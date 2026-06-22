@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<style>
+@font-face { font-family: 'Noto Sans SC'; src: url('../fonts/NotoSansSC-VariableFont_wght.ttf') format('truetype'); font-weight: 100 900; font-display: swap; }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+body { margin: 0; background: #F5F7FA; font-family: 'Noto Sans SC', sans-serif; padding: 20px; }
+.row { display: flex; flex-wrap: wrap; gap: 12px; }
+.swatch { width: 80px; }
+.color-block { width: 80px; height: 56px; border-radius: 6px; border: 1px solid rgba(0,0,0,0.06); }
+.label { font-size: 11px; color: #4E5969; margin-top: 4px; font-family: 'Inter', sans-serif; }
+.name { font-size: 12px; color: #1D2129; font-weight: 500; }
+h4 { font-size: 12px; color: #86909C; margin: 0 0 8px; text-transform: uppercase; letter-spacing: 0.08em; }
+.section { margin-bottom: 16px; }
+</style>
+</head>
+<body>
+<div class="section">
+  <h4>品牌色 Brand</h4>
+  <div class="row">
+    <div class="swatch"><div class="color-block" style="background:#1677FF"></div><div class="name">Primary</div><div class="label">#1677FF</div></div>
+    <div class="swatch"><div class="color-block" style="background:#0958D9"></div><div class="name">Primary Dark</div><div class="label">#0958D9</div></div>
+    <div class="swatch"><div class="color-block" style="background:#E8F1FF"></div><div class="name">Primary Light</div><div class="label">#E8F1FF</div></div>
+    <div class="swatch"><div class="color-block" style="background:#13C2C2"></div><div class="name">Cyan</div><div class="label">#13C2C2</div></div>
+  </div>
+</div>
+<div class="section">
+  <h4>部门色 Department</h4>
+  <div class="row">
+    <div class="swatch"><div class="color-block" style="background:#FF6B35"></div><div class="name">武汉</div><div class="label">#FF6B35</div></div>
+    <div class="swatch"><div class="color-block" style="background:#FFF2EE; border:1px solid #FFD4C2"></div><div class="name">武汉 Light</div><div class="label">#FFF2EE</div></div>
+    <div class="swatch"><div class="color-block" style="background:#1677FF"></div><div class="name">宜昌</div><div class="label">#1677FF</div></div>
+    <div class="swatch"><div class="color-block" style="background:#E8F1FF; border:1px solid #C3D8FF"></div><div class="name">宜昌 Light</div><div class="label">#E8F1FF</div></div>
+  </div>
+</div>
+<div class="section">
+  <h4>平台色 Platform</h4>
+  <div class="row">
+    <div class="swatch"><div class="color-block" style="background:#FFD100"></div><div class="name">美团</div><div class="label">#FFD100</div></div>
+    <div class="swatch"><div class="color-block" style="background:#0099FF"></div><div class="name">饿了么</div><div class="label">#0099FF</div></div>
+  </div>
+</div>
+</body></html>

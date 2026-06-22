@@ -1,0 +1,27 @@
+{
+  "name": "boss-shujuzonglan1-web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "test:unit": "vitest run"
+  },
+  "dependencies": {
+    "china-division": "^2.7.0",
+    "echarts": "^6.0.0",
+    "echarts-for-react": "^3.0.6",
+    "mongoose": "^9.1.6",
+    "next": "16.1.6",
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "typescript": "^5",
+    "vitest": "^3.2.4"
+  }
+}

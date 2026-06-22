@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<style>
+@font-face { font-family: 'Noto Sans SC'; src: url('../fonts/NotoSansSC-VariableFont_wght.ttf') format('truetype'); font-weight: 100 900; font-display: swap; }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+body { margin: 0; background: #F5F7FA; font-family: 'Noto Sans SC', sans-serif; padding: 20px 24px; display: flex; gap: 32px; flex-wrap: wrap; }
+.group { }
+h4 { font-size: 11px; color: #86909C; margin: 0 0 10px; text-transform: uppercase; letter-spacing: 0.08em; }
+.kpi-card { background: #fff; border: 1px solid #E5E8EF; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); padding: 16px 20px; width: 160px; }
+.kpi-label { font-size: 12px; color: #86909C; margin-bottom: 6px; }
+.kpi-val { font-family: 'Inter', sans-serif; font-size: 36px; font-weight: 700; color: #1D2129; line-height: 1; letter-spacing: -0.02em; }
+.kpi-sub { font-size: 12px; color: #52C41A; margin-top: 6px; }
+.tag { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 500; margin: 4px; }
+.bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.bar-label { font-size: 12px; color: #4E5969; width: 48px; text-align: right; }
+.bar-bg { flex: 1; height: 8px; background: #EEF2F8; border-radius: 4px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 4px; }
+.bar-num { font-family: 'Inter', sans-serif; font-size: 12px; color: #1D2129; font-weight: 600; width: 32px; }
+</style>
+</head>
+<body>
+<div class="group">
+  <h4>KPI 卡片</h4>
+  <div style="display:flex;gap:12px;">
+    <div class="kpi-card">
+      <div class="kpi-label">今日开单数</div>
+      <div class="kpi-val">248</div>
+      <div class="kpi-sub">↑ 12% 较昨日</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">今日回款金额</div>
+      <div class="kpi-val" style="font-size:28px;color:#1677FF">￥38,420</div>
+      <div class="kpi-sub" style="color:#86909C">美团 + 饿了么</div>
+    </div>
+  </div>
+</div>
+
+<div class="group">
+  <h4>标签 Tags</h4>
+  <div>
+    <span class="tag" style="background:#E8F1FF;color:#1677FF">宜昌部</span>
+    <span class="tag" style="background:#FFF2EE;color:#FF6B35">武汉部</span>
+    <span class="tag" style="background:#FFD100;color:#664F00">美团</span>
+    <span class="tag" style="background:#E0F2FF;color:#0099FF">饿了么</span>
+    <span class="tag" style="background:#F6FFED;color:#52C41A">已回款</span>
+    <span class="tag" style="background:#FFF1F0;color:#F5222D">未回款</span>
+  </div>
+</div>
+
+<div class="group">
+  <h4>销售排行条</h4>
+  <div style="background:#fff;border:1px solid #E5E8EF;border-radius:8px;padding:16px;width:220px;box-shadow:0 2px 8px rgba(0,0,0,0.08)">
+    <div class="bar-row">
+      <div class="bar-label">张三</div>
+      <div class="bar-bg"><div class="bar-fill" style="width:90%;background:#1677FF"></div></div>
+      <div class="bar-num">86</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">李四</div>
+      <div class="bar-bg"><div class="bar-fill" style="width:72%;background:#1677FF"></div></div>
+      <div class="bar-num">69</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">王五</div>
+      <div class="bar-bg"><div class="bar-fill" style="width:55%;background:#1677FF"></div></div>
+      <div class="bar-num">53</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">赵六</div>
+      <div class="bar-bg"><div class="bar-fill" style="width:38%;background:#E5E8EF"></div></div>
+      <div class="bar-num">36</div>
+    </div>
+  </div>
+</div>
+</body></html>

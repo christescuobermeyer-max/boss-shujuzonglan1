@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<style>
+@font-face { font-family: 'Noto Sans SC'; src: url('../fonts/NotoSansSC-VariableFont_wght.ttf') format('truetype'); font-weight: 100 900; font-display: swap; }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+body { margin: 0; background: #F5F7FA; font-family: 'Noto Sans SC', sans-serif; padding: 20px; }
+.row { display: flex; flex-wrap: wrap; gap: 12px; }
+.swatch { width: 80px; }
+.color-block { width: 80px; height: 56px; border-radius: 6px; border: 1px solid rgba(0,0,0,0.06); }
+.label { font-size: 11px; color: #4E5969; margin-top: 4px; font-family: 'Inter', sans-serif; }
+.name { font-size: 12px; color: #1D2129; font-weight: 500; }
+h4 { font-size: 12px; color: #86909C; margin: 0 0 8px; text-transform: uppercase; letter-spacing: 0.08em; }
+.section { margin-bottom: 16px; }
+</style>
+</head>
+<body>
+<div class="section">
+  <h4>背景色 Backgrounds</h4>
+  <div class="row">
+    <div class="swatch"><div class="color-block" style="background:#F5F7FA; border:1px solid #E5E8EF"></div><div class="name">Page</div><div class="label">#F5F7FA</div></div>
+    <div class="swatch"><div class="color-block" style="background:#FFFFFF; border:1px solid #E5E8EF"></div><div class="name">Card</div><div class="label">#FFFFFF</div></div>
+    <div class="swatch"><div class="color-block" style="background:#EEF2F8; border:1px solid #E5E8EF"></div><div class="name">Secondary</div><div class="label">#EEF2F8</div></div>
+    <div class="swatch"><div class="color-block" style="background:#F0F4FF; border:1px solid #E5E8EF"></div><div class="name">Tertiary</div><div class="label">#F0F4FF</div></div>
+  </div>
+</div>
+<div class="section">
+  <h4>文字色 Text</h4>
+  <div class="row">
+    <div class="swatch"><div class="color-block" style="background:#1D2129"></div><div class="name">Primary</div><div class="label">#1D2129</div></div>
+    <div class="swatch"><div class="color-block" style="background:#4E5969"></div><div class="name">Secondary</div><div class="label">#4E5969</div></div>
+    <div class="swatch"><div class="color-block" style="background:#86909C"></div><div class="name">Tertiary</div><div class="label">#86909C</div></div>
+    <div class="swatch"><div class="color-block" style="background:#C9CDD4"></div><div class="name">Disabled</div><div class="label">#C9CDD4</div></div>
+  </div>
+</div>
+<div class="section">
+  <h4>语义色 Semantic</h4>
+  <div class="row">
+    <div class="swatch"><div class="color-block" style="background:#52C41A"></div><div class="name">Success</div><div class="label">#52C41A</div></div>
+    <div class="swatch"><div class="color-block" style="background:#FAAD14"></div><div class="name">Warning</div><div class="label">#FAAD14</div></div>
+    <div class="swatch"><div class="color-block" style="background:#F5222D"></div><div class="name">Danger</div><div class="label">#F5222D</div></div>
+    <div class="swatch"><div class="color-block" style="background:#E5E8EF; border:1px solid #C9CDD4"></div><div class="name">Border</div><div class="label">#E5E8EF</div></div>
+  </div>
+</div>
+</body></html>

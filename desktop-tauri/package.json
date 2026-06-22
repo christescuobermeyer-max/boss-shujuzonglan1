@@ -1,0 +1,33 @@
+{
+  "name": "boss-shujuzonglan1-tauri",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "npm run tauri:dev",
+    "web:dev": "next dev --hostname 127.0.0.1 --port 1420",
+    "web:build": "next build",
+    "web:start:desktop": "next start --hostname 127.0.0.1 --port 1420",
+    "build:shell": "node ./scripts/build-tauri-shell.mjs",
+    "tauri:dev": ".\\scripts\\tauri-with-vs.cmd dev",
+    "tauri:build": ".\\scripts\\tauri-with-vs.cmd build",
+    "test:unit": "vitest run"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2.10.1",
+    "china-division": "^2.7.0",
+    "echarts": "^6.0.0",
+    "echarts-for-react": "^3.0.6",
+    "mongoose": "^9.1.6",
+    "next": "16.1.6",
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.10.1",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "typescript": "^5",
+    "vitest": "^3.2.4"
+  }
+}

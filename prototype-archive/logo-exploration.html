@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>呈尚策划 Logo 探索</title>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="design-canvas.jsx"></script>
+<style>
+  @font-face { font-family: 'Noto Sans SC'; src: url('fonts/NotoSansSC-VariableFont_wght.ttf') format('truetype'); font-weight: 100 900; font-display: swap; }
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600;700&family=Inter:wght@700;800&display=swap');
+  body { margin: 0; background: #F0F2F5; }
+
+  .logo-bg-white { background: #FFFFFF; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 32px; padding: 32px; box-sizing: border-box; }
+  .logo-bg-dark { background: #0F1629; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 32px; padding: 32px; box-sizing: border-box; }
+  .logo-bg-brand { background: #1677FF; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 32px; padding: 32px; box-sizing: border-box; }
+
+  .variant-label { font-family: 'Noto Sans SC', sans-serif; font-size: 11px; color: #86909C; text-align: center; letter-spacing: 0.06em; margin-top: 4px; }
+  .variant-label-white { color: rgba(255,255,255,0.5); }
+
+  .logo-stack { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+  .logo-row { display: flex; align-items: center; gap: 40px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+
+/* ─── Logo A: 呈字几何化 + 中文横排 ─────────────────────── */
+function LogoA({ dark = false, invert = false }) {
+  const text = dark ? '#FFFFFF' : (invert ? '#FFFFFF' : '#1D2129');
+  const sub = dark ? 'rgba(255,255,255,0.5)' : (invert ? 'rgba(255,255,255,0.7)' : '#4E5969');
+  const accent = invert ? '#FFFFFF' : '#1677FF';
+  const mark = invert ? '#FFFFFF' : '#1677FF';
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+      {/* 呈字图形：三层叠加矩形，象征"呈现"与"上升" */}
+      <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
+        {/* 底层宽条 */}
+        <rect x="4" y="34" width="36" height="6" rx="2" fill={mark} opacity="0.25"/>
+        {/* 中层 */}
+        <rect x="9" y="24" width="26" height="6" rx="2" fill={mark} opacity="0.55"/>
+        {/* 上层窄 */}
+        <rect x="14" y="14" width="16" height="6" rx="2" fill={mark}/>
+        {/* 顶部点 */}
+        <rect x="19" y="6" width="6" height="5" rx="1.5" fill={mark}/>
+      </svg>
+      <div>
+        <div style={{ fontFamily: "'Noto Sans SC', sans-serif", fontSize: 22, fontWeight: 700, color: text, letterSpacing: '0.08em', lineHeight: 1 }}>
+          呈尚策划
+        </div>
+        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, color: sub, letterSpacing: '0.14em', marginTop: 4, textTransform: 'uppercase' }}>
+          CHENG SHANG PLANNING
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Logo B: CS字母徽标 ─────────────────────────────────── */
+function LogoB({ dark = false, invert = false }) {
+  const text = dark ? '#FFFFFF' : (invert ? '#FFFFFF' : '#1D2129');
+  const sub = dark ? 'rgba(255,255,255,0.5)' : (invert ? 'rgba(255,255,255,0.7)' : '#86909C');
+  const bg1 = invert ? 'rgba(255,255,255,0.2)' : '#1677FF';
+  const bg2 = invert ? 'rgba(255,255,255,0.12)' : '#0040B3';
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+      {/* CS 字母组合标志 */}
+      <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+        <rect width="48" height="48" rx="12" fill={bg1}/>
+        {/* C 形状 */}
+        <path d="M26 14 C18 14 13 18.5 13 24 C13 29.5 18 34 26 34 L26 29 C21 29 18 26.8 18 24 C18 21.2 21 19 26 19 L26 14Z" fill="white"/>
+        {/* S 形状 */}
+        <path d="M29 14 L35 14 C35 14 37 14 37 16.5 C37 19 34 19.5 32 20 C30 20.5 28 21.5 28 24 C28 26.5 30 27 32 27.5 C34 28 37 28.5 37 31.5 C37 34 35 34 35 34 L29 34 L29 30.5 L33 30.5 C33 30.5 33.5 30.5 33.5 29.5 C33.5 28.5 32 28 30.5 27.5 C28 26.5 26.5 24.5 26.5 22.5 C26.5 20 28 18.5 30.5 17.5 C32 17 33.5 16.5 33.5 15.5 C33.5 14.5 33 14.5 33 14.5 L29 14Z" fill="white"/>
+      </svg>
+      <div>
+        <div style={{ fontFamily: "'Noto Sans SC', sans-serif", fontSize: 20, fontWeight: 700, color: text, letterSpacing: '0.06em', lineHeight: 1.1 }}>
+          呈尚策划
+        </div>
+        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 9.5, color: sub, letterSpacing: '0.12em', marginTop: 3, textTransform: 'uppercase' }}>
+          CHENGSHANG PLANNING CO.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Logo C: 圆形印章风格 ─────────────────────────────── */
+function LogoC({ dark = false, invert = false }) {
+  const bg = invert ? 'rgba(255,255,255,0.15)' : '#EEF2F8';
+  const stroke = invert ? 'rgba(255,255,255,0.8)' : '#1677FF';
+  const fill = invert ? '#FFFFFF' : '#1677FF';
+  const text = dark ? '#FFFFFF' : (invert ? '#FFFFFF' : '#1D2129');
+  const sub = dark ? 'rgba(255,255,255,0.5)' : (invert ? 'rgba(255,255,255,0.6)' : '#86909C');
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+      <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
+        <circle cx="26" cy="26" r="24" fill={bg} stroke={stroke} strokeWidth="1.5"/>
+        <circle cx="26" cy="26" r="20" fill="none" stroke={stroke} strokeWidth="0.5" opacity="0.4"/>
+        {/* 呈 字简化 */}
+        <text x="26" y="32" textAnchor="middle" fill={fill}
+          style={{ fontSize: 20, fontWeight: 900, fontFamily: "'Noto Sans SC', sans-serif" }}>呈</text>
+      </svg>
+      <div>
+        <div style={{ fontFamily: "'Noto Serif SC', serif", fontSize: 22, fontWeight: 700, color: text, letterSpacing: '0.12em', lineHeight: 1 }}>
+          呈尚策划
+        </div>
+        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 9.5, color: sub, letterSpacing: '0.16em', marginTop: 5, textTransform: 'uppercase' }}>
+          CHENG SHANG PLANNING
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Logo D: 上升箭头/增长感 ─────────────────────────── */
+function LogoD({ dark = false, invert = false }) {
+  const text = dark ? '#FFFFFF' : (invert ? '#FFFFFF' : '#1D2129');
+  const sub = dark ? 'rgba(255,255,255,0.5)' : (invert ? 'rgba(255,255,255,0.6)' : '#86909C');
+  const c1 = invert ? 'rgba(255,255,255,0.9)' : '#1677FF';
+  const c2 = invert ? 'rgba(255,255,255,0.5)' : '#93BBFF';
+  const c3 = invert ? 'rgba(255,255,255,0.25)' : '#C3D8FF';
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+      <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
+        {/* 三阶梯上升 */}
+        <rect x="4" y="30" width="10" height="10" rx="2" fill={c3}/>
+        <rect x="17" y="21" width="10" height="19" rx="2" fill={c2}/>
+        <rect x="30" y="10" width="10" height="30" rx="2" fill={c1}/>
+        {/* 上升箭头 */}
+        <path d="M32 6 L38 12 M32 6 L26 12" stroke={c1} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+      <div>
+        <div style={{ fontFamily: "'Noto Sans SC', sans-serif", fontSize: 22, fontWeight: 700, color: text, letterSpacing: '0.06em', lineHeight: 1 }}>
+          呈尚策划
+        </div>
+        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 9.5, color: sub, letterSpacing: '0.14em', marginTop: 4, textTransform: 'uppercase' }}>
+          CHENG SHANG · OPERATIONS
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Logo E: 方形品牌感（现代简约）─────────────────── */
+function LogoE({ dark = false, invert = false }) {
+  const text = dark ? '#FFFFFF' : (invert ? '#FFFFFF' : '#1D2129');
+  const sub = dark ? 'rgba(255,255,255,0.5)' : (invert ? 'rgba(255,255,255,0.6)' : '#86909C');
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+      <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+        <defs>
+          <linearGradient id="gradE" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor={invert ? '#FFFFFF' : '#1677FF'}/>
+            <stop offset="100%" stopColor={invert ? 'rgba(255,255,255,0.6)' : '#0040B3'}/>
+          </linearGradient>
+        </defs>
+        <rect width="48" height="48" rx="10" fill="url(#gradE)"/>
+        {/* 呈 字白色居中 */}
+        <text x="24" y="33" textAnchor="middle" fill={invert ? '#1677FF' : 'white'}
+          style={{ fontSize: 26, fontWeight: 900, fontFamily: "'Noto Sans SC', sans-serif" }}>呈</text>
+      </svg>
+      <div>
+        <div style={{ fontFamily: "'Noto Sans SC', sans-serif", fontSize: 22, fontWeight: 700, color: text, letterSpacing: '0.08em', lineHeight: 1 }}>
+          呈尚策划
+        </div>
+        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 9.5, color: sub, letterSpacing: '0.14em', marginTop: 4, textTransform: 'uppercase' }}>
+          CHENGSHANG PLANNING
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Main ───────────────────────────────────────────────── */
+function App() {
+  return (
+    <DesignCanvas title="呈尚策划 · Logo 设计探索">
+
+      {/* Option A */}
+      <DCSection id="optA" title="方案 A — 呈字几何叠层">
+        <DCArtboard id="a1" label="白底" width={420} height={180}>
+          <div className="logo-bg-white">
+            <LogoA/>
+            <div className="variant-label">主要场景 · 白底横版</div>
+          </div>
+        </DCArtboard>
+        <DCArtboard id="a2" label="深色底" width={420} height={180}>
+          <div className="logo-bg-dark">
+            <LogoA dark/>
+            <div className="variant-label variant-label-white">深色背景适用</div>
+          </div>
+        </DCArtboard>
+        <DCArtboard id="a3" label="品牌蓝底" width={420} height={180}>
+          <div className="logo-bg-brand">
+            <LogoA invert/>
+            <div className="variant-label variant-label-white">品牌色背景适用</div>
+          </div>
+        </DCArtboard>
+      </DCSection>
+
+      {/* Option B */}
+      <DCSection id="optB" title="方案 B — CS字母方形徽标">
+        <DCArtboard id="b1" label="白底" width={420} height={180}>
+          <div className="logo-bg-white">
+            <LogoB/>
+            <div className="variant-label">字母组合 · 现代感强</div>
+          </div>
+        </DCArtboard>
+        <DCArtboard id="b2" label="深色底" width={420} height={180}>
+          <div className="logo-bg-dark">
+            <LogoB dark/>
+            <div className="variant-label variant-label-white">深色版本</div>
+          </div>
+        </DCArtboard>
+        <DCArtboard id="b3" label="品牌蓝底" width={420} height={180}>
+          <div className="logo-bg-brand">
+            <LogoB invert/>
+            <div className="variant-label variant-label-white">品牌色版本</div>
+          </div>
+        </DCArtboard>
+      </DCSection>
+
+      {/* Option C */}
+      <DCSection id="optC" title="方案 C — 圆形印章·衬线字体">
+        <DCArtboard id="c1" label="白底" width={420} height={180}>
+          <div className="logo-bg-white">
+            <LogoC/>
+            <div className="variant-label">传统稳重 · 衬线字搭配</div>
+          </div>
+        </DCArtboard>
+        <DCArtboard id="c2" label="深色底" width={420} height={180}>
+          <div className="logo-bg-dark">
+            <LogoC dark/>
+            <div className="variant-label variant-label-white">深色版本</div>
+          </div>
+        </DCArtboard>
+        <DCArtboard id="c3" label="品牌蓝底" width={420} height={180}>
+          <div className="logo-bg-brand">
+            <LogoC invert/>
+            <div className="variant-label variant-label-white">品牌色版本</div>
+          </div>
+        </DCArtboard>
+      </DCSection>
+
+      {/* Option D */}
+      <DCSection id="optD" title="方案 D — 阶梯增长图表">
+        <DCArtboard id="d1" label="白底" width={420} height={180}>
+          <div className="logo-bg-white">
+            <LogoD/>
+            <div className="variant-label">增长感 · 数据化 · 代运营行业契合</div>
+          </div>
+        </DCArtboard>
+        <DCArtboard id="d2" label="深色底" width={420} height={180}>
+          <div className="logo-bg-dark">
+            <LogoD dark/>
+            <div className="variant-label variant-label-white">深色版本</div>
+          </div>
+        </DCArtboard>
+        <DCArtboard id="d3" label="品牌蓝底" width={420} height={180}>
+          <div className="logo-bg-brand">
+            <LogoD invert/>
+            <div className="variant-label variant-label-white">品牌色版本</div>
+          </div>
+        </DCArtboard>
+      </DCSection>
+
+      {/* Option E */}
+      <DCSection id="optE" title="方案 E — 方形品牌块·渐变">
+        <DCArtboard id="e1" label="白底" width={420} height={180}>
+          <div className="logo-bg-white">
+            <LogoE/>
+            <div className="variant-label">简约方块 · 品牌感强 · 适合App图标</div>
+          </div>
+        </DCArtboard>
+        <DCArtboard id="e2" label="深色底" width={420} height={180}>
+          <div className="logo-bg-dark">
+            <LogoE dark/>
+            <div className="variant-label variant-label-white">深色版本</div>
+          </div>
+        </DCArtboard>
+        <DCArtboard id="e3" label="品牌蓝底" width={420} height={180}>
+          <div className="logo-bg-brand">
+            <LogoE invert/>
+            <div className="variant-label variant-label-white">品牌色版本（反色）</div>
+          </div>
+        </DCArtboard>
+      </DCSection>
+
+      {/* Favicon/Icon sizes */}
+      <DCSection id="icons" title="图标尺寸预览（方案 A + D + E）">
+        <DCArtboard id="i1" label="常用尺寸对比" width={600} height={220}>
+          <div style={{ background: '#F5F7FA', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 40, padding: 24, boxSizing: 'border-box' }}>
+            {/* 方案A图标 */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+              {[64, 32, 16].map(sz => (
+                <div key={sz} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+                  <svg width={sz} height={sz} viewBox="0 0 44 44" fill="none">
+                    <rect x="4" y="34" width="36" height="6" rx="2" fill="#1677FF" opacity="0.25"/>
+                    <rect x="9" y="24" width="26" height="6" rx="2" fill="#1677FF" opacity="0.55"/>
+                    <rect x="14" y="14" width="16" height="6" rx="2" fill="#1677FF"/>
+                    <rect x="19" y="6" width="6" height="5" rx="1.5" fill="#1677FF"/>
+                  </svg>
+                  <span style={{ fontSize: 9, color: '#86909C', fontFamily: 'Inter' }}>{sz}px</span>
+                </div>
+              ))}
+              <span style={{ fontSize: 11, color: '#4E5969', fontFamily: 'Noto Sans SC' }}>方案 A</span>
+            </div>
+            {/* 方案D图标 */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+              {[64, 32, 16].map(sz => (
+                <div key={sz} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+                  <svg width={sz} height={sz} viewBox="0 0 44 44" fill="none">
+                    <rect x="4" y="30" width="10" height="10" rx="2" fill="#C3D8FF"/>
+                    <rect x="17" y="21" width="10" height="19" rx="2" fill="#93BBFF"/>
+                    <rect x="30" y="10" width="10" height="30" rx="2" fill="#1677FF"/>
+                    <path d="M32 6 L38 12 M32 6 L26 12" stroke="#1677FF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  <span style={{ fontSize: 9, color: '#86909C', fontFamily: 'Inter' }}>{sz}px</span>
+                </div>
+              ))}
+              <span style={{ fontSize: 11, color: '#4E5969', fontFamily: 'Noto Sans SC' }}>方案 D</span>
+            </div>
+            {/* 方案E图标（方块） */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+              {[64, 32, 16].map(sz => (
+                <div key={sz} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+                  <svg width={sz} height={sz} viewBox="0 0 48 48" fill="none">
+                    <defs>
+                      <linearGradient id={`g${sz}`} x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stopColor="#1677FF"/>
+                        <stop offset="100%" stopColor="#0040B3"/>
+                      </linearGradient>
+                    </defs>
+                    <rect width="48" height="48" rx={sz > 24 ? 10 : 6} fill={`url(#g${sz})`}/>
+                    <text x="24" y="33" textAnchor="middle" fill="white"
+                      style={{ fontSize: sz > 30 ? 26 : sz > 16 ? 14 : 7, fontWeight: 900, fontFamily: 'Noto Sans SC' }}>呈</text>
+                  </svg>
+                  <span style={{ fontSize: 9, color: '#86909C', fontFamily: 'Inter' }}>{sz}px</span>
+                </div>
+              ))}
+              <span style={{ fontSize: 11, color: '#4E5969', fontFamily: 'Noto Sans SC' }}>方案 E</span>
+            </div>
+          </div>
+        </DCArtboard>
+      </DCSection>
+
+    </DesignCanvas>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

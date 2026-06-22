@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<style>
+@font-face {
+  font-family: 'Noto Sans SC';
+  src: url('../fonts/NotoSansSC-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+body { margin: 0; background: #F5F7FA; font-family: 'Noto Sans SC', sans-serif; padding: 20px 24px; }
+.row { display: flex; flex-direction: column; gap: 10px; }
+.specimen { display: flex; align-items: baseline; gap: 16px; border-bottom: 1px solid #F0F4FF; padding-bottom: 8px; }
+.specimen:last-child { border-bottom: none; }
+.sample { color: #1D2129; }
+.meta { font-size: 10px; color: #86909C; font-family: 'Inter', sans-serif; white-space: nowrap; min-width: 200px; }
+
+/* Weight showcase */
+.weights { display: flex; flex-direction: column; gap: 4px; margin-top: 12px; padding-top: 10px; border-top: 1px solid #E5E8EF; }
+.w-row { display: flex; align-items: center; gap: 12px; }
+.w-label { font-size: 10px; color: #86909C; font-family: 'Inter'; width: 70px; flex-shrink: 0; }
+.w-sample { font-family: 'Noto Sans SC', sans-serif; font-size: 16px; color: #1D2129; }
+</style>
+</head>
+<body>
+<div class="row">
+  <div class="specimen">
+    <div class="sample" style="font-family:'Inter',sans-serif;font-size:48px;font-weight:700;line-height:1;letter-spacing:-0.02em">12,345</div>
+    <div class="meta">Inter 48px 700 · KPI大数值</div>
+  </div>
+  <div class="specimen">
+    <div class="sample" style="font-family:'Inter',sans-serif;font-size:28px;font-weight:700;letter-spacing:-0.01em">￥284,360</div>
+    <div class="meta">Inter 28px 700 · 金额展示</div>
+  </div>
+  <div class="specimen">
+    <div class="sample" style="font-family:'Noto Sans SC';font-size:20px;font-weight:700">全国开单省份分布</div>
+    <div class="meta">Noto Sans SC 20px 700 · 版块标题</div>
+  </div>
+  <div class="specimen">
+    <div class="sample" style="font-family:'Noto Sans SC';font-size:16px;font-weight:500">本月回款金额趋势</div>
+    <div class="meta">Noto Sans SC 16px 500 · 卡片标题</div>
+  </div>
+  <div class="specimen">
+    <div class="sample" style="font-family:'Noto Sans SC';font-size:14px;font-weight:400;color:#4E5969">武汉销售部 · 2025-04-22</div>
+    <div class="meta">Noto Sans SC 14px 400 · 正文标签</div>
+  </div>
+  <div class="specimen">
+    <div class="sample" style="font-family:'Noto Sans SC';font-size:12px;font-weight:400;color:#86909C">数据实时更新</div>
+    <div class="meta">Noto Sans SC 12px 400 · 辅助文字</div>
+  </div>
+</div>
+
+<!-- Variable font weight showcase -->
+<div class="weights">
+  <div class="w-row"><div class="w-label">Weight 300</div><div class="w-sample" style="font-weight:300">呈尚策划数据统计系统</div></div>
+  <div class="w-row"><div class="w-label">Weight 400</div><div class="w-sample" style="font-weight:400">呈尚策划数据统计系统</div></div>
+  <div class="w-row"><div class="w-label">Weight 500</div><div class="w-sample" style="font-weight:500">呈尚策划数据统计系统</div></div>
+  <div class="w-row"><div class="w-label">Weight 700</div><div class="w-sample" style="font-weight:700">呈尚策划数据统计系统</div></div>
+  <div class="w-row"><div class="w-label">Weight 900</div><div class="w-sample" style="font-weight:900">呈尚策划数据统计系统</div></div>
+</div>
+</body></html>

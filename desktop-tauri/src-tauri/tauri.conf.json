@@ -1,0 +1,45 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "呈尚策划 · BOSS看板",
+  "version": "0.1.0",
+  "identifier": "com.chengshang.bossdashboard",
+  "build": {
+    "beforeDevCommand": "npm run web:dev",
+    "beforeBuildCommand": "npm run web:build && npm run build:shell",
+    "devUrl": "http://127.0.0.1:1420/",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "登录 · 呈尚策划 · BOSS看板",
+        "fullscreen": false,
+        "maximized": true,
+        "decorations": true,
+        "width": 1600,
+        "height": 960,
+        "minWidth": 1100,
+        "minHeight": 760,
+        "resizable": true,
+        "minimizable": true,
+        "closable": true,
+        "center": true,
+        "visible": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "nsis",
+    "resources": ["./resources/**/*"],
+    "windows": {
+      "nsis": {
+        "installerHooks": "./installer-hooks.nsh"
+      }
+    }
+  }
+}

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>呈尚策划 · BOSS看板</title>
+    <link rel="stylesheet" href="./desktop-shell.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="card">
+        <span class="eyebrow">桌面应用启动中</span>
+        <h1>呈尚策划 · BOSS看板</h1>
+        <p class="lead">正在连接本地统计服务并载入月度数据，请稍候。</p>
+        <div class="status-panel">
+          <span class="status-dot"></span>
+          <span id="status-text">正在启动数据服务...</span>
+        </div>
+        <p class="hint" id="hint-text">首次启动通常需要几秒钟，系统会自动跳转到登录页。</p>
+        <button class="retry-button" id="retry-button" type="button" hidden>
+          重新检测
+        </button>
+      </section>
+    </main>
+
+    <script>
+      const dashboardUrl = "http://127.0.0.1:3210/login";
+      const statusText = document.getElementById("status-text");
+      const hintText = document.getElementById("hint-text");
+      const retryButton = document.getElementById("retry-button");
+
+      const sleep = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
+
+      async function tryConnect() {
+        for (let attempt = 1; attempt <= 60; attempt += 1) {
+          statusText.textContent = `正在启动数据服务...（第 ${attempt} 次检测）`;
+          try {
+            await fetch(dashboardUrl, { cache: "no-store", mode: "no-cors" });
+            statusText.textContent = "连接成功，正在进入登录页...";
+            hintText.textContent = "如未自动跳转，请稍候 1 到 2 秒。";
+            window.location.replace(dashboardUrl);
+            return;
+          } catch (error) {
+            await sleep(1000);
+          }
+        }
+
+        statusText.textContent = "本地数据服务启动失败";
+        hintText.textContent =
+          "请关闭软件后重新打开。若仍失败，请联系我继续排查本地服务日志。";
+        retryButton.hidden = false;
+      }
+
+      retryButton.addEventListener("click", () => {
+        retryButton.hidden = true;
+        statusText.textContent = "正在重新检测...";
+        hintText.textContent = "系统会再次尝试连接本地统计服务。";
+        void tryConnect();
+      });
+
+      void tryConnect();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<style>
+@font-face { font-family: 'Noto Sans SC'; src: url('../fonts/NotoSansSC-VariableFont_wght.ttf') format('truetype'); font-weight: 100 900; font-display: swap; }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+body { margin: 0; background: #F5F7FA; font-family: 'Noto Sans SC', sans-serif; padding: 20px 24px; }
+h4 { font-size: 11px; color: #86909C; margin: 0 0 12px; text-transform: uppercase; letter-spacing: 0.08em; }
+.row { display: flex; align-items: flex-end; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+.space-item { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+.space-bar { background: #1677FF; border-radius: 2px; height: 20px; opacity: 0.15; }
+.space-fill { background: #1677FF; height: 20px; border-radius: 2px; }
+.meta { font-size: 11px; color: #86909C; font-family: 'Inter', sans-serif; }
+.token { font-size: 12px; color: #1D2129; font-weight: 500; }
+
+.radius-row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+.radius-item { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.radius-box { width: 48px; height: 48px; background: #E8F1FF; border: 2px solid #1677FF; }
+.shadow-row { display: flex; gap: 16px; flex-wrap: wrap; }
+.shadow-box { width: 80px; height: 48px; background: #fff; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #86909C; }
+</style>
+</head>
+<body>
+<h4>间距 Spacing</h4>
+<div class="row">
+  <div class="space-item"><div style="background:#1677FF;height:20px;border-radius:2px;width:4px"></div><div class="token">4px</div><div class="meta">space-1</div></div>
+  <div class="space-item"><div style="background:#1677FF;height:20px;border-radius:2px;width:8px"></div><div class="token">8px</div><div class="meta">space-2</div></div>
+  <div class="space-item"><div style="background:#1677FF;height:20px;border-radius:2px;width:12px"></div><div class="token">12px</div><div class="meta">space-3</div></div>
+  <div class="space-item"><div style="background:#1677FF;height:20px;border-radius:2px;width:16px"></div><div class="token">16px</div><div class="meta">space-4</div></div>
+  <div class="space-item"><div style="background:#1677FF;height:20px;border-radius:2px;width:20px"></div><div class="token">20px</div><div class="meta">space-5</div></div>
+  <div class="space-item"><div style="background:#1677FF;height:20px;border-radius:2px;width:24px"></div><div class="token">24px</div><div class="meta">space-6</div></div>
+  <div class="space-item"><div style="background:#1677FF;height:20px;border-radius:2px;width:32px"></div><div class="token">32px</div><div class="meta">space-8</div></div>
+  <div class="space-item"><div style="background:#1677FF;height:20px;border-radius:2px;width:48px"></div><div class="token">48px</div><div class="meta">space-12</div></div>
+</div>
+
+<h4>圆角 Border Radius</h4>
+<div class="radius-row">
+  <div class="radius-item"><div class="radius-box" style="border-radius:4px"></div><div class="token">4px</div><div class="meta">sm · 标签</div></div>
+  <div class="radius-item"><div class="radius-box" style="border-radius:6px"></div><div class="token">6px</div><div class="meta">md · 按钮</div></div>
+  <div class="radius-item"><div class="radius-box" style="border-radius:8px"></div><div class="token">8px</div><div class="meta">lg · 卡片</div></div>
+  <div class="radius-item"><div class="radius-box" style="border-radius:12px"></div><div class="token">12px</div><div class="meta">xl · 大卡片</div></div>
+  <div class="radius-item"><div class="radius-box" style="border-radius:9999px;width:48px;height:24px"></div><div class="token">full</div><div class="meta">胶囊</div></div>
+</div>
+
+<h4>阴影 Shadows</h4>
+<div class="shadow-row">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+    <div class="shadow-box" style="box-shadow:0 2px 8px rgba(0,0,0,0.08)">卡片</div>
+    <div class="meta">shadow-card</div>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+    <div class="shadow-box" style="box-shadow:0 4px 16px rgba(0,0,0,0.12)">Hover</div>
+    <div class="meta">shadow-hover</div>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+    <div class="shadow-box" style="box-shadow:0 8px 24px rgba(0,0,0,0.12)">下拉</div>
+    <div class="meta">shadow-dropdown</div>
+  </div>
+</div>
+</body></html>

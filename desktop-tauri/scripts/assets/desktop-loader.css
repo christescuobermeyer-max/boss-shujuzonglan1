@@ -1,0 +1,119 @@
+:root {
+  color-scheme: light;
+  font-family: "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  background: #edf3fb;
+  color: #14213d;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 15% 18%, rgba(255, 122, 69, 0.16), transparent 26%),
+    radial-gradient(circle at 80% 20%, rgba(22, 119, 255, 0.16), transparent 22%),
+    linear-gradient(180deg, #f8fbff 0%, #edf3fb 100%);
+}
+
+body {
+  display: flex;
+}
+
+.shell {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28px;
+}
+
+.card {
+  width: min(620px, 100%);
+  padding: 34px 36px;
+  border-radius: 28px;
+  border: 1px solid rgba(20, 33, 61, 0.08);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 24px 60px rgba(19, 34, 66, 0.12);
+  backdrop-filter: blur(16px);
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: rgba(22, 119, 255, 0.1);
+  color: #1768e5;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+h1 {
+  margin: 18px 0 12px;
+  font-size: 38px;
+  line-height: 1.1;
+}
+
+.lead,
+.hint {
+  margin: 0;
+  color: #4f5f79;
+  line-height: 1.75;
+}
+
+.status-panel {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 24px 0 14px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(22, 119, 255, 0.08), rgba(82, 196, 26, 0.1));
+}
+
+.status-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: #52c41a;
+  box-shadow: 0 0 0 6px rgba(82, 196, 26, 0.14);
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+.retry-button {
+  margin-top: 18px;
+  min-width: 128px;
+  min-height: 42px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 999px;
+  background: #1768e5;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.retry-button:hover {
+  background: #1257bf;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.15);
+    opacity: 0.72;
+  }
+}

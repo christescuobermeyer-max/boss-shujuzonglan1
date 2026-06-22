@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>呈尚策划 · 数据统计系统</title>
+<style>
+@font-face {
+  font-family: 'Noto Sans SC';
+  src: url('fonts/NotoSansSC-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-display: swap;
+}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg-page: #F2F4F8;
+  --bg-card: #FFFFFF;
+  --bg-secondary: #EEF2F8;
+  --color-primary: #1677FF;
+  --color-primary-dark: #0958D9;
+  --color-primary-light: #E8F1FF;
+  --color-success: #52C41A;
+  --color-danger: #F5222D;
+  --text-primary: #1D2129;
+  --text-secondary: #4E5969;
+  --text-tertiary: #86909C;
+  --border: #E5E8EF;
+  --shadow: 0 2px 8px rgba(0,0,0,0.08), 0 12px 40px rgba(0,0,0,0.08);
+  --font: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --num: 'Inter', sans-serif;
+  --r: 12px;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg-page);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── Background decoration ── */
+.bg-deco {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.bg-deco::before {
+  content: '';
+  position: absolute;
+  top: -120px; right: -120px;
+  width: 480px; height: 480px;
+  background: radial-gradient(circle, rgba(22,119,255,0.10) 0%, transparent 70%);
+  border-radius: 50%;
+}
+.bg-deco::after {
+  content: '';
+  position: absolute;
+  bottom: -80px; left: -80px;
+  width: 360px; height: 360px;
+  background: radial-gradient(circle, rgba(19,194,194,0.08) 0%, transparent 70%);
+  border-radius: 50%;
+}
+.bg-grid {
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(22,119,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(22,119,255,0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  z-index: 0;
+}
+
+/* ── Login card ── */
+.login-wrap {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 400px;
+  padding: 0 20px;
+}
+
+.login-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  padding: 40px 36px 36px;
+}
+
+/* ── Brand header ── */
+.login-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+.login-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.brand-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.04em;
+}
+.login-subtitle {
+  font-size: 13px;
+  color: var(--text-tertiary);
+  letter-spacing: 0.02em;
+}
+
+/* ── Form ── */
+.form-group { margin-bottom: 20px; }
+.form-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 7px;
+}
+
+.input-wrap {
+  position: relative;
+}
+.form-input {
+  width: 100%;
+  height: 44px;
+  padding: 0 44px 0 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-family: var(--font);
+  font-size: 15px;
+  color: var(--text-primary);
+  background: var(--bg-page);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+  letter-spacing: 0.12em;
+}
+.form-input::placeholder { color: var(--text-tertiary); letter-spacing: 0; font-size: 14px; }
+.form-input:focus {
+  border-color: var(--color-primary);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(22,119,255,0.10);
+}
+.form-input.error {
+  border-color: var(--color-danger);
+  box-shadow: 0 0 0 3px rgba(245,34,45,0.08);
+}
+
+.eye-btn {
+  position: absolute;
+  right: 12px; top: 50%;
+  transform: translateY(-50%);
+  background: none; border: none;
+  cursor: pointer; padding: 4px;
+  color: var(--text-tertiary);
+  display: flex; align-items: center;
+  transition: color 0.15s;
+}
+.eye-btn:hover { color: var(--color-primary); }
+
+/* Error message */
+.error-msg {
+  font-size: 12px;
+  color: var(--color-danger);
+  margin-top: 6px;
+  display: none;
+  align-items: center;
+  gap: 4px;
+}
+.error-msg.show { display: flex; }
+
+/* ── Submit button ── */
+.login-btn {
+  width: 100%;
+  height: 46px;
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-family: var(--font);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.06em;
+  transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+  box-shadow: 0 4px 12px rgba(22,119,255,0.30);
+  position: relative;
+  overflow: hidden;
+  margin-top: 8px;
+}
+.login-btn:hover {
+  background: var(--color-primary-dark);
+  box-shadow: 0 6px 18px rgba(22,119,255,0.38);
+  transform: translateY(-1px);
+}
+.login-btn:active { transform: translateY(0); }
+.login-btn:disabled { background: #C9CDD4; box-shadow: none; cursor: not-allowed; transform: none; }
+
+/* Loading spinner inside button */
+.btn-text { transition: opacity 0.2s; }
+.btn-spinner {
+  display: none;
+  position: absolute;
+  inset: 0;
+  align-items: center;
+  justify-content: center;
+}
+.btn-spinner svg { animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Success state ── */
+.success-overlay {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 20px 0 8px;
+}
+.success-icon {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: var(--color-success);
+  display: flex; align-items: center; justify-content: center;
+  animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes popIn {
+  0% { transform: scale(0); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.success-text { font-size: 15px; font-weight: 600; color: var(--text-primary); }
+.success-sub { font-size: 13px; color: var(--text-tertiary); }
+.redirect-bar {
+  width: 100%;
+  height: 3px;
+  background: var(--bg-secondary);
+  border-radius: 2px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+.redirect-fill {
+  height: 100%;
+  background: var(--color-success);
+  border-radius: 2px;
+  width: 0%;
+  transition: width 1.5s linear;
+}
+
+/* ── Footer ── */
+.login-footer {
+  text-align: center;
+  margin-top: 24px;
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+/* ── Mini chart decoration ── */
+.deco-charts {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  margin-bottom: 2px;
+}
+.deco-bar {
+  width: 6px;
+  border-radius: 2px;
+  background: var(--color-primary);
+}
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-deco"></div>
+
+<div class="login-wrap">
+
+  <!-- Mini logo mark above card -->
+  <div style="display:flex;align-items:center;justify-content:center;margin-bottom:20px;gap:8px;">
+    <div class="deco-charts">
+      <div class="deco-bar" style="height:8px;opacity:0.3"></div>
+      <div class="deco-bar" style="height:12px;opacity:0.6"></div>
+      <div class="deco-bar" style="height:18px"></div>
+      <svg width="14" height="14" viewBox="0 0 44 44" fill="none" style="margin-left:1px;margin-bottom:2px">
+        <path d="M32 6 L38 12 M32 6 L26 12" stroke="#1677FF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="login-card">
+
+    <!-- Brand -->
+    <div class="login-brand">
+      <div class="login-logo">
+        <svg width="32" height="32" viewBox="0 0 44 44" fill="none">
+          <rect x="4" y="30" width="10" height="10" rx="2" fill="#C3D8FF"/>
+          <rect x="17" y="21" width="10" height="19" rx="2" fill="#93BBFF"/>
+          <rect x="30" y="10" width="10" height="30" rx="2" fill="#1677FF"/>
+          <path d="M32 6 L38 12 M32 6 L26 12" stroke="#1677FF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="brand-name">呈尚策划</span>
+      </div>
+      <div class="login-subtitle">数据统计系统 · 内部管理平台</div>
+    </div>
+
+    <!-- Form -->
+    <div id="loginForm">
+      <div class="form-group">
+        <label class="form-label">访问密码</label>
+        <div class="input-wrap">
+          <input
+            class="form-input"
+            id="pwdInput"
+            type="password"
+            placeholder="请输入访问密码"
+            autocomplete="current-password"
+            onkeydown="if(event.key==='Enter')doLogin()"
+            oninput="clearError()"
+          />
+          <button class="eye-btn" id="eyeBtn" onclick="toggleEye()" type="button" tabindex="-1">
+            <svg id="eyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+        <div class="error-msg" id="errorMsg">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          密码错误，请重新输入
+        </div>
+      </div>
+
+      <button class="login-btn" id="loginBtn" onclick="doLogin()">
+        <span class="btn-text">进入系统</span>
+        <span class="btn-spinner" id="spinner">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
+            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4"/>
+          </svg>
+        </span>
+      </button>
+    </div>
+
+    <!-- Success state -->
+    <div class="success-overlay" id="successOverlay">
+      <div class="success-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </div>
+      <div class="success-text">验证成功</div>
+      <div class="success-sub">正在进入数据统计系统…</div>
+      <div class="redirect-bar"><div class="redirect-fill" id="redirectFill"></div></div>
+    </div>
+
+  </div>
+
+  <div class="login-footer">© 2025 呈尚策划 · 内部系统，禁止外部访问</div>
+</div>
+
+<script>
+// ── 密码配置 ─────────────────────────────────────
+const CORRECT_PASSWORD = 'cs2025'; // 在此修改密码
+
+// ── 页面入口跳转 ──────────────────────────────────
+const DASHBOARD_URL = 'ui_kits/dashboard/index.html';
+
+// ── 登录逻辑 ─────────────────────────────────────
+let eyeOpen = false;
+
+function toggleEye() {
+  eyeOpen = !eyeOpen;
+  const input = document.getElementById('pwdInput');
+  const icon = document.getElementById('eyeIcon');
+  input.type = eyeOpen ? 'text' : 'password';
+  icon.innerHTML = eyeOpen
+    ? '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>'
+    : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+}
+
+function clearError() {
+  document.getElementById('pwdInput').classList.remove('error');
+  document.getElementById('errorMsg').classList.remove('show');
+}
+
+function doLogin() {
+  const input = document.getElementById('pwdInput');
+  const val = input.value.trim();
+  if (!val) {
+    input.classList.add('error');
+    document.getElementById('errorMsg').classList.add('show');
+    document.getElementById('errorMsg').querySelector('span') && null;
+    document.getElementById('errorMsg').lastChild.textContent = ' 请输入访问密码';
+    input.focus();
+    return;
+  }
+
+  // Show loading
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true;
+  document.querySelector('.btn-text').style.opacity = '0';
+  document.getElementById('spinner').style.display = 'flex';
+
+  setTimeout(() => {
+    if (val === CORRECT_PASSWORD) {
+      // Success
+      document.getElementById('loginForm').style.display = 'none';
+      const overlay = document.getElementById('successOverlay');
+      overlay.style.display = 'flex';
+      // Animate progress bar then redirect
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          document.getElementById('redirectFill').style.width = '100%';
+        }, 50);
+      });
+      setTimeout(() => {
+        window.location.href = DASHBOARD_URL;
+      }, 1600);
+    } else {
+      // Error
+      btn.disabled = false;
+      document.querySelector('.btn-text').style.opacity = '1';
+      document.getElementById('spinner').style.display = 'none';
+      input.classList.add('error');
+      document.getElementById('errorMsg').classList.add('show');
+      // Shake animation
+      input.style.animation = 'none';
+      input.offsetHeight; // reflow
+      input.style.animation = 'shake 0.4s ease';
+      input.value = '';
+      input.focus();
+    }
+  }, 800);
+}
+
+// Shake keyframes
+const style = document.createElement('style');
+style.textContent = `@keyframes shake {
+  0%,100%{transform:translateX(0)}
+  20%{transform:translateX(-6px)}
+  40%{transform:translateX(6px)}
+  60%{transform:translateX(-4px)}
+  80%{transform:translateX(4px)}
+}`;
+document.head.appendChild(style);
+
+// Auto-focus
+window.addEventListener('load', () => {
+  document.getElementById('pwdInput').focus();
+});
+</script>
+</body>
+</html>

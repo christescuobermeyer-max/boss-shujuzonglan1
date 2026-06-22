@@ -1,0 +1,8 @@
+.next
+node_modules
+.env.local
+coverage
+tsconfig.tsbuildinfo
+dist
+src-tauri/resources
+src-tauri/target

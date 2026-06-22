@@ -1,0 +1,204 @@
+/* ============================================================
+   代运营数据统计系统 — Design Tokens
+   Light Theme · Noto Sans SC + Inter
+   ============================================================ */
+
+/* ── Local Fonts ────────────────────────────────────────── */
+@font-face {
+  font-family: 'Noto Sans SC';
+  src: url('fonts/NotoSansSC-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+/* Inter still loaded from Google Fonts for numeric display */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* ── Root Variables ──────────────────────────────────────── */
+:root {
+  /* === COLORS: Background === */
+  --bg-page:        #F5F7FA;
+  --bg-card:        #FFFFFF;
+  --bg-secondary:   #EEF2F8;
+  --bg-tertiary:    #F0F4FF;
+  --bg-hover:       #F5F7FA;
+
+  /* === COLORS: Brand === */
+  --color-primary:        #1677FF;
+  --color-primary-light:  #E8F1FF;
+  --color-primary-dark:   #0958D9;
+  --color-cyan:           #13C2C2;
+  --color-cyan-light:     #E6FFFB;
+
+  /* === COLORS: Department === */
+  --color-wuhan:          #FF6B35;
+  --color-wuhan-light:    #FFF2EE;
+  --color-yichang:        #1677FF;
+  --color-yichang-light:  #E8F1FF;
+
+  /* === COLORS: Platform === */
+  --color-meituan:        #FFD100;
+  --color-meituan-dark:   #CC9F00;
+  --color-eleme:          #0099FF;
+  --color-eleme-light:    #E0F2FF;
+
+  /* === COLORS: Semantic === */
+  --color-success:        #52C41A;
+  --color-success-light:  #F6FFED;
+  --color-warning:        #FAAD14;
+  --color-warning-light:  #FFFBE6;
+  --color-danger:         #F5222D;
+  --color-danger-light:   #FFF1F0;
+
+  /* === COLORS: Text === */
+  --text-primary:   #1D2129;
+  --text-secondary: #4E5969;
+  --text-tertiary:  #86909C;
+  --text-disabled:  #C9CDD4;
+  --text-inverse:   #FFFFFF;
+  --text-link:      #1677FF;
+
+  /* === COLORS: Border === */
+  --border-default: #E5E8EF;
+  --border-light:   #F2F3F5;
+  --border-strong:  #C9CDD4;
+
+  /* === SHADOWS === */
+  --shadow-card:    0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-card-hover: 0 4px 16px rgba(0, 0, 0, 0.12);
+  --shadow-dropdown: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+  /* === RADIUS === */
+  --radius-sm:   4px;
+  --radius-md:   6px;
+  --radius-lg:   8px;
+  --radius-xl:   12px;
+  --radius-full: 9999px;
+
+  /* === SPACING === */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* === TYPOGRAPHY === */
+  --font-sans:   'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-num:    'Inter', 'Noto Sans SC', sans-serif;
+  --font-mono:   'JetBrains Mono', 'Courier New', monospace;
+
+  /* Font sizes */
+  --text-xs:   12px;
+  --text-sm:   13px;
+  --text-base: 14px;
+  --text-md:   16px;
+  --text-lg:   18px;
+  --text-xl:   20px;
+  --text-2xl:  24px;
+  --text-3xl:  32px;
+  --text-4xl:  48px;
+  --text-5xl:  64px;
+
+  /* Font weights */
+  --weight-regular: 400;
+  --weight-medium:  500;
+  --weight-bold:    700;
+
+  /* Line heights */
+  --leading-tight:  1.25;
+  --leading-normal: 1.5;
+  --leading-loose:  1.75;
+
+  /* === TRANSITIONS === */
+  --transition-fast: 0.15s ease-out;
+  --transition-base: 0.2s ease-out;
+  --transition-slow: 0.3s ease-out;
+}
+
+/* ── Semantic Typography ─────────────────────────────────── */
+
+/* Data KPI — big number display */
+.kpi-value {
+  font-family: var(--font-num);
+  font-size: var(--text-4xl);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+.kpi-value-lg {
+  font-family: var(--font-num);
+  font-size: var(--text-5xl);
+  font-weight: var(--weight-bold);
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+/* Section / card titles */
+.card-title {
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  font-weight: var(--weight-medium);
+  color: var(--text-primary);
+  line-height: var(--leading-tight);
+}
+.section-title {
+  font-family: var(--font-sans);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
+  color: var(--text-primary);
+}
+
+/* Body / label text */
+.label {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  line-height: var(--leading-normal);
+}
+.label-sm {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  line-height: var(--leading-normal);
+}
+
+/* Chart axis / tick labels */
+.axis-label {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+}
+
+/* ── Base Card ───────────────────────────────────────────── */
+.ds-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-6);
+  transition: box-shadow var(--transition-base);
+}
+.ds-card:hover {
+  box-shadow: var(--shadow-card-hover);
+}
+
+/* ── Tag / Badge ─────────────────────────────────────────── */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+}
+.tag-primary { background: var(--color-primary-light); color: var(--color-primary); }
+.tag-success { background: var(--color-success-light); color: var(--color-success); }
+.tag-warning { background: var(--color-warning-light); color: var(--color-warning); }
+.tag-danger  { background: var(--color-danger-light);  color: var(--color-danger);  }
+.tag-wuhan   { background: var(--color-wuhan-light);   color: var(--color-wuhan);   }
+.tag-yichang { background: var(--color-yichang-light); color: var(--color-yichang); }

@@ -1,0 +1,16 @@
+[package]
+name = "boss_shujuzonglan1_tauri"
+version = "0.1.0"
+description = "呈尚策划月度数据总览桌面版"
+authors = ["OpenAI Codex"]
+edition = "2021"
+
+[build-dependencies]
+tauri-build = { version = "2.5.6", features = [] }
+
+[dependencies]
+tauri = { version = "2.10.3", features = [] }
+
+[features]
+default = ["custom-protocol"]
+custom-protocol = ["tauri/custom-protocol"]

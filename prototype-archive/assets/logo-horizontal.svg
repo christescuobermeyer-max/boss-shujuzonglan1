@@ -1,0 +1,10 @@
+<svg width="220" height="60" viewBox="0 0 220 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  
+  <rect x="2" y="38" width="10" height="10" rx="2" fill="#C3D8FF"></rect>
+  <rect x="15" y="29" width="10" height="19" rx="2" fill="#93BBFF"></rect>
+  <rect x="28" y="18" width="10" height="30" rx="2" fill="#1677FF"></rect>
+  <path d="M30 14 L36 20 M30 14 L24 20" stroke="#1677FF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
+  
+  <text x="52" y="36" font-family="&#39;Noto Sans SC&#39;, &#39;PingFang SC&#39;, &#39;Microsoft YaHei&#39;, sans-serif" font-size="22" font-weight="700" fill="#1D2129" letter-spacing="3">呈尚策划</text>
+  <text x="54" y="50" font-family="&#39;Inter&#39;, Arial, sans-serif" font-size="9" fill="#86909C" letter-spacing="2">CHENGSHANG PLANNING</text>
+</svg>

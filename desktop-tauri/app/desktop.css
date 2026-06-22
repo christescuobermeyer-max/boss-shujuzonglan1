@@ -1,0 +1,46 @@
+[data-shell-mode="tauri"] body {
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+[data-shell-mode="tauri"] .dashboard-shell {
+  width: 100vw;
+  max-width: none;
+  min-height: 100vh;
+  padding: 18px 22px 24px;
+}
+
+[data-shell-mode="tauri"] .hero-card,
+[data-shell-mode="tauri"] .metrics-grid,
+[data-shell-mode="tauri"] .overview-grid,
+[data-shell-mode="tauri"] .overview-bottom-grid,
+[data-shell-mode="tauri"] .detail-section,
+[data-shell-mode="tauri"] .charts-grid {
+  width: 100%;
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+[data-shell-mode="tauri"] .overview-grid {
+  grid-template-columns: 340px minmax(0, 1fr) 340px;
+}
+
+[data-shell-mode="tauri"] .detail-trend-grid,
+[data-shell-mode="tauri"] .overview-bottom-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+[data-shell-mode="tauri"] .hero-card {
+  padding: 24px;
+}
+
+[data-shell-mode="tauri"] .metrics-grid {
+  overflow-x: visible;
+}
+
+@media (max-width: 1440px) {
+  [data-shell-mode="tauri"] .overview-grid {
+    grid-template-columns: 300px minmax(0, 1fr) 300px;
+  }
+}
