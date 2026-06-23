@@ -36,7 +36,7 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/mobile/:path*", "/stats", "/api/stats/monthly"]
+  matcher: ["/mobile/:path*", "/api/stats/monthly"]
 };
 
 export { MOBILE_SESSION_COOKIE };

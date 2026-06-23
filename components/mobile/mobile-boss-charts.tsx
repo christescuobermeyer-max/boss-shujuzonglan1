@@ -25,9 +25,9 @@ export function MobileAmountTrendChart({
     grid: { top: 14, right: 10, bottom: 24, left: 42 },
     tooltip: {
       trigger: "axis",
-      backgroundColor: "rgba(255,255,255,0.98)",
-      borderColor: "#d9e2ef",
-      textStyle: { color: "#1d2129", fontSize: 11 },
+      backgroundColor: "#ffffff",
+      borderColor: "#eaeaea",
+      textStyle: { color: "#000000", fontSize: 11 },
       formatter: (params: Array<{ name: string; value: number }>) =>
         `${params[0]?.name ?? ""}<br/>回款：<b>¥${Number(params[0]?.value ?? 0).toLocaleString("zh-CN", {
           maximumFractionDigits: 2
@@ -36,18 +36,18 @@ export function MobileAmountTrendChart({
     xAxis: {
       type: "category",
       data: data.map((item) => item.date.slice(5)),
-      axisLabel: { color: "#86909c", fontSize: 9, interval: 3 },
-      axisLine: { lineStyle: { color: "#e5e8ef" } },
+      axisLabel: { color: "#999999", fontSize: 9, interval: 3 },
+      axisLine: { lineStyle: { color: "#eaeaea" } },
       axisTick: { show: false }
     },
     yAxis: {
       type: "value",
       axisLabel: {
-        color: "#86909c",
+        color: "#999999",
         fontSize: 9,
         formatter: (value: number) => formatAxisAmount(value)
       },
-      splitLine: { lineStyle: { color: "#eef2f8", type: "dashed" } }
+      splitLine: { lineStyle: { color: "#f2f2f2", type: "dashed" } }
     },
     series: [
       {
@@ -55,7 +55,7 @@ export function MobileAmountTrendChart({
         data: data.map((item) => item.value),
         smooth: true,
         symbol: "none",
-        lineStyle: { color: "#16a34a", width: 2.5 },
+        lineStyle: { color: "#000000", width: 2 },
         areaStyle: {
           color: {
             type: "linear",
@@ -64,8 +64,8 @@ export function MobileAmountTrendChart({
             x2: 0,
             y2: 1,
             colorStops: [
-              { offset: 0, color: "rgba(22, 163, 74, 0.2)" },
-              { offset: 1, color: "rgba(22, 163, 74, 0)" }
+              { offset: 0, color: "rgba(0, 0, 0, 0.12)" },
+              { offset: 1, color: "rgba(0, 0, 0, 0)" }
             ]
           }
         }
@@ -88,22 +88,22 @@ export function MobileOrderTrendChart({
     tooltip: {
       trigger: "axis",
       axisPointer: { type: "shadow" },
-      backgroundColor: "rgba(255,255,255,0.98)",
-      borderColor: "#d9e2ef",
-      textStyle: { color: "#1d2129", fontSize: 11 }
+      backgroundColor: "#ffffff",
+      borderColor: "#eaeaea",
+      textStyle: { color: "#000000", fontSize: 11 }
     },
     xAxis: {
       type: "category",
       data: data.map((item) => item.label.slice(5)),
-      axisLabel: { color: "#86909c", fontSize: 9, interval: 3 },
-      axisLine: { lineStyle: { color: "#e5e8ef" } },
+      axisLabel: { color: "#999999", fontSize: 9, interval: 3 },
+      axisLine: { lineStyle: { color: "#eaeaea" } },
       axisTick: { show: false }
     },
     yAxis: {
       type: "value",
       minInterval: 1,
-      axisLabel: { color: "#86909c", fontSize: 9 },
-      splitLine: { lineStyle: { color: "#eef2f8", type: "dashed" } }
+      axisLabel: { color: "#999999", fontSize: 9 },
+      splitLine: { lineStyle: { color: "#f2f2f2", type: "dashed" } }
     },
     series: [
       {
@@ -111,8 +111,8 @@ export function MobileOrderTrendChart({
         data: data.map((item) => item.value),
         barMaxWidth: 14,
         itemStyle: {
-          borderRadius: [5, 5, 0, 0],
-          color: "#1677ff"
+          borderRadius: [4, 4, 0, 0],
+          color: "#000000"
         }
       }
     ]
