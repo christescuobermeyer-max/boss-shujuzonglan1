@@ -1,11 +1,12 @@
 import { getCachedReportPayload, setCachedReportPayload } from "@/lib/report-cache";
+import type { DailyPointPlatform } from "@/lib/daily-point-derived";
 import { resolveSalesCity } from "@/lib/sales-city";
 import { buildCityMonthlyPointAmountTrend } from "@/lib/stats/city-opened-point-daily-amount";
 import { buildCityMonthlyPointSummary } from "@/lib/stats/city-opened-point-summary";
 import { buildDailySummaryRows, type DailySummaryRow } from "@/lib/stats/daily-summary-rows";
 import { buildDailyTotalAmountTrend } from "@/lib/stats/daily-total-amount-trend";
 import { filterDetailsByBusinessMonth } from "@/lib/stats/daily-point-month-scope";
-import { fetchMonthlyDerivedDetails } from "@/lib/stats/daily-point-monthly";
+import { ensureMonthlyDerivedPrepared } from "@/lib/stats/daily-point-monthly";
 import { buildDailyPointTrends } from "@/lib/stats/daily-point-trends";
 import { getStatsDeptCity, normalizeStatsDept, type StatsDept } from "@/lib/stats/dept";
 import { resolveMonthRange } from "@/lib/stats/month";
@@ -16,7 +17,8 @@ import { buildNamedCountTrend } from "@/lib/stats/monthly-stats-trends";
 import type { DailyTrendSeries } from "@/lib/stats/daily-trend-series";
 import type { DailyAmountPoint } from "@/lib/stats/daily-total-amount-trend";
 import type { MobileMonthlyStatsPayload, MobileRankItem } from "@/lib/mobile-dashboard";
-import type { TrendItem } from "@/lib/stats/types";
+import type { DailyPointDerivedRow, TrendItem } from "@/lib/stats/types";
+import { DailyPointDetail } from "@/models/daily-point-detail";
 import { Shop } from "@/models/shop";
 
 const CACHE_NAMESPACE = "mobile-stats-monthly";
@@ -32,6 +34,44 @@ type MobileShopStatsRow = {
   shopName?: string;
   terminationDate?: Date | null;
 };
+
+function buildMonthDateKeyRegex(month: string) {
+  return new RegExp(`^${month.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}-`);
+}
+
+function buildMobileDailyPointProjection(platform: DailyPointPlatform) {
+  const projection: Record<string, 0 | 1> = {
+    _id: 0,
+    businessDateKey: 1,
+    platform: 1,
+    recordDate: 1,
+    recordDateKey: 1,
+    merchantId: 1,
+    storeId: 1,
+    shopName: 1,
+    amountValue: 1
+  };
+
+  if (platform === "meituan") {
+    projection["rowData.结算周期"] = 1;
+  }
+
+  return projection;
+}
+
+async function fetchMonthlyMobileDerivedDetails(
+  platform: DailyPointPlatform,
+  month: string
+) {
+  await ensureMonthlyDerivedPrepared(platform, month);
+
+  return DailyPointDetail.find({
+    platform,
+    recordDateKey: { $regex: buildMonthDateKeyRegex(month) }
+  })
+    .select(buildMobileDailyPointProjection(platform))
+    .lean<DailyPointDerivedRow[]>();
+}
 
 function matchesDept(shop: MobileShopStatsRow, dept: StatsDept) {
   const deptCity = getStatsDeptCity(dept);
@@ -153,10 +193,10 @@ export async function getMobileMonthlyStatsPayload(
         terminationDate: 1
       })
       .lean<MobileShopStatsRow[]>(),
-    fetchMonthlyDerivedDetails("meituan", month),
-    fetchMonthlyDerivedDetails("meituan", nextMonth),
-    fetchMonthlyDerivedDetails("eleme", month),
-    fetchMonthlyDerivedDetails("eleme", nextMonth)
+    fetchMonthlyMobileDerivedDetails("meituan", month),
+    fetchMonthlyMobileDerivedDetails("meituan", nextMonth),
+    fetchMonthlyMobileDerivedDetails("eleme", month),
+    fetchMonthlyMobileDerivedDetails("eleme", nextMonth)
   ]);
 
   const filteredCandidateShops = candidateShops.filter((shop) => matchesDept(shop, dept));

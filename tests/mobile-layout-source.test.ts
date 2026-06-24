@@ -56,6 +56,8 @@ describe("mobile boss quick view layout source", () => {
 
     expect(source).toContain("/api/mobile/stats/monthly?month=");
     expect(source).not.toContain("/api/stats/monthly");
+    expect(source).toContain("response.text()");
+    expect(source).toContain("JSON.parse");
   });
 
   it("uses mobile-specific chart wrappers", () => {

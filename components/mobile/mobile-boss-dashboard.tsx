@@ -31,6 +31,15 @@ function buildUpdateTime() {
   return `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")} 更新`;
 }
 
+function getErrorMessage(result: unknown) {
+  if (!result || typeof result !== "object" || !("message" in result)) {
+    return "";
+  }
+
+  const message = (result as { message?: unknown }).message;
+  return typeof message === "string" ? message : "";
+}
+
 function RankingList({
   title,
   items,
@@ -130,13 +139,21 @@ export function MobileBossDashboard() {
 
     fetch(`/api/mobile/stats/monthly?month=${month}`)
       .then(async (response) => {
-        const result = await response.json();
         if (response.status === 401) {
           window.location.href = "/mobile/login";
           return null;
         }
+
+        const rawBody = await response.text();
+        let result: unknown = null;
+        try {
+          result = rawBody ? JSON.parse(rawBody) : null;
+        } catch {
+          throw new Error("数据接口返回异常，请稍后重试");
+        }
+
         if (!response.ok) {
-          throw new Error(result.message || "数据暂时无法加载，请稍后重试");
+          throw new Error(getErrorMessage(result) || "数据暂时无法加载，请稍后重试");
         }
         return result as MobileMonthlyStatsPayload;
       })
