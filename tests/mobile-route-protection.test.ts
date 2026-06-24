@@ -7,7 +7,7 @@ function readProjectFile(...parts: string[]) {
 }
 
 describe("mobile route protection", () => {
-  it("defines proxy protection for mobile, stats, and the monthly stats API", () => {
+  it("defines proxy protection for mobile, stats, and monthly stats APIs", () => {
     const source = readProjectFile("proxy.ts");
     const authSource = readProjectFile("lib", "mobile-auth.ts");
 
@@ -16,6 +16,7 @@ describe("mobile route protection", () => {
     expect(source).toContain("/mobile/:path*");
     expect(source).toContain("/stats");
     expect(source).toContain("/api/stats/monthly");
+    expect(source).toContain("/api/mobile/stats/monthly");
     expect(source).toContain("/mobile/login");
   });
 
@@ -38,6 +39,16 @@ describe("mobile route protection", () => {
 
   it("protects the existing monthly stats API before connecting to MongoDB", () => {
     const source = readProjectFile("app", "api", "stats", "monthly", "route.ts");
+
+    expect(source).toContain("isMobileRequestAuthenticated");
+    expect(source.indexOf("isMobileRequestAuthenticated")).toBeLessThan(
+      source.indexOf("connectMongo")
+    );
+    expect(source).toContain("status: 401");
+  });
+
+  it("protects the mobile lightweight stats API before connecting to MongoDB", () => {
+    const source = readProjectFile("app", "api", "mobile", "stats", "monthly", "route.ts");
 
     expect(source).toContain("isMobileRequestAuthenticated");
     expect(source.indexOf("isMobileRequestAuthenticated")).toBeLessThan(

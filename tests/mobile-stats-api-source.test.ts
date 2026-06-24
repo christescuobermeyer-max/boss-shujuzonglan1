@@ -1,0 +1,32 @@
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
+import { describe, expect, it } from "vitest";
+
+function filePath(...parts: string[]) {
+  return join(process.cwd(), ...parts);
+}
+
+function readProjectFile(...parts: string[]) {
+  return readFileSync(filePath(...parts), "utf8");
+}
+
+describe("mobile lightweight stats api source", () => {
+  it("adds a protected mobile-only monthly stats endpoint", () => {
+    expect(existsSync(filePath("app", "api", "mobile", "stats", "monthly", "route.ts"))).toBe(true);
+    const source = readProjectFile("app", "api", "mobile", "stats", "monthly", "route.ts");
+
+    expect(source).toContain("isMobileRequestAuthenticated");
+    expect(source).toContain("getMobileMonthlyStatsPayload");
+    expect(source).not.toContain("getMonthlyStatsPayload");
+  });
+
+  it("does not compute desktop-only datasets for the mobile endpoint", () => {
+    const source = readProjectFile("lib", "mobile-monthly-stats-service.ts");
+
+    expect(source).toContain("getMobileMonthlyStatsPayload");
+    expect(source).not.toContain("fetchAllDailyPointAmountTrend");
+    expect(source).not.toContain("buildSalesInvalidSummary");
+    expect(source).not.toContain("provinceDistribution");
+    expect(source).not.toContain("allDailyPointAmountTrend");
+  });
+});

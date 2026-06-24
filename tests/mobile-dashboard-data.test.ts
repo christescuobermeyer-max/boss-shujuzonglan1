@@ -2,229 +2,131 @@ import { describe, expect, it } from "vitest";
 import {
   buildMobileDashboardData,
   formatMobileAmount,
-  getVisibleDailyRepaymentRows
+  getVisibleDailyRepaymentRows,
+  type MobileMonthlyStatsPayload
 } from "@/lib/mobile-dashboard";
-import { buildEmptyMonthlyStats } from "@/lib/stats/monthly-stats-defaults";
-import type { StatsMonthlyPayload } from "@/lib/stats/types";
 
-function buildStatsFixture(): StatsMonthlyPayload {
-  const stats = buildEmptyMonthlyStats("2026-04");
+function buildDailyRow(date: string, totalAmount: number) {
   return {
-    ...stats,
+    date,
+    dailyPointShopCount: totalAmount === 0 ? 0 : 2,
+    totalAmount,
+    meituanAmount: totalAmount,
+    elemeAmount: 0,
+    wuhanAmount: totalAmount === 0 ? 0 : 50
+  };
+}
+
+function buildPayloadFixture(): MobileMonthlyStatsPayload {
+  return {
+    month: "2026-04",
     monthlyShopCount: 28,
-    monthlyPointAmount: 123456.78,
-    monthlyCommissionShopCount: 18,
-    wuhanMonthlyPointSummary: {
-      cityName: "武汉",
-      cohortShopCount: 12,
-      commissionShopCount: 9,
-      totalAmount: 45678.9,
-      meituanAmount: 30000,
-      elemeAmount: 15678.9
-    },
-    dailyOrderShopTrend: [
-      { date: "2026-04-01", count: 1 },
-      { date: "2026-04-02", count: 2 },
-      { date: "2026-04-03", count: 3 },
-      { date: "2026-04-04", count: 4 },
-      { date: "2026-04-05", count: 5 },
-      { date: "2026-04-06", count: 6 },
-      { date: "2026-04-07", count: 7 },
-      { date: "2026-04-08", count: 8 }
+    wuhanMonthlyPointAmount: 45678.9,
+    yichangMonthlyPointAmount: 77777.88,
+    monthlyTerminationCount: 25,
+    dailyAmountTrend: [
+      { date: "2026-04-01", value: 0 },
+      { date: "2026-04-02", value: 110 },
+      { date: "2026-04-03", value: 0 },
+      { date: "2026-04-04", value: 220 },
+      { date: "2026-04-05", value: 330 },
+      { date: "2026-04-06", value: 440 },
+      { date: "2026-04-07", value: 550 },
+      { date: "2026-04-08", value: 660 },
+      { date: "2026-04-09", value: 770 },
+      { date: "2026-04-10", value: 880 }
     ],
-    meituanDailyPointShopTrend: [
-      {
-        name: "美团",
-        values: [
-          { date: "2026-04-01", value: 1 },
-          { date: "2026-04-02", value: 2 },
-          { date: "2026-04-03", value: 3 },
-          { date: "2026-04-04", value: 4 },
-          { date: "2026-04-05", value: 5 },
-          { date: "2026-04-06", value: 6 },
-          { date: "2026-04-07", value: 7 },
-          { date: "2026-04-08", value: 8 }
-        ]
-      }
+    dailyRepaymentRows: [
+      buildDailyRow("2026-04-01", 0),
+      buildDailyRow("2026-04-02", 110),
+      buildDailyRow("2026-04-03", 0),
+      buildDailyRow("2026-04-04", 220),
+      buildDailyRow("2026-04-05", 330),
+      buildDailyRow("2026-04-06", 440),
+      buildDailyRow("2026-04-07", 550),
+      buildDailyRow("2026-04-08", 660),
+      buildDailyRow("2026-04-09", 770),
+      buildDailyRow("2026-04-10", 880)
     ],
-    elemeDailyPointShopTrend: [
-      {
-        name: "饿了么",
-        values: [
-          { date: "2026-04-01", value: 1 },
-          { date: "2026-04-02", value: 1 },
-          { date: "2026-04-03", value: 1 },
-          { date: "2026-04-04", value: 1 },
-          { date: "2026-04-05", value: 1 },
-          { date: "2026-04-06", value: 1 },
-          { date: "2026-04-07", value: 1 },
-          { date: "2026-04-08", value: 1 }
-        ]
-      }
-    ],
-    meituanDailyPointAmountTrend: [
-      {
-        name: "运营A",
-        values: [
-          { date: "2026-04-01", value: 100 },
-          { date: "2026-04-02", value: 200 },
-          { date: "2026-04-03", value: 300 },
-          { date: "2026-04-04", value: 400 },
-          { date: "2026-04-05", value: 500 },
-          { date: "2026-04-06", value: 600 },
-          { date: "2026-04-07", value: 700 },
-          { date: "2026-04-08", value: 800 }
-        ]
-      },
-      {
-        name: "运营B",
-        values: [{ date: "2026-04-08", value: 3000 }]
-      }
-    ],
-    elemeDailyPointAmountTrend: [
-      {
-        name: "运营A",
-        values: [
-          { date: "2026-04-01", value: 10 },
-          { date: "2026-04-02", value: 20 },
-          { date: "2026-04-03", value: 30 },
-          { date: "2026-04-04", value: 40 },
-          { date: "2026-04-05", value: 50 },
-          { date: "2026-04-06", value: 60 },
-          { date: "2026-04-07", value: 70 },
-          { date: "2026-04-08", value: 80 }
-        ]
-      }
-    ],
-    wuhanDailyPointAmountTrend: [
-      {
-        name: "武汉",
-        values: [
-          { date: "2026-04-01", value: 50 },
-          { date: "2026-04-08", value: 500 }
-        ]
-      }
-    ],
-    salesShopTrend: [
-      { name: "销售6", count: 6 },
-      { name: "销售2", count: 12 },
-      { name: "销售1", count: 18 },
-      { name: "销售5", count: 8 },
-      { name: "销售3", count: 11 },
-      { name: "销售4", count: 9 }
-    ],
-    operatorTerminationTrend: [
-      { name: "运营A", count: 2 },
-      { name: "运营B", count: 6 },
-      { name: "运营C", count: 4 },
-      { name: "运营D", count: 1 },
-      { name: "运营E", count: 3 },
-      { name: "运营F", count: 9 }
-    ],
-    salesInvalidSummary: [
-      {
-        salesName: "销售1",
-        totalSignedShopCount: 5,
-        invalidShopCount: 2,
-        terminatedWithinDaysCount: 1,
-        finalShopCount: 3
-      },
-      {
-        salesName: "销售2",
-        totalSignedShopCount: 4,
-        invalidShopCount: 1,
-        terminatedWithinDaysCount: 0,
-        finalShopCount: 1
-      }
-    ]
+    rankings: {
+      sales: [
+        { name: "销售1", value: 18 },
+        { name: "销售2", value: 12 },
+        { name: "销售3", value: 11 },
+        { name: "销售4", value: 9 },
+        { name: "销售5", value: 8 },
+        { name: "销售6", value: 6 }
+      ],
+      operatorAmount: Array.from({ length: 9 }, (_, index) => ({
+        name: `运营${index + 1}`,
+        value: 900 - index
+      })),
+      operatorTermination: Array.from({ length: 9 }, (_, index) => ({
+        name: `解约运营${index + 1}`,
+        value: 20 - index
+      }))
+    }
   };
 }
 
 describe("mobile dashboard data", () => {
-  it("builds boss KPIs from the monthly payload", () => {
-    const data = buildMobileDashboardData(buildStatsFixture());
+  it("builds the selected boss KPI cards from the mobile payload", () => {
+    const data = buildMobileDashboardData(buildPayloadFixture());
 
     expect(data.kpis.map((item) => item.label)).toEqual([
-      "本月回款总金额",
       "本月武汉回款",
+      "本月宜昌回款",
       "月总店铺数",
       "本月解约数"
     ]);
-    expect(data.kpis[0].value).toBe("¥123,456.78");
-    expect(data.kpis[1].value).toBe("¥45,678.90");
+    expect(data.kpis[0].value).toBe("¥45,678.90");
+    expect(data.kpis[1].value).toBe("¥77,777.88");
     expect(data.kpis[2].value).toBe("28");
     expect(data.kpis[3].value).toBe("25");
+    expect(data.kpis.some((item) => item.prominent)).toBe(false);
   });
 
-  it("sorts daily repayment rows descending and shows the latest 7 by default", () => {
-    const data = buildMobileDashboardData(buildStatsFixture());
+  it("keeps only daily repayment dates that have data", () => {
+    const data = buildMobileDashboardData(buildPayloadFixture());
 
+    expect(data.totalAmountTrendData.map((item) => item.date)).toEqual([
+      "2026-04-02",
+      "2026-04-04",
+      "2026-04-05",
+      "2026-04-06",
+      "2026-04-07",
+      "2026-04-08",
+      "2026-04-09",
+      "2026-04-10"
+    ]);
     expect(data.dailyRepaymentRows.map((row) => row.date)).toEqual([
+      "2026-04-10",
+      "2026-04-09",
       "2026-04-08",
       "2026-04-07",
       "2026-04-06",
       "2026-04-05",
       "2026-04-04",
-      "2026-04-03",
-      "2026-04-02",
-      "2026-04-01"
+      "2026-04-02"
     ]);
     expect(getVisibleDailyRepaymentRows(data.dailyRepaymentRows, false)).toHaveLength(7);
     expect(getVisibleDailyRepaymentRows(data.dailyRepaymentRows, true)).toHaveLength(8);
-    expect(data.dailyRepaymentRows[0]).toMatchObject({
-      date: "2026-04-08",
-      totalAmount: 3880,
-      meituanAmount: 3800,
-      elemeAmount: 80,
-      wuhanAmount: 500,
-      dailyPointShopCount: 9
-    });
   });
 
-  it("builds mobile top rankings from existing dashboard ranking sources", () => {
-    const data = buildMobileDashboardData(buildStatsFixture());
+  it("keeps all sales, operator amount, and termination ranking rows", () => {
+    const data = buildMobileDashboardData(buildPayloadFixture());
 
-    expect(data.rankings.sales.map((item) => item.name)).toEqual([
-      "销售1",
-      "销售2",
-      "销售3",
-      "销售4",
-      "销售5"
-    ]);
-    expect(data.rankings.operatorAmount.map((item) => item.name)).toEqual([
-      "运营A",
-      "运营B"
-    ]);
-    expect(data.rankings.operatorTermination.map((item) => item.name)).toEqual([
-      "运营F",
-      "运营B",
-      "运营C",
-      "运营E",
-      "运营A"
-    ]);
+    expect(data.rankings.sales).toHaveLength(6);
+    expect(data.rankings.operatorAmount).toHaveLength(9);
+    expect(data.rankings.operatorTermination).toHaveLength(9);
   });
 
-  it("builds daily brief rows and an exception badge", () => {
-    const data = buildMobileDashboardData(buildStatsFixture());
+  it("does not expose unselected mobile sections in dashboard data", () => {
+    const data = buildMobileDashboardData(buildPayloadFixture());
 
-    expect(data.dailyBriefRows.map((row) => row.date)).toEqual([
-      "2026-04-08",
-      "2026-04-07",
-      "2026-04-06"
-    ]);
-    expect(data.exceptionBadge).toEqual({
-      label: "异常店铺",
-      value: 4
-    });
-  });
-
-  it("handles empty monthly data without synthetic daily rows", () => {
-    const data = buildMobileDashboardData(buildEmptyMonthlyStats("2026-04"));
-
-    expect(data.dailyRepaymentRows).toEqual([]);
-    expect(data.dailyBriefRows).toEqual([]);
-    expect(data.rankings.sales).toEqual([]);
-    expect(data.exceptionBadge.value).toBe(0);
+    expect(data).not.toHaveProperty("dailyOrderData");
+    expect(data).not.toHaveProperty("dailyBriefRows");
+    expect(data).not.toHaveProperty("exceptionBadge");
   });
 
   it("formats mobile amounts consistently", () => {

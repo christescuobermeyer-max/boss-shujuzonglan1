@@ -1,13 +1,15 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { MobileAmountTrendChart, MobileOrderTrendChart } from "@/components/mobile/mobile-boss-charts";
+import { MobileAmountTrendChart } from "@/components/mobile/mobile-boss-charts";
 import {
+  buildEmptyMobileMonthlyStats,
   buildMobileDashboardData,
   formatMobileAmount,
   getVisibleDailyRepaymentRows,
   type MobileDashboardData,
   type MobileDailyRepaymentRow,
+  type MobileMonthlyStatsPayload,
   type MobileRankItem
 } from "@/lib/mobile-dashboard";
 import {
@@ -15,10 +17,8 @@ import {
   getPreviousMonthValue
 } from "@/lib/stats/month-rotation";
 import {
-  buildEmptyMonthlyStats,
   getCurrentMonthValue
 } from "@/lib/stats/monthly-stats-defaults";
-import type { StatsMonthlyPayload } from "@/lib/stats/types";
 
 function formatMonthLabel(value: string) {
   const matched = value.match(/^(\d{4})-(\d{2})$/);
@@ -115,7 +115,9 @@ function LoadingSkeleton() {
 export function MobileBossDashboard() {
   const initialMonth = useMemo(() => getCurrentMonthValue(), []);
   const [month, setMonth] = useState(initialMonth);
-  const [stats, setStats] = useState<StatsMonthlyPayload>(buildEmptyMonthlyStats(initialMonth));
+  const [stats, setStats] = useState<MobileMonthlyStatsPayload>(
+    buildEmptyMobileMonthlyStats(initialMonth)
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [expanded, setExpanded] = useState(false);
@@ -126,7 +128,7 @@ export function MobileBossDashboard() {
     setLoading(true);
     setError("");
 
-    fetch(`/api/stats/monthly?month=${month}`)
+    fetch(`/api/mobile/stats/monthly?month=${month}`)
       .then(async (response) => {
         const result = await response.json();
         if (response.status === 401) {
@@ -136,7 +138,7 @@ export function MobileBossDashboard() {
         if (!response.ok) {
           throw new Error(result.message || "数据暂时无法加载，请稍后重试");
         }
-        return result as StatsMonthlyPayload;
+        return result as MobileMonthlyStatsPayload;
       })
       .then((result) => {
         if (!active || !result) return;
@@ -201,7 +203,7 @@ export function MobileBossDashboard() {
 
       {!loading ? (
         <>
-          <section className="mobile-kpi-grid" aria-label="本月回款总金额">
+          <section className="mobile-kpi-grid" aria-label="手机关键指标">
             {dashboardData.kpis.map((item) => (
               <article
                 className={`mobile-kpi-card mobile-kpi-${item.accent}${item.prominent ? " mobile-kpi-card-primary" : ""}`}
@@ -213,75 +215,42 @@ export function MobileBossDashboard() {
             ))}
           </section>
 
-          <section className="mobile-section">
-            <div className="mobile-section-head">
-              <h2>每日回款趋势</h2>
-              <span>按日查看本月回款变化</span>
-            </div>
-            <MobileAmountTrendChart data={dashboardData.totalAmountTrendData} />
-          </section>
-
-          <section className="mobile-section">
-            <div className="mobile-section-head">
-              <h2>每日开单趋势</h2>
-              <span>按签约日期查看开单数</span>
-            </div>
-            <MobileOrderTrendChart data={dashboardData.dailyOrderData} />
-          </section>
-
-          <section className="mobile-section">
-            <div className="mobile-section-head mobile-section-head-row">
-              <div>
-                <h2>每日回款列表</h2>
-                <span>最新日期优先，展示平台与武汉拆分</span>
+          {dashboardData.totalAmountTrendData.length > 0 ? (
+            <section className="mobile-section">
+              <div className="mobile-section-head">
+                <h2>每日回款趋势</h2>
+                <span>按日查看本月回款变化</span>
               </div>
-              {dashboardData.dailyRepaymentRows.length > 7 ? (
-                <button
-                  type="button"
-                  className="mobile-link-button"
-                  onClick={() => setExpanded((value) => !value)}
-                >
-                  {expanded ? "收起" : "展开本月全部"}
-                </button>
-              ) : null}
-            </div>
-            <div className="mobile-daily-list">
-              {visibleDailyRows.length > 0 ? (
-                visibleDailyRows.map((row) => <DailyRepaymentCard key={row.date} row={row} />)
-              ) : (
-                <div className="mobile-empty">当前月份暂无逐日回款明细</div>
-              )}
-            </div>
-          </section>
+              <MobileAmountTrendChart data={dashboardData.totalAmountTrendData} />
+            </section>
+          ) : null}
 
-          <RankingList title="销售开单 Top" items={dashboardData.rankings.sales} unit="家" />
-          <RankingList title="运营回款 Top" items={dashboardData.rankings.operatorAmount} unit="¥" />
-          <RankingList title="解约 Top" items={dashboardData.rankings.operatorTermination} unit="家" />
-
-          <section className="mobile-section mobile-brief-section">
-            <div className="mobile-section-head mobile-section-head-row">
-              <div>
-                <h2>每日简报</h2>
-                <span>最近 3 天回款概览</span>
+          {dashboardData.dailyRepaymentRows.length > 0 ? (
+            <section className="mobile-section">
+              <div className="mobile-section-head mobile-section-head-row">
+                <div>
+                  <h2>每日回款列表</h2>
+                  <span>最新日期优先，展示平台与武汉拆分</span>
+                </div>
+                {dashboardData.dailyRepaymentRows.length > 7 ? (
+                  <button
+                    type="button"
+                    className="mobile-link-button"
+                    onClick={() => setExpanded((value) => !value)}
+                  >
+                    {expanded ? "收起" : "展开本月全部"}
+                  </button>
+                ) : null}
               </div>
-              <strong className="mobile-exception-badge">
-                {dashboardData.exceptionBadge.label} {dashboardData.exceptionBadge.value}
-              </strong>
-            </div>
-            <div className="mobile-brief-list">
-              {dashboardData.dailyBriefRows.length > 0 ? (
-                dashboardData.dailyBriefRows.map((row) => (
-                  <div className="mobile-brief-row" key={`brief-${row.date}`}>
-                    <span>{row.date}</span>
-                    <strong>{formatMobileAmount(row.totalAmount)}</strong>
-                    <em>{row.dailyPointShopCount} 家抽点</em>
-                  </div>
-                ))
-              ) : (
-                <div className="mobile-empty">暂无简报数据</div>
-              )}
-            </div>
-          </section>
+              <div className="mobile-daily-list">
+                {visibleDailyRows.map((row) => <DailyRepaymentCard key={row.date} row={row} />)}
+              </div>
+            </section>
+          ) : null}
+
+          <RankingList title="销售开单" items={dashboardData.rankings.sales} unit="家" />
+          <RankingList title="运营回款" items={dashboardData.rankings.operatorAmount} unit="¥" />
+          <RankingList title="解约" items={dashboardData.rankings.operatorTermination} unit="家" />
         </>
       ) : null}
     </main>

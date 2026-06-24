@@ -6,6 +6,7 @@ import {
 
 const LOGIN_PATH = "/mobile/login";
 const MOBILE_PATH = "/mobile";
+const MONTHLY_STATS_API_PATHS = ["/api/stats/monthly", "/api/mobile/stats/monthly"];
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -23,7 +24,7 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  if (pathname === "/api/stats/monthly") {
+  if (MONTHLY_STATS_API_PATHS.includes(pathname)) {
     return NextResponse.json(
       { message: "未授权访问", error: "unauthorized" },
       { status: 401 }
@@ -36,7 +37,7 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/mobile/:path*", "/stats", "/api/stats/monthly"]
+  matcher: ["/mobile/:path*", "/stats", "/api/stats/monthly", "/api/mobile/stats/monthly"]
 };
 
 export { MOBILE_SESSION_COOKIE };

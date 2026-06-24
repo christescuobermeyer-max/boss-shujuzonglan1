@@ -11,9 +11,10 @@ function readProjectFile(...parts: string[]) {
 }
 
 describe("mobile boss quick view layout source", () => {
-  it("defines mobile login and dashboard routes", () => {
+  it("defines mobile login, dashboard, and lightweight stats routes", () => {
     expect(existsSync(filePath("app", "mobile", "login", "page.tsx"))).toBe(true);
     expect(existsSync(filePath("app", "mobile", "page.tsx"))).toBe(true);
+    expect(existsSync(filePath("app", "api", "mobile", "stats", "monthly", "route.ts"))).toBe(true);
   });
 
   it("renders the mobile login shell with password flow copy", () => {
@@ -26,18 +27,35 @@ describe("mobile boss quick view layout source", () => {
   });
 
   it("renders the agreed mobile dashboard sections", () => {
-    const source = readProjectFile("components", "mobile", "mobile-boss-dashboard.tsx");
+    const source = [
+      readProjectFile("components", "mobile", "mobile-boss-dashboard.tsx"),
+      readProjectFile("lib", "mobile-dashboard.ts")
+    ].join("\n");
 
     expect(source).toContain("呈尚策划 · BOSS快看");
-    expect(source).toContain("本月回款总金额");
+    expect(source).toContain("本月武汉回款");
+    expect(source).toContain("本月宜昌回款");
+    expect(source).toContain("月总店铺数");
+    expect(source).toContain("本月解约数");
     expect(source).toContain("每日回款趋势");
-    expect(source).toContain("每日开单趋势");
     expect(source).toContain("每日回款列表");
     expect(source).toContain("展开本月全部");
-    expect(source).toContain("销售开单 Top");
-    expect(source).toContain("运营回款 Top");
-    expect(source).toContain("解约 Top");
-    expect(source).toContain("每日简报");
+    expect(source).toContain("销售开单");
+    expect(source).toContain("运营回款");
+    expect(source).toContain("解约");
+    expect(source).not.toContain("本月回款总金额");
+    expect(source).not.toContain("每日开单趋势");
+    expect(source).not.toContain("每日简报");
+    expect(source).not.toContain("销售开单 Top");
+    expect(source).not.toContain("运营回款 Top");
+    expect(source).not.toContain("解约 Top");
+  });
+
+  it("loads data from the mobile-only lightweight stats endpoint", () => {
+    const source = readProjectFile("components", "mobile", "mobile-boss-dashboard.tsx");
+
+    expect(source).toContain("/api/mobile/stats/monthly?month=");
+    expect(source).not.toContain("/api/stats/monthly");
   });
 
   it("uses mobile-specific chart wrappers", () => {
