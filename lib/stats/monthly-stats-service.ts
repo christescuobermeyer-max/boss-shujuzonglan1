@@ -1,11 +1,10 @@
 import { getCachedReportPayload, setCachedReportPayload } from "@/lib/report-cache";
-import { buildAllDailyPointAmountTrend } from "@/lib/stats/all-daily-point-amount-trend";
 import { buildCityMonthlyPointAmountTrend } from "@/lib/stats/city-opened-point-daily-amount";
 import { buildCityMonthlyPointSummary } from "@/lib/stats/city-opened-point-summary";
 import { buildMonthDateKeys } from "@/lib/stats/date-keys";
 import { filterDetailsByBusinessMonth } from "@/lib/stats/daily-point-month-scope";
 import { getStatsDeptCity, normalizeStatsDept, type StatsDept } from "@/lib/stats/dept";
-import { fetchAllDerivedDetails, fetchMonthlyDerivedDetails } from "@/lib/stats/daily-point-monthly";
+import { fetchAllDailyPointAmountTrend, fetchMonthlyDerivedDetails } from "@/lib/stats/daily-point-monthly";
 import { buildDailyPointTrends } from "@/lib/stats/daily-point-trends";
 import { buildDailyCountTrendSeries } from "@/lib/stats/daily-trend-series";
 import { resolveMonthRange } from "@/lib/stats/month";
@@ -64,8 +63,7 @@ export async function getMonthlyStatsPayload(monthParam: string | null, deptPara
     meituanNextMonthDetails,
     elemeDetails,
     elemeNextMonthDetails,
-    allMeituanDetails,
-    allElemeDetails
+    allDailyPointAmountTrend
   ] = await Promise.all([
     Shop.find({
       $or: [
@@ -106,8 +104,7 @@ export async function getMonthlyStatsPayload(monthParam: string | null, deptPara
     fetchMonthlyDerivedDetails("meituan", nextMonth),
     fetchMonthlyDerivedDetails("eleme", month),
     fetchMonthlyDerivedDetails("eleme", nextMonth),
-    fetchAllDerivedDetails("meituan"),
-    fetchAllDerivedDetails("eleme")
+    fetchAllDailyPointAmountTrend()
   ]);
 
   const filteredCandidateShops = candidateShops.filter((shop) => matchesDept(shop, dept));
@@ -223,10 +220,7 @@ export async function getMonthlyStatsPayload(monthParam: string | null, deptPara
     meituanDailyPointAmountTrend: meituanTrends.totalAmountTrend,
     elemeDailyPointShopTrend: elemeTrends.shopCountTrend,
     elemeDailyPointAmountTrend: elemeTrends.totalAmountTrend,
-    allDailyPointAmountTrend: buildAllDailyPointAmountTrend([
-      ...allMeituanDetails,
-      ...allElemeDetails
-    ])
+    allDailyPointAmountTrend
   };
 
   setCachedReportPayload(CACHE_NAMESPACE, `${month}:${dept}`, payload);

@@ -13,4 +13,15 @@ describe("monthly stats all point details source", () => {
     expect(source).toContain("details: monthlyElemeDetails");
     expect(source).not.toContain("shopMatcher.matches(detail)");
   });
+
+  it("历史每日回款总趋势应使用 Mongo 聚合，避免请求内拉取全量明细", () => {
+    const source = readFileSync(
+      join(process.cwd(), "lib", "stats", "monthly-stats-service.ts"),
+      "utf8"
+    );
+
+    expect(source).toContain("fetchAllDailyPointAmountTrend()");
+    expect(source).not.toContain("fetchAllDerivedDetails");
+    expect(source).not.toContain("buildAllDailyPointAmountTrend([");
+  });
 });

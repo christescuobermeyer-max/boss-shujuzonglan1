@@ -30,8 +30,8 @@ export async function connectMongo() {
     globalCache.promise = mongoose.connect(mongoUri, {
       bufferCommands: false,
       appName: "boss-shujuzonglan1-web",
-      maxPoolSize: 10,
-      minPoolSize: 2,
+      maxPoolSize: 5,
+      minPoolSize: 0,
       maxIdleTimeMS: 60_000,
       serverSelectionTimeoutMS: 10_000,
       socketTimeoutMS: 45_000
