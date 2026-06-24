@@ -228,6 +228,7 @@ export function MobileBossDashboard() {
               >
                 <span>{item.label}</span>
                 <strong>{item.value}</strong>
+                {item.note ? <small className="mobile-kpi-note">{item.note}</small> : null}
               </article>
             ))}
           </section>

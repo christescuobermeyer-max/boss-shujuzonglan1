@@ -14,6 +14,7 @@ import { shiftMonthValue } from "@/lib/stats/month-rotation";
 import { buildMonthlyPointSummary } from "@/lib/stats/monthly-point-summary";
 import { buildMonthlyShopCohorts } from "@/lib/stats/monthly-shop-cohorts";
 import { buildNamedCountTrend } from "@/lib/stats/monthly-stats-trends";
+import { getLatestOnlineShopSummary } from "@/lib/stats/latest-online-shop-service";
 import type { DailyTrendSeries } from "@/lib/stats/daily-trend-series";
 import type { DailyAmountPoint } from "@/lib/stats/daily-total-amount-trend";
 import type { MobileMonthlyStatsPayload, MobileRankItem } from "@/lib/mobile-dashboard";
@@ -161,7 +162,8 @@ export async function getMobileMonthlyStatsPayload(
     meituanDetails,
     meituanNextMonthDetails,
     elemeDetails,
-    elemeNextMonthDetails
+    elemeNextMonthDetails,
+    latestOnlineShopSummary
   ] = await Promise.all([
     Shop.find({
       $or: [
@@ -196,7 +198,8 @@ export async function getMobileMonthlyStatsPayload(
     fetchMonthlyMobileDerivedDetails("meituan", month),
     fetchMonthlyMobileDerivedDetails("meituan", nextMonth),
     fetchMonthlyMobileDerivedDetails("eleme", month),
-    fetchMonthlyMobileDerivedDetails("eleme", nextMonth)
+    fetchMonthlyMobileDerivedDetails("eleme", nextMonth),
+    getLatestOnlineShopSummary()
   ]);
 
   const filteredCandidateShops = candidateShops.filter((shop) => matchesDept(shop, dept));
@@ -267,11 +270,17 @@ export async function getMobileMonthlyStatsPayload(
   const payload: MobileMonthlyStatsPayload = {
     month,
     monthlyShopCount: monthlyShops.length,
+    monthlyPointAmount: monthlyPointSummary.totalAmount,
     wuhanMonthlyPointAmount: wuhanMonthlyPointSummary.totalAmount,
     yichangMonthlyPointAmount: roundAmount(
       monthlyPointSummary.totalAmount - wuhanMonthlyPointSummary.totalAmount
     ),
     monthlyTerminationCount: filteredTerminationShops.length,
+    onlineShopCounts: {
+      latestDate: latestOnlineShopSummary.latestDate,
+      meituanCount: latestOnlineShopSummary.meituanCount,
+      elemeCount: latestOnlineShopSummary.elemeCount
+    },
     dailyAmountTrend,
     dailyRepaymentRows,
     rankings: {

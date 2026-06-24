@@ -5,6 +5,7 @@ export type MobileKpi = {
   label: string;
   value: string;
   accent: "blue" | "green" | "orange" | "teal";
+  note?: string;
   prominent?: boolean;
 };
 
@@ -15,12 +16,20 @@ export type MobileRankItem = {
 
 export type MobileDailyRepaymentRow = DailySummaryRow;
 
+export type MobileOnlineShopCounts = {
+  latestDate: string;
+  meituanCount: number;
+  elemeCount: number;
+};
+
 export type MobileMonthlyStatsPayload = {
   month: string;
   monthlyShopCount: number;
+  monthlyPointAmount: number;
   wuhanMonthlyPointAmount: number;
   yichangMonthlyPointAmount: number;
   monthlyTerminationCount: number;
+  onlineShopCounts: MobileOnlineShopCounts;
   dailyAmountTrend: DailyAmountPoint[];
   dailyRepaymentRows: MobileDailyRepaymentRow[];
   rankings: {
@@ -62,6 +71,14 @@ export function formatMobileAmount(value: number) {
   })}`;
 }
 
+function formatMobileCount(value: number) {
+  return Number(value ?? 0).toLocaleString("zh-CN");
+}
+
+function formatOnlineShopDateNote(value: string) {
+  return `最新数据日期 ${value || "暂无日期"}`;
+}
+
 export function getVisibleDailyRepaymentRows(
   rows: MobileDailyRepaymentRow[],
   expanded: boolean
@@ -73,9 +90,15 @@ export function buildEmptyMobileMonthlyStats(month: string): MobileMonthlyStatsP
   return {
     month,
     monthlyShopCount: 0,
+    monthlyPointAmount: 0,
     wuhanMonthlyPointAmount: 0,
     yichangMonthlyPointAmount: 0,
     monthlyTerminationCount: 0,
+    onlineShopCounts: {
+      latestDate: "",
+      meituanCount: 0,
+      elemeCount: 0
+    },
     dailyAmountTrend: [],
     dailyRepaymentRows: [],
     rankings: {
@@ -89,8 +112,26 @@ export function buildEmptyMobileMonthlyStats(month: string): MobileMonthlyStatsP
 export function buildMobileDashboardData(
   payload: MobileMonthlyStatsPayload
 ): MobileDashboardData {
+  const onlineShopCounts = payload.onlineShopCounts ?? {
+    latestDate: "",
+    meituanCount: 0,
+    elemeCount: 0
+  };
+  const onlineShopDateNote = formatOnlineShopDateNote(onlineShopCounts.latestDate);
+  const monthlyPointAmount = Number(
+    payload.monthlyPointAmount ??
+      Number(payload.wuhanMonthlyPointAmount ?? 0) +
+        Number(payload.yichangMonthlyPointAmount ?? 0)
+  );
+
   return {
     kpis: [
+      {
+        label: "本月总回款金额",
+        value: formatMobileAmount(monthlyPointAmount),
+        accent: "blue",
+        prominent: true
+      },
       {
         label: "本月武汉回款",
         value: formatMobileAmount(payload.wuhanMonthlyPointAmount),
@@ -110,6 +151,18 @@ export function buildMobileDashboardData(
         label: "本月解约数",
         value: String(Number(payload.monthlyTerminationCount ?? 0)),
         accent: "teal"
+      },
+      {
+        label: "美团在线店铺数",
+        value: `${formatMobileCount(onlineShopCounts.meituanCount)}家`,
+        note: onlineShopDateNote,
+        accent: "orange"
+      },
+      {
+        label: "饿了么在线店铺数",
+        value: `${formatMobileCount(onlineShopCounts.elemeCount)}家`,
+        note: onlineShopDateNote,
+        accent: "blue"
       }
     ],
     totalAmountTrendData: payload.dailyAmountTrend

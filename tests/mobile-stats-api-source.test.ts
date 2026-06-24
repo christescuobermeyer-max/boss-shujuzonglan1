@@ -30,5 +30,16 @@ describe("mobile lightweight stats api source", () => {
     expect(source).not.toContain("allDailyPointAmountTrend");
     expect(source).toContain("rowData.结算周期");
     expect(source).not.toContain("rowData: 1");
+    expect(source).toContain("getLatestOnlineShopSummary");
+    expect(source).toContain("onlineShopCounts");
+  });
+
+  it("defines the online shop snapshot model for the web runtime", () => {
+    const source = readProjectFile("models", "online-shop-count-snapshot.ts");
+
+    expect(source).toContain('collection: "online_shop_count_snapshots"');
+    expect(source).toContain("statDateKey");
+    expect(source).toContain("capturedAt");
+    expect(source).toContain('enum: ["meituan", "eleme"]');
   });
 });

@@ -21,9 +21,15 @@ function buildPayloadFixture(): MobileMonthlyStatsPayload {
   return {
     month: "2026-04",
     monthlyShopCount: 28,
+    monthlyPointAmount: 123456.78,
     wuhanMonthlyPointAmount: 45678.9,
     yichangMonthlyPointAmount: 77777.88,
     monthlyTerminationCount: 25,
+    onlineShopCounts: {
+      latestDate: "2026-06-23",
+      meituanCount: 108,
+      elemeCount: 72
+    },
     dailyAmountTrend: [
       { date: "2026-04-01", value: 0 },
       { date: "2026-04-02", value: 110 },
@@ -74,16 +80,24 @@ describe("mobile dashboard data", () => {
     const data = buildMobileDashboardData(buildPayloadFixture());
 
     expect(data.kpis.map((item) => item.label)).toEqual([
+      "本月总回款金额",
       "本月武汉回款",
       "本月宜昌回款",
       "月总店铺数",
-      "本月解约数"
+      "本月解约数",
+      "美团在线店铺数",
+      "饿了么在线店铺数"
     ]);
-    expect(data.kpis[0].value).toBe("¥45,678.90");
-    expect(data.kpis[1].value).toBe("¥77,777.88");
-    expect(data.kpis[2].value).toBe("28");
-    expect(data.kpis[3].value).toBe("25");
-    expect(data.kpis.some((item) => item.prominent)).toBe(false);
+    expect(data.kpis[0].value).toBe("¥123,456.78");
+    expect(data.kpis[0].prominent).toBe(true);
+    expect(data.kpis[1].value).toBe("¥45,678.90");
+    expect(data.kpis[2].value).toBe("¥77,777.88");
+    expect(data.kpis[3].value).toBe("28");
+    expect(data.kpis[4].value).toBe("25");
+    expect(data.kpis[5].value).toBe("108家");
+    expect(data.kpis[5].note).toBe("最新数据日期 2026-06-23");
+    expect(data.kpis[6].value).toBe("72家");
+    expect(data.kpis[6].note).toBe("最新数据日期 2026-06-23");
   });
 
   it("keeps only daily repayment dates that have data", () => {

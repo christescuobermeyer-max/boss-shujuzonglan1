@@ -33,17 +33,21 @@ describe("mobile boss quick view layout source", () => {
     ].join("\n");
 
     expect(source).toContain("呈尚策划 · BOSS快看");
+    expect(source).toContain("本月总回款金额");
     expect(source).toContain("本月武汉回款");
     expect(source).toContain("本月宜昌回款");
     expect(source).toContain("月总店铺数");
     expect(source).toContain("本月解约数");
+    expect(source).toContain("美团在线店铺数");
+    expect(source).toContain("饿了么在线店铺数");
+    expect(source).toContain("最新数据日期");
+    expect(source).toContain("mobile-kpi-note");
     expect(source).toContain("每日回款趋势");
     expect(source).toContain("每日回款列表");
     expect(source).toContain("展开本月全部");
     expect(source).toContain("销售开单");
     expect(source).toContain("运营回款");
     expect(source).toContain("解约");
-    expect(source).not.toContain("本月回款总金额");
     expect(source).not.toContain("每日开单趋势");
     expect(source).not.toContain("每日简报");
     expect(source).not.toContain("销售开单 Top");
