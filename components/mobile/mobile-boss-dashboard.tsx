@@ -346,8 +346,10 @@ export function MobileBossDashboard() {
   const [aftersalesDaily, setAftersalesDaily] = useState<AftersalesDailyRecordsPayload>(
     buildEmptyAftersalesDailyRecords()
   );
-  const [workBoardsLoading, setWorkBoardsLoading] = useState(true);
-  const [workBoardsError, setWorkBoardsError] = useState("");
+  const [workflowLoading, setWorkflowLoading] = useState(true);
+  const [aftersalesLoading, setAftersalesLoading] = useState(true);
+  const [workflowError, setWorkflowError] = useState("");
+  const [aftersalesError, setAftersalesError] = useState("");
 
   useEffect(() => {
     let active = true;
@@ -398,36 +400,51 @@ export function MobileBossDashboard() {
 
   useEffect(() => {
     let active = true;
-    setWorkBoardsLoading(true);
-    setWorkBoardsError("");
 
-    const workflowRequest = fetch("/api/mobile/workflow/daily-monitor").then((response) =>
-      parseMobileJsonResponse<WorkflowDailyMonitorPayload>(
-        response,
-        "运营工作进度暂时无法加载，请稍后重试"
+    setWorkflowLoading(true);
+    setWorkflowError("");
+    fetch("/api/mobile/workflow/daily-monitor")
+      .then((response) =>
+        parseMobileJsonResponse<WorkflowDailyMonitorPayload>(
+          response,
+          "运营工作进度暂时无法加载，请稍后重试"
+        )
       )
-    );
-    const aftersalesRequest = fetch("/api/mobile/aftersales/daily-records").then((response) =>
-      parseMobileJsonResponse<AftersalesDailyRecordsPayload>(
-        response,
-        "售后每日工作暂时无法加载，请稍后重试"
-      )
-    );
-
-    Promise.all([workflowRequest, aftersalesRequest])
-      .then(([workflowResult, aftersalesResult]) => {
-        if (!active || !workflowResult || !aftersalesResult) return;
+      .then((workflowResult) => {
+        if (!active || !workflowResult) return;
         setWorkflowMonitor(workflowResult);
+      })
+      .catch((requestError: unknown) => {
+        if (!active) return;
+        setWorkflowError(
+          requestError instanceof Error ? requestError.message : "运营工作进度暂时无法加载，请稍后重试"
+        );
+      })
+      .finally(() => {
+        if (active) setWorkflowLoading(false);
+      });
+
+    setAftersalesLoading(true);
+    setAftersalesError("");
+    fetch("/api/mobile/aftersales/daily-records")
+      .then((response) =>
+        parseMobileJsonResponse<AftersalesDailyRecordsPayload>(
+          response,
+          "售后每日工作暂时无法加载，请稍后重试"
+        )
+      )
+      .then((aftersalesResult) => {
+        if (!active || !aftersalesResult) return;
         setAftersalesDaily(aftersalesResult);
       })
       .catch((requestError: unknown) => {
         if (!active) return;
-        setWorkBoardsError(
-          requestError instanceof Error ? requestError.message : "工作数据暂时无法加载，请稍后重试"
+        setAftersalesError(
+          requestError instanceof Error ? requestError.message : "售后每日工作暂时无法加载，请稍后重试"
         );
       })
       .finally(() => {
-        if (active) setWorkBoardsLoading(false);
+        if (active) setAftersalesLoading(false);
       });
 
     return () => {
@@ -527,13 +544,13 @@ export function MobileBossDashboard() {
           <RankingList title="解约" items={dashboardData.rankings.operatorTermination} unit="家" />
           <MobileWorkflowProgressSection
             monitor={workflowMonitor}
-            loading={workBoardsLoading}
-            error={workBoardsError}
+            loading={workflowLoading}
+            error={workflowError}
           />
           <MobileAftersalesDailySection
             daily={aftersalesDaily}
-            loading={workBoardsLoading}
-            error={workBoardsError}
+            loading={aftersalesLoading}
+            error={aftersalesError}
           />
         </>
       ) : null}

@@ -17,4 +17,18 @@ describe("mobile work board layout", () => {
       source.indexOf("MobileAftersalesDailySection")
     );
   });
+
+  it("运营工作进度和售后每日工作应独立加载与独立报错", () => {
+    const source = readFileSync(
+      join(process.cwd(), "components", "mobile", "mobile-boss-dashboard.tsx"),
+      "utf8"
+    );
+
+    expect(source).toContain("workflowError");
+    expect(source).toContain("aftersalesError");
+    expect(source).toContain("workflowLoading");
+    expect(source).toContain("aftersalesLoading");
+    expect(source).not.toContain("Promise.all([workflowRequest, aftersalesRequest])");
+    expect(source).not.toContain("workBoardsError");
+  });
 });

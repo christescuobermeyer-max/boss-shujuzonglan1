@@ -62,7 +62,7 @@ export async function GET(request: NextRequest) {
           status: response.status,
           detail: payload
         },
-        { status: response.status === 401 ? 502 : response.status }
+        { status: 502 }
       );
     }
 
