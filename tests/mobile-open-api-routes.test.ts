@@ -8,18 +8,24 @@ describe("mobile open API proxy routes", () => {
       join(process.cwd(), "app", "api", "mobile", "workflow", "daily-monitor", "route.ts"),
       "utf8"
     );
+    const helperSource = readFileSync(
+      join(process.cwd(), "lib", "mobile-open-api-proxy.ts"),
+      "utf8"
+    );
 
     expect(source).toContain("isMobileRequestAuthenticated");
     expect(source).toContain('preferredRegion = "hnd1"');
-    expect(source).toContain("CHENGSHANG_OPEN_API_BASE");
-    expect(source).toContain("CHENGSHANG_OPEN_API_TOKEN");
-    expect(source).toContain("OPEN_API_TOKEN");
+    expect(helperSource).toContain("CHENGSHANG_OPEN_API_BASES");
+    expect(helperSource).toContain("CHENGSHANG_OPEN_API_BASE");
+    expect(helperSource).toContain("CHENGSHANG_OPEN_API_TOKEN");
+    expect(helperSource).toContain("OPEN_API_TOKEN");
     expect(source).toContain("/api/open/workflow/daily-monitor");
-    expect(source).toContain("Authorization");
-    expect(source).toContain('cache: "no-store"');
-    expect(source).toContain("console.error");
+    expect(source).toContain("fetchOpenApiJson");
+    expect(helperSource).toContain("Authorization");
+    expect(helperSource).toContain('cache: "no-store"');
+    expect(helperSource).toContain("console.error");
     expect(source).toContain("upstreamStatus");
-    expect(source).toContain("tokenConfigured");
+    expect(helperSource).toContain("tokenConfigured");
   });
 
   it("代理售后每日记录接口并透传 date 参数", () => {
@@ -27,17 +33,21 @@ describe("mobile open API proxy routes", () => {
       join(process.cwd(), "app", "api", "mobile", "aftersales", "daily-records", "route.ts"),
       "utf8"
     );
+    const helperSource = readFileSync(
+      join(process.cwd(), "lib", "mobile-open-api-proxy.ts"),
+      "utf8"
+    );
 
     expect(source).toContain("isMobileRequestAuthenticated");
     expect(source).toContain('preferredRegion = "hnd1"');
     expect(source).toContain("/api/open/aftersales/daily-records");
-    expect(source).toContain("OPEN_API_TOKEN");
+    expect(helperSource).toContain("OPEN_API_TOKEN");
     expect(source).toContain('searchParams.get("date")');
     expect(source).toContain("URLSearchParams");
-    expect(source).toContain("Authorization");
-    expect(source).toContain('cache: "no-store"');
-    expect(source).toContain("console.error");
+    expect(helperSource).toContain("Authorization");
+    expect(helperSource).toContain('cache: "no-store"');
+    expect(helperSource).toContain("console.error");
     expect(source).toContain("upstreamStatus");
-    expect(source).toContain("tokenConfigured");
+    expect(helperSource).toContain("tokenConfigured");
   });
 });
