@@ -8,7 +8,9 @@ function getOpenApiConfig() {
   const base = (
     process.env.CHENGSHANG_OPEN_API_BASE || "https://8-136-183-128.sslip.io"
   ).trim().replace(/\/$/, "");
-  const token = process.env.CHENGSHANG_OPEN_API_TOKEN?.trim();
+  const token = (
+    process.env.CHENGSHANG_OPEN_API_TOKEN || process.env.OPEN_API_TOKEN
+  )?.trim();
   return { base, token };
 }
 

@@ -12,6 +12,7 @@ describe("mobile open API proxy routes", () => {
     expect(source).toContain("isMobileRequestAuthenticated");
     expect(source).toContain("CHENGSHANG_OPEN_API_BASE");
     expect(source).toContain("CHENGSHANG_OPEN_API_TOKEN");
+    expect(source).toContain("OPEN_API_TOKEN");
     expect(source).toContain("/api/open/workflow/daily-monitor");
     expect(source).toContain("Authorization");
     expect(source).toContain('cache: "no-store"');
@@ -25,6 +26,7 @@ describe("mobile open API proxy routes", () => {
 
     expect(source).toContain("isMobileRequestAuthenticated");
     expect(source).toContain("/api/open/aftersales/daily-records");
+    expect(source).toContain("OPEN_API_TOKEN");
     expect(source).toContain('searchParams.get("date")');
     expect(source).toContain("URLSearchParams");
     expect(source).toContain("Authorization");

@@ -47,7 +47,24 @@ function getErrorMessage(result: unknown) {
     return "";
   }
 
-  const message = (result as { message?: unknown }).message;
+  const responseObject = result as {
+    message?: unknown;
+    error?: unknown;
+    detail?: { message?: unknown; error?: unknown };
+    status?: unknown;
+  };
+  if (responseObject.error === "missing_open_api_token") {
+    return "开放 API Token 未配置";
+  }
+  if (responseObject.error === "upstream_error" && responseObject.status === 401) {
+    return "开放 API Token 无效";
+  }
+  const detailMessage =
+    typeof responseObject.detail?.message === "string"
+      ? responseObject.detail.message
+      : "";
+  if (detailMessage) return detailMessage;
+  const message = responseObject.message;
   return typeof message === "string" ? message : "";
 }
 
