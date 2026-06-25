@@ -13,6 +13,17 @@ import {
   type MobileRankItem
 } from "@/lib/mobile-dashboard";
 import {
+  buildAftersalesEmployeeRows,
+  buildEmptyAftersalesDailyRecords,
+  buildEmptyWorkflowDailyMonitor,
+  buildWorkflowProgressRows,
+  formatOpenApiDateTime,
+  getRecentAftersalesRecords,
+  type AftersalesDailyRecordsPayload,
+  type AftersalesRecord,
+  type WorkflowDailyMonitorPayload
+} from "@/lib/mobile-work-boards";
+import {
   getNextAllowedMonth,
   getPreviousMonthValue
 } from "@/lib/stats/month-rotation";
@@ -38,6 +49,40 @@ function getErrorMessage(result: unknown) {
 
   const message = (result as { message?: unknown }).message;
   return typeof message === "string" ? message : "";
+}
+
+async function parseMobileJsonResponse<T>(
+  response: Response,
+  fallbackMessage: string
+) {
+  if (response.status === 401) {
+    window.location.href = "/mobile/login";
+    return null;
+  }
+
+  const rawBody = await response.text();
+  let result: unknown = null;
+  try {
+    result = rawBody ? JSON.parse(rawBody) : null;
+  } catch {
+    throw new Error("数据接口返回异常，请稍后重试");
+  }
+
+  if (!response.ok) {
+    throw new Error(getErrorMessage(result) || fallbackMessage);
+  }
+
+  return result as T;
+}
+
+function formatMobileCount(value: number) {
+  return Number(value ?? 0).toLocaleString("zh-CN");
+}
+
+function formatMobileDateLabel(value: string) {
+  const matched = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!matched) return value || "今日";
+  return `${Number(matched[2])}月${Number(matched[3])}日`;
 }
 
 function RankingList({
@@ -107,6 +152,153 @@ function DailyRepaymentCard({ row }: { row: MobileDailyRepaymentRow }) {
   );
 }
 
+function MobileWorkflowProgressSection({
+  monitor,
+  loading,
+  error
+}: {
+  monitor: WorkflowDailyMonitorPayload;
+  loading: boolean;
+  error: string;
+}) {
+  const rows = buildWorkflowProgressRows(monitor, 8);
+  const maxPending = Math.max(1, ...rows.map((item) => item.pendingShopCount));
+  const flowTotal = (monitor.operatorStats ?? []).reduce(
+    (sum, item) => sum + Number(item.flowPendingShopCount ?? 0),
+    0
+  );
+  const patrolTotal = (monitor.operatorStats ?? []).reduce(
+    (sum, item) => sum + Number(item.patrolPendingShopCount ?? 0),
+    0
+  );
+
+  return (
+    <section className="mobile-section mobile-work-section">
+      <div className="mobile-section-head mobile-section-head-row">
+        <div>
+          <h2>运营工作进度</h2>
+          <span>今日待处理 · {formatOpenApiDateTime(monitor.generatedAt)}</span>
+        </div>
+        <strong className="mobile-work-total">{formatMobileCount(monitor.totalPendingShops)}家</strong>
+      </div>
+
+      {loading ? <div className="mobile-work-loading">数据加载中</div> : null}
+      {!loading && error ? <div className="mobile-work-error">{error}</div> : null}
+
+      {!loading && !error ? (
+        rows.length > 0 ? (
+          <>
+            <div className="mobile-work-summary-grid">
+              <div>
+                <span>流程推进</span>
+                <strong>{formatMobileCount(flowTotal)}</strong>
+              </div>
+              <div>
+                <span>巡店标记</span>
+                <strong>{formatMobileCount(patrolTotal)}</strong>
+              </div>
+            </div>
+            <div className="mobile-work-progress-list">
+              {rows.map((item) => (
+                <article className="mobile-work-progress-row" key={item.operatorName}>
+                  <div className="mobile-work-progress-head">
+                    <strong>{item.operatorName}</strong>
+                    <span>{formatMobileCount(item.pendingShopCount)}家</span>
+                  </div>
+                  <div className="mobile-work-progress-track">
+                    <span style={{ width: `${Math.max(6, (item.pendingShopCount / maxPending) * 100)}%` }} />
+                  </div>
+                  <div className="mobile-work-progress-meta">
+                    <span>流程 {formatMobileCount(item.flowPendingShopCount)}</span>
+                    <span>巡店 {formatMobileCount(item.patrolPendingShopCount)}</span>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </>
+        ) : (
+          <div className="mobile-empty">暂无待处理工作</div>
+        )
+      ) : null}
+    </section>
+  );
+}
+
+function AftersalesRecordCard({ record }: { record: AftersalesRecord }) {
+  return (
+    <article className="mobile-aftersales-record">
+      <div className="mobile-aftersales-record-head">
+        <strong>{record.shopName || "未命名店铺"}</strong>
+        <span>{record.actionLabel || record.actionType || "跟进"}</span>
+      </div>
+      <div className="mobile-aftersales-record-meta">
+        <span>{record.operatorName || "未分配"}</span>
+        <span>{record.deliveryPlatform || "未知平台"}</span>
+        {record.shopStatus ? <span>{record.shopStatus}</span> : null}
+      </div>
+      {record.note ? <p>{record.note}</p> : null}
+      {record.rechargeAmount ? (
+        <div className="mobile-aftersales-recharge">
+          点金充值 {formatMobileAmount(Number(record.rechargeAmount))}
+        </div>
+      ) : null}
+    </article>
+  );
+}
+
+function MobileAftersalesDailySection({
+  daily,
+  loading,
+  error
+}: {
+  daily: AftersalesDailyRecordsPayload;
+  loading: boolean;
+  error: string;
+}) {
+  const employees = buildAftersalesEmployeeRows(daily, 6);
+  const recentRecords = getRecentAftersalesRecords(daily, 6);
+
+  return (
+    <section className="mobile-section mobile-aftersales-section">
+      <div className="mobile-section-head mobile-section-head-row">
+        <div>
+          <h2>售后每日工作</h2>
+          <span>{formatMobileDateLabel(daily.dateKey)} · {formatOpenApiDateTime(daily.generatedAt)}</span>
+        </div>
+        <strong className="mobile-work-total">{formatMobileCount(daily.totalCount)}条</strong>
+      </div>
+
+      {loading ? <div className="mobile-work-loading">数据加载中</div> : null}
+      {!loading && error ? <div className="mobile-work-error">{error}</div> : null}
+
+      {!loading && !error ? (
+        daily.totalCount > 0 ? (
+          <>
+            <div className="mobile-aftersales-employee-grid">
+              {employees.map((employee) => (
+                <div className="mobile-aftersales-employee" key={employee.operatorName}>
+                  <strong>{employee.operatorName}</strong>
+                  <span>{formatMobileCount(employee.actionCount)}条 / {formatMobileCount(employee.shopCount)}店</span>
+                </div>
+              ))}
+            </div>
+            <div className="mobile-aftersales-record-list">
+              {recentRecords.map((record, index) => (
+                <AftersalesRecordCard
+                  key={`${record.operatorName}-${record.shopName}-${record.createdAt}-${index}`}
+                  record={record}
+                />
+              ))}
+            </div>
+          </>
+        ) : (
+          <div className="mobile-empty">暂无售后跟进记录</div>
+        )
+      ) : null}
+    </section>
+  );
+}
+
 function LoadingSkeleton() {
   return (
     <div className="mobile-skeleton-stack" aria-label="数据加载中">
@@ -131,6 +323,14 @@ export function MobileBossDashboard() {
   const [error, setError] = useState("");
   const [expanded, setExpanded] = useState(false);
   const [updateTime, setUpdateTime] = useState(buildUpdateTime());
+  const [workflowMonitor, setWorkflowMonitor] = useState<WorkflowDailyMonitorPayload>(
+    buildEmptyWorkflowDailyMonitor()
+  );
+  const [aftersalesDaily, setAftersalesDaily] = useState<AftersalesDailyRecordsPayload>(
+    buildEmptyAftersalesDailyRecords()
+  );
+  const [workBoardsLoading, setWorkBoardsLoading] = useState(true);
+  const [workBoardsError, setWorkBoardsError] = useState("");
 
   useEffect(() => {
     let active = true;
@@ -178,6 +378,45 @@ export function MobileBossDashboard() {
   useEffect(() => {
     setExpanded(false);
   }, [month]);
+
+  useEffect(() => {
+    let active = true;
+    setWorkBoardsLoading(true);
+    setWorkBoardsError("");
+
+    const workflowRequest = fetch("/api/mobile/workflow/daily-monitor").then((response) =>
+      parseMobileJsonResponse<WorkflowDailyMonitorPayload>(
+        response,
+        "运营工作进度暂时无法加载，请稍后重试"
+      )
+    );
+    const aftersalesRequest = fetch("/api/mobile/aftersales/daily-records").then((response) =>
+      parseMobileJsonResponse<AftersalesDailyRecordsPayload>(
+        response,
+        "售后每日工作暂时无法加载，请稍后重试"
+      )
+    );
+
+    Promise.all([workflowRequest, aftersalesRequest])
+      .then(([workflowResult, aftersalesResult]) => {
+        if (!active || !workflowResult || !aftersalesResult) return;
+        setWorkflowMonitor(workflowResult);
+        setAftersalesDaily(aftersalesResult);
+      })
+      .catch((requestError: unknown) => {
+        if (!active) return;
+        setWorkBoardsError(
+          requestError instanceof Error ? requestError.message : "工作数据暂时无法加载，请稍后重试"
+        );
+      })
+      .finally(() => {
+        if (active) setWorkBoardsLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const dashboardData: MobileDashboardData = useMemo(
     () => buildMobileDashboardData(stats),
@@ -269,6 +508,16 @@ export function MobileBossDashboard() {
           <RankingList title="销售开单" items={dashboardData.rankings.sales} unit="家" />
           <RankingList title="运营回款" items={dashboardData.rankings.operatorAmount} unit="¥" />
           <RankingList title="解约" items={dashboardData.rankings.operatorTermination} unit="家" />
+          <MobileWorkflowProgressSection
+            monitor={workflowMonitor}
+            loading={workBoardsLoading}
+            error={workBoardsError}
+          />
+          <MobileAftersalesDailySection
+            daily={aftersalesDaily}
+            loading={workBoardsLoading}
+            error={workBoardsError}
+          />
         </>
       ) : null}
     </main>

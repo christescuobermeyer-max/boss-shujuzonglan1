@@ -1,13 +1,12 @@
 import { getCachedReportPayload, setCachedReportPayload } from "@/lib/report-cache";
-import { buildAllDailyPointAmountTrend } from "@/lib/stats/all-daily-point-amount-trend";
 import { buildCityMonthlyPointAmountTrend } from "@/lib/stats/city-opened-point-daily-amount";
 import { buildMonthDateKeys } from "@/lib/stats/date-keys";
 import { filterDetailsByBusinessMonth } from "@/lib/stats/daily-point-month-scope";
-import { buildDailyPointShopMatcher } from "@/lib/stats/daily-point-shop-matcher";
+import { buildDailyTotalAmountTrend } from "@/lib/stats/daily-total-amount-trend";
 import { buildEmployeeStatusMap } from "@/lib/stats/employee-employment";
 import { buildEmployeeFilteredMonthlyStats } from "@/lib/stats/employee-filtered-monthly-stats";
 import { getStatsDeptCity, normalizeStatsDept, type StatsDept } from "@/lib/stats/dept";
-import { fetchAllDerivedDetails, fetchMonthlyDerivedDetails } from "@/lib/stats/daily-point-monthly";
+import { fetchMonthlyDerivedDetails } from "@/lib/stats/daily-point-monthly";
 import { buildDailyPointTrends } from "@/lib/stats/daily-point-trends";
 import { buildDailyCountTrendSeries } from "@/lib/stats/daily-trend-series";
 import { resolveMonthRange } from "@/lib/stats/month";
@@ -56,9 +55,7 @@ export async function getMonthlyStatsPayload(monthParam: string | null, deptPara
     meituanDetails,
     meituanNextMonthDetails,
     elemeDetails,
-    elemeNextMonthDetails,
-    allMeituanDetails,
-    allElemeDetails
+    elemeNextMonthDetails
   ] = await Promise.all([
     Shop.find({
       $or: [
@@ -77,9 +74,7 @@ export async function getMonthlyStatsPayload(monthParam: string | null, deptPara
     fetchMonthlyDerivedDetails("meituan", month),
     fetchMonthlyDerivedDetails("meituan", nextMonth),
     fetchMonthlyDerivedDetails("eleme", month),
-    fetchMonthlyDerivedDetails("eleme", nextMonth),
-    fetchAllDerivedDetails("meituan"),
-    fetchAllDerivedDetails("eleme")
+    fetchMonthlyDerivedDetails("eleme", nextMonth)
   ]);
 
   const filteredCandidateShops = candidateShops.filter((shop) => matchesDept(shop, dept));
@@ -88,7 +83,6 @@ export async function getMonthlyStatsPayload(monthParam: string | null, deptPara
     end,
     shops: filteredCandidateShops
   });
-  const shopMatcher = buildDailyPointShopMatcher(cumulativeShops);
   const filteredTerminationShops = terminationShops.filter((shop) => matchesDept(shop, dept));
   const monthlyMeituanDetails = filterDetailsByBusinessMonth({
     month,
@@ -98,21 +92,19 @@ export async function getMonthlyStatsPayload(monthParam: string | null, deptPara
     month,
     details: [...elemeDetails, ...elemeNextMonthDetails]
   });
-  const scopedMeituanDetails = monthlyMeituanDetails.filter((detail) => shopMatcher.matches(detail));
-  const scopedElemeDetails = monthlyElemeDetails.filter((detail) => shopMatcher.matches(detail));
   const meituanTrends = buildDailyPointTrends({
     month,
     start,
     end,
     shops: cumulativeShops,
-    details: scopedMeituanDetails
+    details: monthlyMeituanDetails
   });
   const elemeTrends = buildDailyPointTrends({
     month,
     start,
     end,
     shops: cumulativeShops,
-    details: scopedElemeDetails
+    details: monthlyElemeDetails
   });
   const dateKeys = buildMonthDateKeys(start, end);
   const salesStatusMap = buildEmployeeStatusMap(filteredCandidateShops, "sales");
@@ -158,11 +150,11 @@ export async function getMonthlyStatsPayload(monthParam: string | null, deptPara
     )
   });
   const monthlyPointSummary = buildMonthlyPointSummary([
-    ...scopedMeituanDetails,
-    ...scopedElemeDetails
+    ...monthlyMeituanDetails,
+    ...monthlyElemeDetails
   ]);
-  const meituanPointSummary = buildMonthlyPointSummary(scopedMeituanDetails);
-  const elemePointSummary = buildMonthlyPointSummary(scopedElemeDetails);
+  const meituanPointSummary = buildMonthlyPointSummary(monthlyMeituanDetails);
+  const elemePointSummary = buildMonthlyPointSummary(monthlyElemeDetails);
   const { wuhanMonthlyPointSummary, yichangMonthlyPointSummary } =
     buildKeyCityMonthlyPointSummaries({
       start,
@@ -221,13 +213,13 @@ export async function getMonthlyStatsPayload(monthParam: string | null, deptPara
       dateKeys,
       buildPlatformTerminationTrend(filteredTerminationShops, "eleme")
     ),
-    meituanDailyPointShopTrend: employeeFilteredStats.meituanDailyPointShopTrend,
-    meituanDailyPointAmountTrend: employeeFilteredStats.meituanDailyPointAmountTrend,
-    elemeDailyPointShopTrend: employeeFilteredStats.elemeDailyPointShopTrend,
-    elemeDailyPointAmountTrend: employeeFilteredStats.elemeDailyPointAmountTrend,
-    allDailyPointAmountTrend: buildAllDailyPointAmountTrend([
-      ...allMeituanDetails,
-      ...allElemeDetails
+    meituanDailyPointShopTrend: meituanTrends.shopCountTrend,
+    meituanDailyPointAmountTrend: meituanTrends.totalAmountTrend,
+    elemeDailyPointShopTrend: elemeTrends.shopCountTrend,
+    elemeDailyPointAmountTrend: elemeTrends.totalAmountTrend,
+    allDailyPointAmountTrend: buildDailyTotalAmountTrend([
+      ...meituanTrends.totalAmountTrend,
+      ...elemeTrends.totalAmountTrend
     ])
   };
 

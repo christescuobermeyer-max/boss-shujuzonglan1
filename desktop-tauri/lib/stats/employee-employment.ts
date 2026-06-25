@@ -56,5 +56,8 @@ export function filterActiveDailyTrendSeries(
   items: DailyTrendSeries[],
   statusMap: Map<string, string>
 ) {
-  return filterActiveNamedItems(items, statusMap, (item) => item.name);
+  return items.filter((item) => {
+    const name = String(item.name ?? "").trim();
+    return name === "未分配" || statusMap.get(name) === "在职";
+  });
 }

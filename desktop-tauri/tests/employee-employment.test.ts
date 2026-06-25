@@ -65,4 +65,25 @@ describe("employee employment", () => {
       { name: "王涛", values: [{ date: "2026-04-01", value: 10 }] },
     ]);
   });
+
+  it("保留未分配每日趋势用于平台实际回款汇总", () => {
+    const operatorMap = new Map([
+      ["王涛", "在职"],
+      ["离职运营", "离职"],
+    ]);
+
+    const result = filterActiveDailyTrendSeries(
+      [
+        { name: "王涛", values: [{ date: "2026-04-01", value: 10 }] },
+        { name: "未分配", values: [{ date: "2026-04-01", value: 6 }] },
+        { name: "离职运营", values: [{ date: "2026-04-01", value: 8 }] },
+      ],
+      operatorMap
+    );
+
+    expect(result).toEqual([
+      { name: "王涛", values: [{ date: "2026-04-01", value: 10 }] },
+      { name: "未分配", values: [{ date: "2026-04-01", value: 6 }] },
+    ]);
+  });
 });
