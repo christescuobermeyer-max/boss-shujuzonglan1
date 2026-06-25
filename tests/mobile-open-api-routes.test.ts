@@ -10,6 +10,7 @@ describe("mobile open API proxy routes", () => {
     );
 
     expect(source).toContain("isMobileRequestAuthenticated");
+    expect(source).toContain('preferredRegion = "hnd1"');
     expect(source).toContain("CHENGSHANG_OPEN_API_BASE");
     expect(source).toContain("CHENGSHANG_OPEN_API_TOKEN");
     expect(source).toContain("OPEN_API_TOKEN");
@@ -28,6 +29,7 @@ describe("mobile open API proxy routes", () => {
     );
 
     expect(source).toContain("isMobileRequestAuthenticated");
+    expect(source).toContain('preferredRegion = "hnd1"');
     expect(source).toContain("/api/open/aftersales/daily-records");
     expect(source).toContain("OPEN_API_TOKEN");
     expect(source).toContain('searchParams.get("date")');

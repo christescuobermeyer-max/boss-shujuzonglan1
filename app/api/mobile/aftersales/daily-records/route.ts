@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { isMobileRequestAuthenticated } from "@/lib/mobile-auth";
 
 export const dynamic = "force-dynamic";
+export const preferredRegion = "hnd1";
 export const maxDuration = 30;
 
 function getOpenApiConfig() {
