@@ -24,6 +24,32 @@ async function readUpstreamResponse(response: Response) {
   }
 }
 
+function serializeFetchError(error: unknown) {
+  if (!(error instanceof Error)) {
+    return { message: "unknown_error", name: "unknown" };
+  }
+
+  const cause = (error as Error & { cause?: unknown }).cause;
+  const serializedCause =
+    cause instanceof Error
+      ? {
+          name: cause.name,
+          message: cause.message,
+          code: (cause as Error & { code?: unknown }).code,
+          errno: (cause as Error & { errno?: unknown }).errno,
+          syscall: (cause as Error & { syscall?: unknown }).syscall,
+          address: (cause as Error & { address?: unknown }).address,
+          port: (cause as Error & { port?: unknown }).port
+        }
+      : cause;
+
+  return {
+    message: error.message,
+    name: error.name,
+    cause: serializedCause
+  };
+}
+
 export async function GET(request: NextRequest) {
   try {
     if (!isMobileRequestAuthenticated(request)) {
@@ -73,15 +99,16 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(payload);
   } catch (error) {
+    const serializedError = serializeFetchError(error);
     console.error("mobile workflow open api proxy exception", {
-      message: error instanceof Error ? error.message : "unknown_error",
-      name: error instanceof Error ? error.name : "unknown",
+      ...serializedError,
       stack: error instanceof Error ? error.stack : undefined
     });
     return NextResponse.json(
       {
         message: "获取运营工作进度失败",
-        error: error instanceof Error ? error.message : "unknown_error"
+        error: "proxy_exception",
+        detail: serializedError
       },
       { status: 500 }
     );
