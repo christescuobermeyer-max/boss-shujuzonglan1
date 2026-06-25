@@ -16,6 +16,9 @@ describe("mobile open API proxy routes", () => {
     expect(source).toContain("/api/open/workflow/daily-monitor");
     expect(source).toContain("Authorization");
     expect(source).toContain('cache: "no-store"');
+    expect(source).toContain("console.error");
+    expect(source).toContain("upstreamStatus");
+    expect(source).toContain("tokenConfigured");
   });
 
   it("代理售后每日记录接口并透传 date 参数", () => {
@@ -31,5 +34,8 @@ describe("mobile open API proxy routes", () => {
     expect(source).toContain("URLSearchParams");
     expect(source).toContain("Authorization");
     expect(source).toContain('cache: "no-store"');
+    expect(source).toContain("console.error");
+    expect(source).toContain("upstreamStatus");
+    expect(source).toContain("tokenConfigured");
   });
 });

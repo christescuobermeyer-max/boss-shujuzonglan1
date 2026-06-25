@@ -52,11 +52,15 @@ function getErrorMessage(result: unknown) {
     error?: unknown;
     detail?: { message?: unknown; error?: unknown };
     status?: unknown;
+    upstreamStatus?: unknown;
   };
   if (responseObject.error === "missing_open_api_token") {
     return "开放 API Token 未配置";
   }
-  if (responseObject.error === "upstream_error" && responseObject.status === 401) {
+  if (
+    responseObject.error === "upstream_error" &&
+    (responseObject.status === 401 || responseObject.upstreamStatus === 401)
+  ) {
     return "开放 API Token 无效";
   }
   const detailMessage =

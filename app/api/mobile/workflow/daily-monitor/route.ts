@@ -14,13 +14,13 @@ function getOpenApiConfig() {
   return { base, token };
 }
 
-async function readJsonResponse(response: Response) {
+async function readUpstreamResponse(response: Response) {
   const rawBody = await response.text();
-  if (!rawBody) return null;
+  if (!rawBody) return { payload: null, rawBody };
   try {
-    return JSON.parse(rawBody);
+    return { payload: JSON.parse(rawBody), rawBody };
   } catch {
-    return { rawBody };
+    return { payload: { rawBody }, rawBody };
   }
 }
 
@@ -35,24 +35,36 @@ export async function GET(request: NextRequest) {
 
     const { base, token } = getOpenApiConfig();
     if (!token) {
+      console.error("mobile workflow open api token missing", {
+        base,
+        tokenConfigured: false
+      });
       return NextResponse.json(
         { message: "开放 API Token 未配置", error: "missing_open_api_token" },
         { status: 500 }
       );
     }
 
-    const response = await fetch(`${base}/api/open/workflow/daily-monitor`, {
+    const upstreamUrl = `${base}/api/open/workflow/daily-monitor`;
+    const response = await fetch(upstreamUrl, {
       headers: { Authorization: `Bearer ${token}` },
       cache: "no-store"
     });
-    const payload = await readJsonResponse(response);
+    const { payload, rawBody } = await readUpstreamResponse(response);
 
     if (!response.ok) {
+      console.error("mobile workflow open api upstream error", {
+        upstreamUrl,
+        upstreamStatus: response.status,
+        upstreamBodyPreview: rawBody.slice(0, 800),
+        tokenConfigured: true,
+        tokenLength: token.length
+      });
       return NextResponse.json(
         {
           message: "获取运营工作进度失败",
           error: "upstream_error",
-          status: response.status,
+          upstreamStatus: response.status,
           detail: payload
         },
         { status: 502 }
@@ -61,6 +73,11 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(payload);
   } catch (error) {
+    console.error("mobile workflow open api proxy exception", {
+      message: error instanceof Error ? error.message : "unknown_error",
+      name: error instanceof Error ? error.name : "unknown",
+      stack: error instanceof Error ? error.stack : undefined
+    });
     return NextResponse.json(
       {
         message: "获取运营工作进度失败",
