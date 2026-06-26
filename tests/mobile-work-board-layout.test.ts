@@ -45,4 +45,14 @@ describe("mobile work board layout", () => {
     expect(source).toContain("/api/mobile/aftersales/daily-records?date=");
     expect(source).toContain("[aftersalesDate]");
   });
+
+  it("售后每日工作记录列表不应截断当日内容", () => {
+    const source = readFileSync(
+      join(process.cwd(), "components", "mobile", "mobile-boss-dashboard.tsx"),
+      "utf8"
+    );
+
+    expect(source).toContain("getRecentAftersalesRecords(daily)");
+    expect(source).not.toContain("getRecentAftersalesRecords(daily, 6)");
+  });
 });

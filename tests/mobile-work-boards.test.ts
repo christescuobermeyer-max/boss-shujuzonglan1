@@ -103,6 +103,34 @@ describe("mobile work board helpers", () => {
     ]);
   });
 
+  it("售后每日记录默认返回当日全部内容", () => {
+    const payload = {
+      dateKey: "2026-06-25",
+      totalCount: 9,
+      generatedAt: "2026-06-25T03:25:00.000Z",
+      employees: [
+        {
+          operatorName: "售后",
+          actionCount: 9,
+          shopCount: 9,
+          records: Array.from({ length: 9 }, (_, index) => ({
+            shopName: `${index + 1}店`,
+            merchantId: `${index + 1}`,
+            deliveryPlatform: "美团餐饮",
+            shopStatus: "正常",
+            actionType: "phone_followup",
+            actionLabel: "电话跟进",
+            operatorName: "售后",
+            note: `第${index + 1}条`,
+            createdAt: `2026-06-25T${String(index).padStart(2, "0")}:00:00.000Z`
+          }))
+        }
+      ]
+    };
+
+    expect(getRecentAftersalesRecords(payload)).toHaveLength(9);
+  });
+
   it("格式化开放 API 时间为手机端更新时间", () => {
     expect(formatOpenApiDateTime("2026-06-25T03:20:00.000Z")).toMatch(/\d{2}:\d{2}/);
     expect(formatOpenApiDateTime("")).toBe("暂无更新时间");

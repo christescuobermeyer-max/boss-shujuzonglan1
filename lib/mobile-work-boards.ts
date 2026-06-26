@@ -140,9 +140,9 @@ export function buildAftersalesEmployeeRows(
 
 export function getRecentAftersalesRecords(
   payload: AftersalesDailyRecordsPayload,
-  limit = 8
+  limit?: number
 ) {
-  return (payload.employees ?? [])
+  const records = (payload.employees ?? [])
     .flatMap((employee) =>
       (employee.records ?? []).map((record) => ({
         ...record,
@@ -153,8 +153,9 @@ export function getRecentAftersalesRecords(
       const leftTime = new Date(left.createdAt ?? "").getTime();
       const rightTime = new Date(right.createdAt ?? "").getTime();
       return (Number.isFinite(rightTime) ? rightTime : 0) - (Number.isFinite(leftTime) ? leftTime : 0);
-    })
-    .slice(0, limit);
+    });
+
+  return typeof limit === "number" ? records.slice(0, limit) : records;
 }
 
 export function formatOpenApiDateTime(value: string) {

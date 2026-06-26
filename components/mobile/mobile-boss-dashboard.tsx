@@ -285,7 +285,7 @@ function MobileAftersalesDailySection({
   onDateChange: (date: string) => void;
 }) {
   const employees = buildAftersalesEmployeeRows(daily, 6);
-  const recentRecords = getRecentAftersalesRecords(daily, 6);
+  const recentRecords = getRecentAftersalesRecords(daily);
 
   return (
     <section className="mobile-section mobile-aftersales-section">
