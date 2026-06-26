@@ -14,6 +14,7 @@ describe("mobile open API proxy routes", () => {
     );
 
     expect(source).toContain("isMobileRequestAuthenticated");
+    expect(source).toContain('runtime = "nodejs"');
     expect(source).toContain('preferredRegion = "hnd1"');
     expect(helperSource).toContain("CHENGSHANG_OPEN_API_BASES");
     expect(helperSource).toContain("CHENGSHANG_OPEN_API_BASE");
@@ -39,6 +40,7 @@ describe("mobile open API proxy routes", () => {
     );
 
     expect(source).toContain("isMobileRequestAuthenticated");
+    expect(source).toContain('runtime = "nodejs"');
     expect(source).toContain('preferredRegion = "hnd1"');
     expect(source).toContain("/api/open/aftersales/daily-records");
     expect(helperSource).toContain("OPEN_API_TOKEN");

@@ -4,6 +4,7 @@ import { fetchOpenApiJson } from "@/lib/mobile-open-api-proxy";
 import type { AftersalesDailyRecordsPayload } from "@/lib/mobile-work-boards";
 
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 export const preferredRegion = "hnd1";
 export const maxDuration = 30;
 

@@ -34,10 +34,19 @@ type FetchOpenApiParams = {
   logLabel: string;
 };
 
+type UpstreamResponse = Pick<Response, "ok" | "status" | "text">;
+
 export function getOpenApiToken() {
   return (
     process.env.CHENGSHANG_OPEN_API_TOKEN || process.env.OPEN_API_TOKEN
   )?.trim();
+}
+
+function parseBaseList(configured?: string) {
+  return (configured ?? "")
+    .split(",")
+    .map((item) => item.trim().replace(/\/$/, ""))
+    .filter(Boolean);
 }
 
 export function getOpenApiBases() {
@@ -46,13 +55,27 @@ export function getOpenApiBases() {
     process.env.CHENGSHANG_OPEN_API_BASE ||
     DEFAULT_OPEN_API_BASE;
 
-  return configured
-    .split(",")
-    .map((item) => item.trim().replace(/\/$/, ""))
-    .filter(Boolean);
+  return Array.from(
+    new Set([
+      ...parseBaseList(configured),
+      ...getOpenApiInsecureTlsBases()
+    ])
+  );
 }
 
-async function readUpstreamResponse(response: Response) {
+export function getOpenApiInsecureTlsBases() {
+  return parseBaseList(process.env.CHENGSHANG_OPEN_API_INSECURE_TLS_BASES);
+}
+
+export function shouldAllowInsecureTlsForUrl(upstreamUrl: string) {
+  const url = new URL(upstreamUrl);
+  return getOpenApiInsecureTlsBases().some((base) => {
+    const baseUrl = new URL(base);
+    return url.origin === baseUrl.origin;
+  });
+}
+
+async function readUpstreamResponse(response: UpstreamResponse) {
   const rawBody = await response.text();
   if (!rawBody) return { payload: null, rawBody };
   try {
@@ -88,11 +111,57 @@ export function serializeFetchError(error: unknown): SerializedFetchError {
   };
 }
 
-async function fetchWithTimeout(upstreamUrl: string, token: string) {
+async function fetchWithInsecureTls(
+  upstreamUrl: string,
+  token: string,
+  signal: AbortSignal
+): Promise<UpstreamResponse> {
+  const https = await import("node:https");
+  const url = new URL(upstreamUrl);
+
+  return await new Promise<UpstreamResponse>((resolve, reject) => {
+    const request = https.request(
+      url,
+      {
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}` },
+        rejectUnauthorized: false,
+        signal
+      },
+      (response) => {
+        const chunks: Buffer[] = [];
+        response.on("data", (chunk) => {
+          chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+        });
+        response.on("end", () => {
+          const status = response.statusCode ?? 0;
+          const body = Buffer.concat(chunks).toString("utf8");
+          resolve({
+            ok: status >= 200 && status < 300,
+            status,
+            text: async () => body
+          });
+        });
+      }
+    );
+
+    request.on("error", reject);
+    request.end();
+  });
+}
+
+async function fetchWithTimeout(
+  upstreamUrl: string,
+  token: string
+): Promise<UpstreamResponse> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), DEFAULT_TIMEOUT_MS);
 
   try {
+    if (shouldAllowInsecureTlsForUrl(upstreamUrl)) {
+      return await fetchWithInsecureTls(upstreamUrl, token, controller.signal);
+    }
+
     return await fetch(upstreamUrl, {
       headers: { Authorization: `Bearer ${token}` },
       cache: "no-store",
