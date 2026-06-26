@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   buildAftersalesEmployeeRows,
+  getDefaultAftersalesDateKey,
   buildWorkflowProgressRows,
   formatOpenApiDateTime,
   getRecentAftersalesRecords
@@ -105,5 +106,11 @@ describe("mobile work board helpers", () => {
   it("格式化开放 API 时间为手机端更新时间", () => {
     expect(formatOpenApiDateTime("2026-06-25T03:20:00.000Z")).toMatch(/\d{2}:\d{2}/);
     expect(formatOpenApiDateTime("")).toBe("暂无更新时间");
+  });
+
+  it("按上海时区默认展示昨天的售后每日工作", () => {
+    const result = getDefaultAftersalesDateKey(new Date("2026-06-26T01:30:00+08:00"));
+
+    expect(result).toBe("2026-06-25");
   });
 });

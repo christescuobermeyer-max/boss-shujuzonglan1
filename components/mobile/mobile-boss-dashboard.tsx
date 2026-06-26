@@ -18,6 +18,8 @@ import {
   buildEmptyWorkflowDailyMonitor,
   buildWorkflowProgressRows,
   formatOpenApiDateTime,
+  getDefaultAftersalesDateKey,
+  getShanghaiDateKey,
   getRecentAftersalesRecords,
   type AftersalesDailyRecordsPayload,
   type AftersalesRecord,
@@ -270,24 +272,40 @@ function AftersalesRecordCard({ record }: { record: AftersalesRecord }) {
 function MobileAftersalesDailySection({
   daily,
   loading,
-  error
+  error,
+  selectedDate,
+  maxDate,
+  onDateChange
 }: {
   daily: AftersalesDailyRecordsPayload;
   loading: boolean;
   error: string;
+  selectedDate: string;
+  maxDate: string;
+  onDateChange: (date: string) => void;
 }) {
   const employees = buildAftersalesEmployeeRows(daily, 6);
   const recentRecords = getRecentAftersalesRecords(daily, 6);
 
   return (
     <section className="mobile-section mobile-aftersales-section">
-      <div className="mobile-section-head mobile-section-head-row">
+      <div className="mobile-section-head mobile-section-head-row mobile-aftersales-head">
         <div>
           <h2>售后每日工作</h2>
           <span>{formatMobileDateLabel(daily.dateKey)} · {formatOpenApiDateTime(daily.generatedAt)}</span>
         </div>
         <strong className="mobile-work-total">{formatMobileCount(daily.totalCount)}条</strong>
       </div>
+      <label className="mobile-aftersales-date-filter">
+        <span>筛选日期</span>
+        <input
+          type="date"
+          value={selectedDate}
+          max={maxDate}
+          onChange={(event) => onDateChange(event.target.value)}
+          aria-label="筛选售后每日工作日期"
+        />
+      </label>
 
       {loading ? <div className="mobile-work-loading">数据加载中</div> : null}
       {!loading && error ? <div className="mobile-work-error">{error}</div> : null}
@@ -336,6 +354,8 @@ function LoadingSkeleton() {
 
 export function MobileBossDashboard() {
   const initialMonth = useMemo(() => getCurrentMonthValue(), []);
+  const initialAftersalesDate = useMemo(() => getDefaultAftersalesDateKey(), []);
+  const maxAftersalesDate = useMemo(() => getShanghaiDateKey(), []);
   const [month, setMonth] = useState(initialMonth);
   const [stats, setStats] = useState<MobileMonthlyStatsPayload>(
     buildEmptyMobileMonthlyStats(initialMonth)
@@ -354,6 +374,7 @@ export function MobileBossDashboard() {
   const [aftersalesLoading, setAftersalesLoading] = useState(true);
   const [workflowError, setWorkflowError] = useState("");
   const [aftersalesError, setAftersalesError] = useState("");
+  const [aftersalesDate, setAftersalesDate] = useState(initialAftersalesDate);
 
   useEffect(() => {
     let active = true;
@@ -428,9 +449,17 @@ export function MobileBossDashboard() {
         if (active) setWorkflowLoading(false);
       });
 
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+
     setAftersalesLoading(true);
     setAftersalesError("");
-    fetch("/api/mobile/aftersales/daily-records")
+    fetch(`/api/mobile/aftersales/daily-records?date=${encodeURIComponent(aftersalesDate)}`)
       .then((response) =>
         parseMobileJsonResponse<AftersalesDailyRecordsPayload>(
           response,
@@ -454,7 +483,7 @@ export function MobileBossDashboard() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [aftersalesDate]);
 
   const dashboardData: MobileDashboardData = useMemo(
     () => buildMobileDashboardData(stats),
@@ -555,6 +584,9 @@ export function MobileBossDashboard() {
             daily={aftersalesDaily}
             loading={aftersalesLoading}
             error={aftersalesError}
+            selectedDate={aftersalesDate}
+            maxDate={maxAftersalesDate}
+            onDateChange={setAftersalesDate}
           />
         </>
       ) : null}

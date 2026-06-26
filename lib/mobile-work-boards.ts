@@ -49,6 +49,39 @@ function toFiniteNumber(value: unknown) {
   return Number.isFinite(numberValue) ? numberValue : 0;
 }
 
+function getShanghaiDateParts(date: Date) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    timeZone: "Asia/Shanghai"
+  }).formatToParts(date);
+
+  const year = parts.find((part) => part.type === "year")?.value ?? "";
+  const month = parts.find((part) => part.type === "month")?.value ?? "";
+  const day = parts.find((part) => part.type === "day")?.value ?? "";
+  return { year, month, day };
+}
+
+export function getShanghaiDateKey(date = new Date()) {
+  const { year, month, day } = getShanghaiDateParts(date);
+  if (!year || !month || !day) return "";
+  return `${year}-${month}-${day}`;
+}
+
+export function getDefaultAftersalesDateKey(now = new Date()) {
+  const { year, month, day } = getShanghaiDateParts(now);
+  if (!year || !month || !day) return "";
+
+  const shanghaiMidnightUtc = Date.UTC(
+    Number(year),
+    Number(month) - 1,
+    Number(day),
+    -8
+  );
+  return getShanghaiDateKey(new Date(shanghaiMidnightUtc - 24 * 60 * 60 * 1000));
+}
+
 export function buildEmptyWorkflowDailyMonitor(): WorkflowDailyMonitorPayload {
   return {
     operatorStats: [],

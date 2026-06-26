@@ -12,7 +12,7 @@ describe("mobile work board layout", () => {
     expect(source).toContain("MobileWorkflowProgressSection");
     expect(source).toContain("MobileAftersalesDailySection");
     expect(source).toContain('fetch("/api/mobile/workflow/daily-monitor")');
-    expect(source).toContain('fetch("/api/mobile/aftersales/daily-records")');
+    expect(source).toContain("/api/mobile/aftersales/daily-records?date=");
     expect(source.indexOf("MobileWorkflowProgressSection")).toBeLessThan(
       source.indexOf("MobileAftersalesDailySection")
     );
@@ -30,5 +30,19 @@ describe("mobile work board layout", () => {
     expect(source).toContain("aftersalesLoading");
     expect(source).not.toContain("Promise.all([workflowRequest, aftersalesRequest])");
     expect(source).not.toContain("workBoardsError");
+  });
+
+  it("售后每日工作默认展示昨天并支持日期筛选", () => {
+    const source = readFileSync(
+      join(process.cwd(), "components", "mobile", "mobile-boss-dashboard.tsx"),
+      "utf8"
+    );
+
+    expect(source).toContain("getDefaultAftersalesDateKey");
+    expect(source).toContain("aftersalesDate");
+    expect(source).toContain("setAftersalesDate");
+    expect(source).toContain('type="date"');
+    expect(source).toContain("/api/mobile/aftersales/daily-records?date=");
+    expect(source).toContain("[aftersalesDate]");
   });
 });

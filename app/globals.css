@@ -1621,6 +1621,54 @@ button {
   margin-bottom: 12px;
 }
 
+.mobile-aftersales-head {
+  margin-bottom: 10px;
+}
+
+.mobile-aftersales-date-filter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 44px;
+  margin-bottom: 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #ffffff;
+  padding: 8px 10px;
+}
+
+.mobile-aftersales-date-filter span {
+  flex: 0 0 auto;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.mobile-aftersales-date-filter input {
+  min-width: 0;
+  width: 150px;
+  height: 36px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-soft);
+  color: var(--text-strong);
+  padding: 0 8px;
+  font-size: 13px;
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
+}
+
+.mobile-aftersales-date-filter input:hover {
+  border-color: var(--border-strong);
+}
+
+.mobile-aftersales-date-filter input:focus-visible {
+  outline: 2px solid #000000;
+  outline-offset: 2px;
+}
+
 .mobile-aftersales-employee {
   min-width: 0;
   border: 1px solid var(--border);
