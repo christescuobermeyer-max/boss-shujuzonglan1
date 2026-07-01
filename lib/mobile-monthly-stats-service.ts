@@ -235,6 +235,8 @@ export async function getMobileMonthlyStatsPayload(
     ...monthlyMeituanDetails,
     ...monthlyElemeDetails
   ]);
+  const meituanPointSummary = buildMonthlyPointSummary(monthlyMeituanDetails);
+  const elemePointSummary = buildMonthlyPointSummary(monthlyElemeDetails);
   const wuhanMonthlyPointSummary = buildCityMonthlyPointSummary({
     cityName: "武汉",
     start,
@@ -271,6 +273,8 @@ export async function getMobileMonthlyStatsPayload(
     month,
     monthlyShopCount: monthlyShops.length,
     monthlyPointAmount: monthlyPointSummary.totalAmount,
+    meituanMonthlyPointAmount: meituanPointSummary.totalAmount,
+    elemeMonthlyPointAmount: elemePointSummary.totalAmount,
     wuhanMonthlyPointAmount: wuhanMonthlyPointSummary.totalAmount,
     yichangMonthlyPointAmount: roundAmount(
       monthlyPointSummary.totalAmount - wuhanMonthlyPointSummary.totalAmount
@@ -278,6 +282,7 @@ export async function getMobileMonthlyStatsPayload(
     monthlyTerminationCount: filteredTerminationShops.length,
     onlineShopCounts: {
       latestDate: latestOnlineShopSummary.latestDate,
+      totalCount: latestOnlineShopSummary.totalCount,
       meituanCount: latestOnlineShopSummary.meituanCount,
       elemeCount: latestOnlineShopSummary.elemeCount
     },

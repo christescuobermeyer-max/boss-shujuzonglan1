@@ -32,6 +32,11 @@ describe("mobile lightweight stats api source", () => {
     expect(source).not.toContain("rowData: 1");
     expect(source).toContain("getLatestOnlineShopSummary");
     expect(source).toContain("onlineShopCounts");
+    expect(source).toContain("const meituanPointSummary = buildMonthlyPointSummary(monthlyMeituanDetails)");
+    expect(source).toContain("const elemePointSummary = buildMonthlyPointSummary(monthlyElemeDetails)");
+    expect(source).toContain("meituanMonthlyPointAmount");
+    expect(source).toContain("elemeMonthlyPointAmount");
+    expect(source).toContain("totalCount: latestOnlineShopSummary.totalCount");
   });
 
   it("defines the online shop snapshot model for the web runtime", () => {

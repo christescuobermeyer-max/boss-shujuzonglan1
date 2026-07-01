@@ -18,6 +18,7 @@ export type MobileDailyRepaymentRow = DailySummaryRow;
 
 export type MobileOnlineShopCounts = {
   latestDate: string;
+  totalCount: number;
   meituanCount: number;
   elemeCount: number;
 };
@@ -26,6 +27,8 @@ export type MobileMonthlyStatsPayload = {
   month: string;
   monthlyShopCount: number;
   monthlyPointAmount: number;
+  meituanMonthlyPointAmount: number;
+  elemeMonthlyPointAmount: number;
   wuhanMonthlyPointAmount: number;
   yichangMonthlyPointAmount: number;
   monthlyTerminationCount: number;
@@ -91,11 +94,14 @@ export function buildEmptyMobileMonthlyStats(month: string): MobileMonthlyStatsP
     month,
     monthlyShopCount: 0,
     monthlyPointAmount: 0,
+    meituanMonthlyPointAmount: 0,
+    elemeMonthlyPointAmount: 0,
     wuhanMonthlyPointAmount: 0,
     yichangMonthlyPointAmount: 0,
     monthlyTerminationCount: 0,
     onlineShopCounts: {
       latestDate: "",
+      totalCount: 0,
       meituanCount: 0,
       elemeCount: 0
     },
@@ -114,10 +120,16 @@ export function buildMobileDashboardData(
 ): MobileDashboardData {
   const onlineShopCounts = payload.onlineShopCounts ?? {
     latestDate: "",
+    totalCount: 0,
     meituanCount: 0,
     elemeCount: 0
   };
   const onlineShopDateNote = formatOnlineShopDateNote(onlineShopCounts.latestDate);
+  const onlineShopTotalCount = Number(
+    onlineShopCounts.totalCount ??
+      Number(onlineShopCounts.meituanCount ?? 0) +
+        Number(onlineShopCounts.elemeCount ?? 0)
+  );
   const monthlyPointAmount = Number(
     payload.monthlyPointAmount ??
       Number(payload.wuhanMonthlyPointAmount ?? 0) +
@@ -131,6 +143,16 @@ export function buildMobileDashboardData(
         value: formatMobileAmount(monthlyPointAmount),
         accent: "blue",
         prominent: true
+      },
+      {
+        label: "美团总回款",
+        value: formatMobileAmount(payload.meituanMonthlyPointAmount),
+        accent: "orange"
+      },
+      {
+        label: "饿了么总回款",
+        value: formatMobileAmount(payload.elemeMonthlyPointAmount),
+        accent: "blue"
       },
       {
         label: "本月武汉回款",
@@ -163,6 +185,12 @@ export function buildMobileDashboardData(
         value: `${formatMobileCount(onlineShopCounts.elemeCount)}家`,
         note: onlineShopDateNote,
         accent: "blue"
+      },
+      {
+        label: "总在线店铺数",
+        value: `${formatMobileCount(onlineShopTotalCount)}家`,
+        note: onlineShopDateNote,
+        accent: "teal"
       }
     ],
     totalAmountTrendData: payload.dailyAmountTrend
