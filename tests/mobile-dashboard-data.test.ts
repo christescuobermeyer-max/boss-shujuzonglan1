@@ -90,9 +90,9 @@ describe("mobile dashboard data", () => {
       "本月宜昌回款",
       "月总店铺数",
       "本月解约数",
+      "总在线店铺数",
       "美团在线店铺数",
-      "饿了么在线店铺数",
-      "总在线店铺数"
+      "饿了么在线店铺数"
     ]);
     expect(data.kpis[0].value).toBe("¥123,456.78");
     expect(data.kpis[0].prominent).toBe(true);
@@ -102,11 +102,11 @@ describe("mobile dashboard data", () => {
     expect(data.kpis[4].value).toBe("¥77,777.88");
     expect(data.kpis[5].value).toBe("28");
     expect(data.kpis[6].value).toBe("25");
-    expect(data.kpis[7].value).toBe("108家");
+    expect(data.kpis[7].value).toBe("180家");
     expect(data.kpis[7].note).toBe("最新数据日期 2026-06-23");
-    expect(data.kpis[8].value).toBe("72家");
+    expect(data.kpis[8].value).toBe("108家");
     expect(data.kpis[8].note).toBe("最新数据日期 2026-06-23");
-    expect(data.kpis[9].value).toBe("180家");
+    expect(data.kpis[9].value).toBe("72家");
     expect(data.kpis[9].note).toBe("最新数据日期 2026-06-23");
   });
 

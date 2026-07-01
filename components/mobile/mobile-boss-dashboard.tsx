@@ -102,6 +102,10 @@ function formatMobileCount(value: number) {
   return Number(value ?? 0).toLocaleString("zh-CN");
 }
 
+function isOnlineShopKpi(label: string) {
+  return label === "总在线店铺数" || label === "美团在线店铺数" || label === "饿了么在线店铺数";
+}
+
 function formatMobileDateLabel(value: string) {
   const matched = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
   if (!matched) return value || "今日";
@@ -529,7 +533,7 @@ export function MobileBossDashboard() {
           <section className="mobile-kpi-grid" aria-label="手机关键指标">
             {dashboardData.kpis.map((item) => (
               <article
-                className={`mobile-kpi-card mobile-kpi-${item.accent}${item.prominent ? " mobile-kpi-card-primary" : ""}`}
+                className={`mobile-kpi-card mobile-kpi-${item.accent}${item.prominent ? " mobile-kpi-card-primary" : ""}${isOnlineShopKpi(item.label) ? " mobile-kpi-online" : ""}`}
                 key={item.label}
               >
                 <span>{item.label}</span>

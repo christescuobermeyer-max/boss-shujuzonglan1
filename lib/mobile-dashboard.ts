@@ -175,6 +175,12 @@ export function buildMobileDashboardData(
         accent: "teal"
       },
       {
+        label: "总在线店铺数",
+        value: `${formatMobileCount(onlineShopTotalCount)}家`,
+        note: onlineShopDateNote,
+        accent: "teal"
+      },
+      {
         label: "美团在线店铺数",
         value: `${formatMobileCount(onlineShopCounts.meituanCount)}家`,
         note: onlineShopDateNote,
@@ -185,12 +191,6 @@ export function buildMobileDashboardData(
         value: `${formatMobileCount(onlineShopCounts.elemeCount)}家`,
         note: onlineShopDateNote,
         accent: "blue"
-      },
-      {
-        label: "总在线店铺数",
-        value: `${formatMobileCount(onlineShopTotalCount)}家`,
-        note: onlineShopDateNote,
-        accent: "teal"
       }
     ],
     totalAmountTrendData: payload.dailyAmountTrend

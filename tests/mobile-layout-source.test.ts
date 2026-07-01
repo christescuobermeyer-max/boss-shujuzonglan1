@@ -82,4 +82,15 @@ describe("mobile boss quick view layout source", () => {
     expect(source).toContain("@media (max-width: 430px)");
     expect(source).toContain(".dashboard-shell");
   });
+
+  it("lays out the three online shop KPI cards in one equal-width row", () => {
+    const dashboardSource = readProjectFile("components", "mobile", "mobile-boss-dashboard.tsx");
+    const cssSource = readProjectFile("app", "globals.css");
+
+    expect(dashboardSource).toContain("mobile-kpi-online");
+    expect(cssSource).toContain(".mobile-kpi-online");
+    expect(cssSource).toContain("grid-template-columns: repeat(6, minmax(0, 1fr))");
+    expect(cssSource).toContain("grid-column: span 3");
+    expect(cssSource).toContain("grid-column: span 2");
+  });
 });
