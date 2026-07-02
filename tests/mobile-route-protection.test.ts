@@ -7,7 +7,7 @@ function readProjectFile(...parts: string[]) {
 }
 
 describe("mobile route protection", () => {
-  it("defines proxy protection for mobile, stats, and monthly stats APIs", () => {
+  it("defines page-level proxy protection while Sealos owns mobile APIs", () => {
     const source = readProjectFile("proxy.ts");
     const authSource = readProjectFile("lib", "mobile-auth.ts");
 
@@ -15,8 +15,9 @@ describe("mobile route protection", () => {
     expect(authSource).toContain("mobile_dashboard_session");
     expect(source).toContain("/mobile/:path*");
     expect(source).toContain("/stats");
-    expect(source).toContain("/api/stats/monthly");
-    expect(source).toContain("/api/mobile/stats/monthly");
+    expect(source).toContain('matcher: ["/mobile/:path*", "/stats"]');
+    expect(source).not.toContain("/api/stats/monthly");
+    expect(source).not.toContain("/api/mobile/stats/monthly");
     expect(source).toContain("/mobile/login");
   });
 
@@ -28,32 +29,33 @@ describe("mobile route protection", () => {
     expect(source).toContain("/mobile");
   });
 
-  it("validates mobile login using server-only password configuration", () => {
-    const source = readProjectFile("app", "api", "mobile", "login", "route.ts");
+  it("validates mobile login using the Sealos backend implementation", () => {
+    const source = readProjectFile(
+      "server",
+      "boss-shuju",
+      "src",
+      "routes",
+      "mobile-login.ts"
+    );
 
-    expect(source).toContain("verifyMobilePassword");
     expect(source).toContain("createMobileSessionToken");
     expect(source).toContain("MOBILE_SESSION_COOKIE");
     expect(source).not.toContain("13972539707");
   });
 
-  it("protects the existing monthly stats API before connecting to MongoDB", () => {
-    const source = readProjectFile("app", "api", "stats", "monthly", "route.ts");
-
-    expect(source).toContain("isMobileRequestAuthenticated");
-    expect(source.indexOf("isMobileRequestAuthenticated")).toBeLessThan(
-      source.indexOf("connectMongo")
+  it("protects the Sealos mobile stats API before connecting to MongoDB", () => {
+    const source = readProjectFile(
+      "server",
+      "boss-shuju",
+      "src",
+      "routes",
+      "mobile-stats.ts"
     );
-    expect(source).toContain("status: 401");
-  });
 
-  it("protects the mobile lightweight stats API before connecting to MongoDB", () => {
-    const source = readProjectFile("app", "api", "mobile", "stats", "monthly", "route.ts");
-
-    expect(source).toContain("isMobileRequestAuthenticated");
-    expect(source.indexOf("isMobileRequestAuthenticated")).toBeLessThan(
-      source.indexOf("connectMongo")
+    expect(source).toContain("mobileAuthMiddleware");
+    expect(source.indexOf("mobileAuthMiddleware, async")).toBeLessThan(
+      source.indexOf("await connectMongo")
     );
-    expect(source).toContain("status: 401");
+    expect(source).toContain("/api/mobile/stats/monthly");
   });
 });
