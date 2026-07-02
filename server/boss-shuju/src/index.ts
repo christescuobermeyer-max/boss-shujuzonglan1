@@ -1,10 +1,12 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { getEnv } from "./config/env.js";
+import { mobileLoginRoute } from "./routes/mobile-login.js";
 
 export const app = new Hono();
 
 app.get("/healthz", (c) => c.json({ ok: true }));
+app.route("/", mobileLoginRoute);
 
 if (process.env.NODE_ENV !== "test") {
   const env = getEnv();
