@@ -10,7 +10,9 @@ export const mobileLoginRoute = new Hono();
 
 mobileLoginRoute.post("/api/mobile/login", async (c) => {
   const env = getEnv();
-  const body = await c.req.json<{ password?: string }>().catch(() => ({}));
+  const body = (await c.req.json<{ password?: string }>().catch(() => ({}))) as {
+    password?: unknown;
+  };
   const password = typeof body.password === "string" ? body.password.trim() : "";
 
   if (password !== env.mobilePassword) {
@@ -25,3 +27,4 @@ mobileLoginRoute.post("/api/mobile/login", async (c) => {
 
   return c.json({ ok: true });
 });
+

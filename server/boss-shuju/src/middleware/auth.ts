@@ -13,3 +13,4 @@ export const mobileAuthMiddleware = createMiddleware(async (c, next) => {
 
   await next();
 });
+
