@@ -6,3 +6,4 @@ coverage/
 tsconfig.tsbuildinfo
 .playwright-cli/
 *.log
+后端数据库迁移初始需求
