@@ -18,6 +18,6 @@ describe("sealos backend auth", () => {
     expect(sessionSource).toContain("timingSafeEqual");
     expect(loginSource).toContain("/api/mobile/login");
     expect(loginSource).toContain("HttpOnly");
-    expect(loginSource).toContain("SameSite=Lax");
+    expect(loginSource).toContain("SameSite=${sameSite}");
   });
 });

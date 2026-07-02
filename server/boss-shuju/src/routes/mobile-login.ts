@@ -20,9 +20,10 @@ mobileLoginRoute.post("/api/mobile/login", async (c) => {
   }
 
   const token = createMobileSessionToken(env.mobileSessionSecret);
+  const sameSite = env.mobileCookieSameSite;
   c.header(
     "Set-Cookie",
-    `${MOBILE_SESSION_COOKIE}=${encodeURIComponent(token)}; Max-Age=${MOBILE_SESSION_MAX_AGE_SECONDS}; Path=/; HttpOnly; Secure; SameSite=Lax`
+    `${MOBILE_SESSION_COOKIE}=${encodeURIComponent(token)}; Max-Age=${MOBILE_SESSION_MAX_AGE_SECONDS}; Path=/; HttpOnly; Secure; SameSite=${sameSite}`
   );
 
   return c.json({ ok: true });

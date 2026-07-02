@@ -7,3 +7,5 @@ tsconfig.tsbuildinfo
 .playwright-cli/
 *.log
 后端数据库迁移初始需求
+server/boss-shuju/.env
+server/boss-shuju/dist/

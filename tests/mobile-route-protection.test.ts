@@ -7,26 +7,23 @@ function readProjectFile(...parts: string[]) {
 }
 
 describe("mobile route protection", () => {
-  it("defines page-level proxy protection while Sealos owns mobile APIs", () => {
+  it("leaves mobile pages to Sealos API auth and only redirects legacy stats", () => {
     const source = readProjectFile("proxy.ts");
-    const authSource = readProjectFile("lib", "mobile-auth.ts");
 
-    expect(source).toContain("MOBILE_SESSION_COOKIE");
-    expect(authSource).toContain("mobile_dashboard_session");
-    expect(source).toContain("/mobile/:path*");
     expect(source).toContain("/stats");
-    expect(source).toContain('matcher: ["/mobile/:path*", "/stats"]');
+    expect(source).toContain('matcher: ["/stats"]');
+    expect(source).not.toContain("/mobile/:path*");
     expect(source).not.toContain("/api/stats/monthly");
     expect(source).not.toContain("/api/mobile/stats/monthly");
     expect(source).toContain("/mobile/login");
   });
 
-  it("keeps login public while redirecting authenticated users away from the login page", () => {
+  it("keeps login public while redirecting legacy protected pages there", () => {
     const source = readProjectFile("proxy.ts");
 
     expect(source).toContain('pathname === "/mobile/login"');
+    expect(source).toContain("NextResponse.next");
     expect(source).toContain("NextResponse.redirect");
-    expect(source).toContain("/mobile");
   });
 
   it("validates mobile login using the Sealos backend implementation", () => {

@@ -4,6 +4,7 @@ export type ServerEnv = {
   mobilePassword: string;
   mobileSessionSecret: string;
   bossWebOrigin: string;
+  mobileCookieSameSite: "Lax" | "None";
   openApiBases: string[];
   openApiToken: string;
   openApiInsecureTlsBases: string[];
@@ -22,6 +23,10 @@ function parseList(value: string | undefined) {
     .filter(Boolean);
 }
 
+function parseSameSite(value: string | undefined): "Lax" | "None" {
+  return value?.trim().toLowerCase() === "lax" ? "Lax" : "None";
+}
+
 export function getEnv(): ServerEnv {
   return {
     port: Number(process.env.PORT ?? 8789),
@@ -29,6 +34,7 @@ export function getEnv(): ServerEnv {
     mobilePassword: requireEnv("MOBILE_DASHBOARD_PASSWORD"),
     mobileSessionSecret: requireEnv("MOBILE_SESSION_SECRET"),
     bossWebOrigin: requireEnv("BOSS_WEB_ORIGIN"),
+    mobileCookieSameSite: parseSameSite(process.env.MOBILE_COOKIE_SAME_SITE),
     openApiBases: parseList(
       process.env.CHENGSHANG_OPEN_API_BASES ||
         process.env.CHENGSHANG_OPEN_API_BASE
