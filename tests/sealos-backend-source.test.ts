@@ -15,6 +15,7 @@ describe("sealos backend scaffold", () => {
     expect(pkg.dependencies.hono).toBeTruthy();
     expect(pkg.scripts.build).toContain("tsc");
     expect(indexSource).toContain("new Hono");
+    expect(indexSource).toContain("credentialedCorsMiddleware");
     expect(indexSource).toContain("/healthz");
     expect(indexSource).toContain("PORT");
   });
