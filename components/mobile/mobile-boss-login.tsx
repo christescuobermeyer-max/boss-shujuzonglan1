@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { KeyboardEvent, Suspense, useState } from "react";
+import { buildBossApiUrl } from "@/lib/mobile-api-client";
 
 function MobileBossLoginInner() {
   const router = useRouter();
@@ -22,9 +23,10 @@ function MobileBossLoginInner() {
     setError("");
 
     try {
-      const response = await fetch("/api/mobile/login", {
+      const response = await fetch(buildBossApiUrl("/api/mobile/login"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ password: trimmedPassword })
       });
       const result = (await response.json()) as { message?: string };

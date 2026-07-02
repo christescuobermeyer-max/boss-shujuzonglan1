@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { MobileAmountTrendChart } from "@/components/mobile/mobile-boss-charts";
+import { buildBossApiUrl } from "@/lib/mobile-api-client";
 import {
   buildEmptyMobileMonthlyStats,
   buildMobileDashboardData,
@@ -385,7 +386,9 @@ export function MobileBossDashboard() {
     setLoading(true);
     setError("");
 
-    fetch(`/api/mobile/stats/monthly?month=${month}`)
+    fetch(buildBossApiUrl(`/api/mobile/stats/monthly?month=${month}`), {
+      credentials: "include"
+    })
       .then(async (response) => {
         if (response.status === 401) {
           window.location.href = "/mobile/login";
@@ -432,7 +435,9 @@ export function MobileBossDashboard() {
 
     setWorkflowLoading(true);
     setWorkflowError("");
-    fetch("/api/mobile/workflow/daily-monitor")
+    fetch(buildBossApiUrl("/api/mobile/workflow/daily-monitor"), {
+      credentials: "include"
+    })
       .then((response) =>
         parseMobileJsonResponse<WorkflowDailyMonitorPayload>(
           response,
@@ -463,7 +468,9 @@ export function MobileBossDashboard() {
 
     setAftersalesLoading(true);
     setAftersalesError("");
-    fetch(`/api/mobile/aftersales/daily-records?date=${encodeURIComponent(aftersalesDate)}`)
+    fetch(buildBossApiUrl(`/api/mobile/aftersales/daily-records?date=${encodeURIComponent(aftersalesDate)}`), {
+      credentials: "include"
+    })
       .then((response) =>
         parseMobileJsonResponse<AftersalesDailyRecordsPayload>(
           response,
