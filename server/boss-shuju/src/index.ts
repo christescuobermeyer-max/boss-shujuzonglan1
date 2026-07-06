@@ -6,6 +6,7 @@ import { mobileAftersalesRoute } from "./routes/mobile-aftersales.js";
 import { mobileLoginRoute } from "./routes/mobile-login.js";
 import { mobileStatsRoute } from "./routes/mobile-stats.js";
 import { mobileWorkflowRoute } from "./routes/mobile-workflow.js";
+import { recentSignedTerminationRoute } from "./routes/recent-signed-termination.js";
 
 export const app = new Hono();
 
@@ -15,6 +16,7 @@ app.route("/", mobileAftersalesRoute);
 app.route("/", mobileLoginRoute);
 app.route("/", mobileStatsRoute);
 app.route("/", mobileWorkflowRoute);
+app.route("/", recentSignedTerminationRoute);
 
 if (process.env.NODE_ENV !== "test") {
   const env = getEnv();

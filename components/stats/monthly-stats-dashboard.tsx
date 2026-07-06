@@ -5,6 +5,7 @@ import { DailySummarySection } from "@/components/stats/daily-summary-section";
 import { DashboardHeader } from "@/components/stats/dashboard-header";
 import { DashboardMetricsSection } from "@/components/stats/dashboard-metrics-section";
 import { DashboardOverviewSection } from "@/components/stats/dashboard-overview-section";
+import { buildRecentSignedTerminationStatsUrl } from "@/lib/mobile-api-client";
 import {
   getNextAllowedMonth,
   getPreviousMonthValue
@@ -16,7 +17,7 @@ import {
   getCurrentMonthValue
 } from "@/lib/stats/monthly-stats-defaults";
 import { buildOperatorAmountRanking } from "@/lib/stats/operator-amount-ranking";
-import { buildOperatorTerminationRanking } from "@/lib/stats/operator-termination-ranking";
+import type { RecentSignedTerminationStatsResponse } from "@/lib/stats/recent-signed-termination-types";
 import type { StatsMonthlyPayload } from "@/lib/stats/types";
 
 export function MonthlyStatsDashboard() {
@@ -26,6 +27,10 @@ export function MonthlyStatsDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [updateTime, setUpdateTime] = useState("");
+  const [recentSignedTerminationData, setRecentSignedTerminationData] =
+    useState<RecentSignedTerminationStatsResponse | null>(null);
+  const [recentSignedTerminationLoading, setRecentSignedTerminationLoading] = useState(true);
+  const [recentSignedTerminationError, setRecentSignedTerminationError] = useState("");
 
   useEffect(() => {
     let active = true;
@@ -48,6 +53,37 @@ export function MonthlyStatsDashboard() {
       })
       .finally(() => {
         if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [month]);
+
+  useEffect(() => {
+    let active = true;
+    setRecentSignedTerminationLoading(true);
+
+    fetch(buildRecentSignedTerminationStatsUrl(month), { credentials: "include" })
+      .then(async (response) => {
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.message || "新签解约统计加载失败");
+        return result as RecentSignedTerminationStatsResponse;
+      })
+      .then((result) => {
+        if (!active) return;
+        setRecentSignedTerminationData(result);
+        setRecentSignedTerminationError("");
+      })
+      .catch((requestError: unknown) => {
+        if (!active) return;
+        setRecentSignedTerminationError(
+          requestError instanceof Error ? requestError.message : "新签解约统计加载失败"
+        );
+        setRecentSignedTerminationData(null);
+      })
+      .finally(() => {
+        if (active) setRecentSignedTerminationLoading(false);
       });
 
     return () => {
@@ -122,10 +158,6 @@ export function MonthlyStatsDashboard() {
       }),
     [stats.elemeDailyPointAmountTrend, stats.meituanDailyPointAmountTrend]
   );
-  const operatorTerminationTopItems = useMemo(
-    () => buildOperatorTerminationRanking(stats.operatorTerminationTrend),
-    [stats.operatorTerminationTrend]
-  );
   const dailySummaryRows = useMemo(
     () =>
       buildDailySummaryRows({
@@ -192,7 +224,9 @@ export function MonthlyStatsDashboard() {
         salesTopItems={salesTopItems}
         operatorTopItems={operatorTopItems}
         operatorAmountTopItems={operatorAmountTopItems}
-        operatorTerminationTopItems={operatorTerminationTopItems}
+        recentSignedTerminationData={recentSignedTerminationData}
+        recentSignedTerminationLoading={recentSignedTerminationLoading}
+        recentSignedTerminationError={recentSignedTerminationError}
         wuhanMonthlyPointSummary={stats.wuhanMonthlyPointSummary}
         monthlyPointAmount={stats.monthlyPointAmount}
         meituanMonthlyPointAmount={stats.meituanMonthlyPointAmount}

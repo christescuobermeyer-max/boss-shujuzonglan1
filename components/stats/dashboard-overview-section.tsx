@@ -5,13 +5,14 @@ import { ChartPanel } from "@/components/stats/chart-panel";
 import { AmountRankPanel } from "@/components/stats/amount-rank-panel";
 import { CompactAmountTrendChart } from "@/components/charts/compact-amount-trend-chart";
 import { ComparePanel } from "@/components/stats/compare-panel";
-import { CountRankPanel } from "@/components/stats/count-rank-panel";
 import { RankListPanel } from "@/components/stats/rank-list-panel";
+import { RecentSignedTerminationPanel } from "@/components/stats/recent-signed-termination-panel";
 import { ServiceSummaryPanel } from "@/components/stats/service-summary-panel";
 import { useMiddleStripMinHeight } from "@/components/stats/use-middle-strip-min-height";
 import { useSidePanelMinHeight } from "@/components/stats/use-side-panel-min-height";
 import { WuhanOpenedPointStrip } from "@/components/stats/wuhan-opened-point-strip";
 import type { DailyAmountPoint } from "@/lib/stats/daily-total-amount-trend";
+import type { RecentSignedTerminationStatsResponse } from "@/lib/stats/recent-signed-termination-types";
 import type { CityMonthlyPointSummary, TrendItem } from "@/lib/stats/types";
 
 type AmountRankItem = {
@@ -32,7 +33,9 @@ export function DashboardOverviewSection(props: {
   salesTopItems: TrendItem[];
   operatorTopItems: TrendItem[];
   operatorAmountTopItems: AmountRankItem[];
-  operatorTerminationTopItems: AmountRankItem[];
+  recentSignedTerminationData: RecentSignedTerminationStatsResponse | null;
+  recentSignedTerminationLoading: boolean;
+  recentSignedTerminationError: string;
   wuhanMonthlyPointSummary: CityMonthlyPointSummary;
   monthlyPointAmount: number;
   meituanMonthlyPointAmount: number;
@@ -46,9 +49,11 @@ export function DashboardOverviewSection(props: {
   const operatorAmountSignature = props.operatorAmountTopItems
     .map((item) => `${item.name}:${item.value}`)
     .join("|");
-  const operatorTerminationSignature = props.operatorTerminationTopItems
-    .map((item) => `${item.name}:${item.value}`)
-    .join("|");
+  const recentTerminationSignature = props.recentSignedTerminationData
+    ? props.recentSignedTerminationData.operatorStats
+        .map((item) => `${item.operatorName}:${item.count}:${item.twoMonthSignedShopCount}`)
+        .join("|")
+    : `${props.recentSignedTerminationLoading}:${props.recentSignedTerminationError}`;
   const {
     leftPanelRef: summaryPanelRef,
     rightPanelRef: terminationPanelRef,
@@ -64,7 +69,7 @@ export function DashboardOverviewSection(props: {
     salesTopSignature,
     operatorTopSignature,
     operatorAmountSignature,
-    operatorTerminationSignature
+    recentTerminationSignature
   ]);
   const {
     stripRef: wuhanStripRef,
@@ -167,10 +172,10 @@ export function DashboardOverviewSection(props: {
             className="termination-panel-shell"
             style={rightPanelMinHeight ? { minHeight: `${rightPanelMinHeight}px` } : undefined}
           >
-            <CountRankPanel
-              title="运营解约店铺数"
-              subtitle="按运营汇总当月解约店铺数量"
-              items={props.operatorTerminationTopItems}
+            <RecentSignedTerminationPanel
+              data={props.recentSignedTerminationData}
+              loading={props.recentSignedTerminationLoading}
+              error={props.recentSignedTerminationError}
             />
           </div>
           <div ref={rightTrendRef}>

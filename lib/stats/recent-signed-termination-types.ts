@@ -1,0 +1,36 @@
+export type RecentSignedTerminationOperatorStat = {
+  operatorName: string;
+  count: number;
+  twoMonthSignedShopCount: number;
+  terminationRate: number;
+};
+
+export type RecentSignedTerminationStatsResponse = {
+  month: string;
+  signedMonthRange: {
+    startMonth: string;
+    endMonth: string;
+    startDate: string;
+    endDate: string;
+  };
+  twoMonthSignedRange: {
+    startMonth: string;
+    endMonth: string;
+    startDate: string;
+    endDate: string;
+  };
+  totalTerminatedCount: number;
+  twoMonthSignedShopCount: number;
+  operatorCount: number;
+  operatorStats: RecentSignedTerminationOperatorStat[];
+  shops: Array<{
+    id: string;
+    shopName: string;
+    merchantId: string;
+    deliveryPlatform: string;
+    operatorName: string;
+    contractSignedDate: string;
+    terminationDate: string;
+    terminationCooperationDays: number | null;
+  }>;
+};

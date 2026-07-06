@@ -14,8 +14,8 @@
   --green: #52c41a;
   --shadow: 0 14px 32px rgba(14, 32, 61, 0.08);
   --radius: 18px;
-  --font-app: var(--font-geist-sans), "Noto Sans SC", "Microsoft YaHei", sans-serif;
-  --font-num: var(--font-geist-mono), var(--font-geist-sans), monospace;
+  --font-app: "Noto Sans SC", "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+  --font-num: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 }
 
 * {
@@ -1801,6 +1801,93 @@ button {
   font-family: var(--font-num);
   font-variant-numeric: tabular-nums;
   overflow-wrap: anywhere;
+}
+
+.recent-termination-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.recent-termination-summary > div {
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 12px;
+  padding: 10px;
+  background: rgba(248, 250, 252, 0.72);
+}
+
+.recent-termination-summary span {
+  display: block;
+  color: #64748b;
+  font-size: 12px;
+}
+
+.recent-termination-summary strong {
+  display: block;
+  color: #0f172a;
+  font-size: 18px;
+  margin-top: 4px;
+}
+
+.recent-termination-list {
+  display: grid;
+  gap: 9px;
+}
+
+.recent-termination-row {
+  display: grid;
+  grid-template-columns: 28px minmax(72px, 1fr) minmax(130px, 1.4fr);
+  align-items: center;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.86);
+}
+
+.recent-termination-row:last-child {
+  border-bottom: 0;
+}
+
+.recent-termination-rank {
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: rgba(239, 68, 68, 0.1);
+  color: #b91c1c;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.recent-termination-name {
+  color: #0f172a;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recent-termination-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 4px 8px;
+  color: #64748b;
+  font-size: 12px;
+}
+
+.recent-termination-metrics strong {
+  color: #dc2626;
+}
+
+.mini-error {
+  margin-bottom: 10px;
+  border-radius: 10px;
+  padding: 9px 10px;
+  background: rgba(254, 226, 226, 0.8);
+  color: #b91c1c;
+  font-size: 13px;
 }
 
 @keyframes mobile-skeleton-pulse {
