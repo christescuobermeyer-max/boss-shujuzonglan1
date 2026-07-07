@@ -1835,32 +1835,46 @@ button {
   gap: 9px;
 }
 
-.recent-termination-row {
+.recent-termination-table {
   display: grid;
-  grid-template-columns: 28px minmax(72px, 1fr) minmax(130px, 1.4fr);
-  align-items: center;
-  gap: 10px;
-  padding: 9px 0;
-  border-bottom: 1px solid rgba(226, 232, 240, 0.86);
+  gap: 0;
 }
 
-.recent-termination-row:last-child {
+.recent-termination-table-header,
+.recent-termination-table-row {
+  display: grid;
+  grid-template-columns: minmax(82px, 1.25fr) minmax(54px, 0.72fr) minmax(54px, 0.72fr) minmax(58px, 0.8fr);
+  align-items: center;
+  gap: 8px;
+}
+
+.recent-termination-table-header {
+  border-bottom: 1px solid rgba(148, 163, 184, 0.28);
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 0 0 8px;
+}
+
+.recent-termination-table-header span:not(:first-child),
+.recent-termination-table-row span:not(:first-child),
+.recent-termination-table-row strong {
+  text-align: right;
+}
+
+.recent-termination-table-row {
+  min-height: 38px;
+  padding: 9px 0;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.86);
+  color: #334155;
+  font-size: 13px;
+}
+
+.recent-termination-table-row:last-child {
   border-bottom: 0;
 }
 
-.recent-termination-rank {
-  width: 24px;
-  height: 24px;
-  border-radius: 999px;
-  display: grid;
-  place-items: center;
-  background: rgba(239, 68, 68, 0.1);
-  color: #b91c1c;
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.recent-termination-name {
+.recent-termination-operator {
   color: #0f172a;
   font-weight: 700;
   overflow: hidden;
@@ -1868,17 +1882,14 @@ button {
   white-space: nowrap;
 }
 
-.recent-termination-metrics {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 4px 8px;
-  color: #64748b;
-  font-size: 12px;
+.recent-termination-table-row strong {
+  color: #dc2626;
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
 }
 
-.recent-termination-metrics strong {
-  color: #dc2626;
+.recent-termination-rate {
+  color: #b91c1c;
 }
 
 .mini-error {

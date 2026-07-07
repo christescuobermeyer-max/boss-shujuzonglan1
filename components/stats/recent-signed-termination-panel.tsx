@@ -44,17 +44,24 @@ export function RecentSignedTerminationPanel({
         {loading ? (
           <div className="rank-empty">加载中...</div>
         ) : rows.length ? (
-          rows.slice(0, 8).map((item, index) => (
-            <div className="recent-termination-row" key={item.operatorName}>
-              <div className="recent-termination-rank">{index + 1}</div>
-              <div className="recent-termination-name">{item.operatorName}</div>
-              <div className="recent-termination-metrics">
-                <strong>{item.count}家</strong>
-                <span>两个月总数 {item.twoMonthSignedShopCount}</span>
-                <span>解约率 {formatRate(item.terminationRate)}</span>
-              </div>
+          <div className="recent-termination-table">
+            <div className="recent-termination-table-header">
+              <span>运营名称</span>
+              <span>解约数</span>
+              <span>总数</span>
+              <span>解约率</span>
             </div>
-          ))
+            {rows.slice(0, 8).map((item) => (
+              <div className="recent-termination-table-row" key={item.operatorName}>
+                <span className="recent-termination-operator">{item.operatorName}</span>
+                <strong>{item.count}家</strong>
+                <span>{item.twoMonthSignedShopCount}家</span>
+                <strong className="recent-termination-rate">
+                  {formatRate(item.terminationRate)}
+                </strong>
+              </div>
+            ))}
+          </div>
         ) : (
           <div className="rank-empty">暂无新签解约数据</div>
         )}
