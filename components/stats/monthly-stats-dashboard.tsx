@@ -137,10 +137,6 @@ export function MonthlyStatsDashboard() {
     () => buildDailyTotalAmountTrend(stats.wuhanDailyPointAmountTrend),
     [stats.wuhanDailyPointAmountTrend]
   );
-  const terminationTotal = stats.operatorTerminationTrend.reduce(
-    (sum, item) => sum + Number(item.count ?? 0),
-    0
-  );
   const wuhanShopCount = Number(
     stats.salesCityShopTrend.find((item) => item.name === "武汉")?.count ?? 0
   );
@@ -194,7 +190,13 @@ export function MonthlyStatsDashboard() {
         : `¥${stats.monthlyPointAmount.toLocaleString("zh-CN", { maximumFractionDigits: 2 })}`,
       accent: "orange" as const
     },
-    { label: "本月解约数", value: loading ? "..." : terminationTotal, accent: "green" as const },
+    {
+      label: "两个月解约数",
+      value: recentSignedTerminationLoading
+        ? "..."
+        : recentSignedTerminationData?.totalTerminatedCount ?? 0,
+      accent: "green" as const
+    },
     { label: "武汉部开单数", value: loading ? "..." : wuhanShopCount, accent: "orange" as const },
     { label: "宜昌部开单数", value: loading ? "..." : yichangShopCount, accent: "blue" as const }
   ];

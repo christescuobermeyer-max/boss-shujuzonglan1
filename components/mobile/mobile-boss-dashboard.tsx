@@ -11,6 +11,7 @@ import {
   buildMobileDashboardData,
   formatMobileAmount,
   getVisibleDailyRepaymentRows,
+  type MobileKpi,
   type MobileDashboardData,
   type MobileDailyRepaymentRow,
   type MobileMonthlyStatsPayload,
@@ -604,6 +605,30 @@ export function MobileBossDashboard() {
     () => buildMobileDashboardData(stats),
     [stats]
   );
+  const mobileKpis = useMemo<MobileKpi[]>(() => {
+    const recentTerminationKpi: MobileKpi = {
+      label: "两个月解约数",
+      value: recentSignedTerminationLoading
+        ? "..."
+        : String(Number(recentSignedTerminationData?.totalTerminatedCount ?? 0)),
+      accent: "teal"
+    };
+    const insertIndex = dashboardData.kpis.findIndex((item) => item.label === "月总店铺数");
+
+    if (insertIndex < 0) {
+      return [...dashboardData.kpis, recentTerminationKpi];
+    }
+
+    return [
+      ...dashboardData.kpis.slice(0, insertIndex + 1),
+      recentTerminationKpi,
+      ...dashboardData.kpis.slice(insertIndex + 1)
+    ];
+  }, [
+    dashboardData.kpis,
+    recentSignedTerminationData?.totalTerminatedCount,
+    recentSignedTerminationLoading
+  ]);
   const visibleDailyRows = getVisibleDailyRepaymentRows(
     dashboardData.dailyRepaymentRows,
     expanded
@@ -642,7 +667,7 @@ export function MobileBossDashboard() {
       {!loading ? (
         <>
           <section className="mobile-kpi-grid" aria-label="手机关键指标">
-            {dashboardData.kpis.map((item) => (
+            {mobileKpis.map((item) => (
               <article
                 className={`mobile-kpi-card mobile-kpi-${item.accent}${item.prominent ? " mobile-kpi-card-primary" : ""}${isOnlineShopKpi(item.label) ? " mobile-kpi-online" : ""}`}
                 key={item.label}

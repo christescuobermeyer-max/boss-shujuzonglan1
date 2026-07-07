@@ -37,7 +37,8 @@ describe("mobile boss quick view layout source", () => {
     expect(source).toContain("本月武汉回款");
     expect(source).toContain("本月宜昌回款");
     expect(source).toContain("月总店铺数");
-    expect(source).toContain("本月解约数");
+    expect(source).toContain("两个月解约数");
+    expect(source).toContain("totalTerminatedCount");
     expect(source).toContain("美团在线店铺数");
     expect(source).toContain("饿了么在线店铺数");
     expect(source).toContain("最新数据日期");

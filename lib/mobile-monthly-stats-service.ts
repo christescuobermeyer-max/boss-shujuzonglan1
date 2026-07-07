@@ -279,7 +279,6 @@ export async function getMobileMonthlyStatsPayload(
     yichangMonthlyPointAmount: roundAmount(
       monthlyPointSummary.totalAmount - wuhanMonthlyPointSummary.totalAmount
     ),
-    monthlyTerminationCount: filteredTerminationShops.length,
     onlineShopCounts: {
       latestDate: latestOnlineShopSummary.latestDate,
       totalCount: latestOnlineShopSummary.totalCount,

@@ -31,7 +31,6 @@ export type MobileMonthlyStatsPayload = {
   elemeMonthlyPointAmount: number;
   wuhanMonthlyPointAmount: number;
   yichangMonthlyPointAmount: number;
-  monthlyTerminationCount: number;
   onlineShopCounts: MobileOnlineShopCounts;
   dailyAmountTrend: DailyAmountPoint[];
   dailyRepaymentRows: MobileDailyRepaymentRow[];
@@ -98,7 +97,6 @@ export function buildEmptyMobileMonthlyStats(month: string): MobileMonthlyStatsP
     elemeMonthlyPointAmount: 0,
     wuhanMonthlyPointAmount: 0,
     yichangMonthlyPointAmount: 0,
-    monthlyTerminationCount: 0,
     onlineShopCounts: {
       latestDate: "",
       totalCount: 0,
@@ -168,11 +166,6 @@ export function buildMobileDashboardData(
         label: "月总店铺数",
         value: String(Number(payload.monthlyShopCount ?? 0)),
         accent: "blue"
-      },
-      {
-        label: "本月解约数",
-        value: String(Number(payload.monthlyTerminationCount ?? 0)),
-        accent: "teal"
       },
       {
         label: "总在线店铺数",
