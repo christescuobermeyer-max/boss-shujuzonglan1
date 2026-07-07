@@ -1493,6 +1493,64 @@ button {
   text-align: right;
 }
 
+.mobile-termination-table {
+  display: grid;
+  gap: 0;
+  margin-top: 4px;
+}
+
+.mobile-termination-table-head,
+.mobile-termination-table-row {
+  display: grid;
+  grid-template-columns: minmax(76px, 1.25fr) minmax(48px, 0.7fr) minmax(48px, 0.7fr) minmax(54px, 0.8fr);
+  align-items: center;
+  gap: 8px;
+}
+
+.mobile-termination-table-head {
+  border-bottom: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 0 0 8px;
+}
+
+.mobile-termination-table-head span:not(:first-child),
+.mobile-termination-table-row span:not(:first-child),
+.mobile-termination-table-row strong {
+  text-align: right;
+}
+
+.mobile-termination-table-row {
+  min-height: 38px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 13px;
+  padding: 9px 0;
+}
+
+.mobile-termination-table-row:last-child {
+  border-bottom: 0;
+}
+
+.mobile-termination-operator {
+  color: var(--text-strong);
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mobile-termination-table-row strong {
+  color: var(--text-strong);
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
+}
+
+.mobile-termination-rate {
+  color: #dc2626 !important;
+}
+
 .mobile-work-section,
 .mobile-aftersales-section {
   border-color: #dcdfe6;

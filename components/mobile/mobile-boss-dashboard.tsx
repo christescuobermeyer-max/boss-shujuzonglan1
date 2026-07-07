@@ -2,7 +2,10 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { MobileAmountTrendChart } from "@/components/mobile/mobile-boss-charts";
-import { buildBossApiUrl } from "@/lib/mobile-api-client";
+import {
+  buildBossApiUrl,
+  buildRecentSignedTerminationStatsUrl
+} from "@/lib/mobile-api-client";
 import {
   buildEmptyMobileMonthlyStats,
   buildMobileDashboardData,
@@ -33,6 +36,7 @@ import {
 import {
   getCurrentMonthValue
 } from "@/lib/stats/monthly-stats-defaults";
+import type { RecentSignedTerminationStatsResponse } from "@/lib/stats/recent-signed-termination-types";
 
 function formatMonthLabel(value: string) {
   const matched = value.match(/^(\d{4})-(\d{2})$/);
@@ -147,6 +151,68 @@ function RankingList({
           <div className="mobile-empty">暂无排行数据</div>
         )}
       </div>
+    </section>
+  );
+}
+
+function formatTerminationRate(value: number) {
+  return `${Math.round(Number(value ?? 0) * 100)}%`;
+}
+
+function MobileRecentSignedTerminationSection({
+  data,
+  loading,
+  error
+}: {
+  data: RecentSignedTerminationStatsResponse | null;
+  loading: boolean;
+  error: string;
+}) {
+  const rows = data?.operatorStats ?? [];
+
+  return (
+    <section className="mobile-section mobile-recent-termination-section">
+      <div className="mobile-section-head mobile-section-head-row">
+        <div>
+          <h2>解约</h2>
+          <span>
+            {data
+              ? `${data.twoMonthSignedRange.startMonth}-${data.twoMonthSignedRange.endMonth} 签约，本月解约`
+              : "上月 + 本月签约店铺中的解约情况"}
+          </span>
+        </div>
+        <strong className="mobile-work-total">
+          {loading ? "..." : `${formatMobileCount(data?.totalTerminatedCount ?? 0)}家`}
+        </strong>
+      </div>
+
+      {loading ? <div className="mobile-work-loading">数据加载中</div> : null}
+      {!loading && error ? <div className="mobile-work-error">{error}</div> : null}
+
+      {!loading && !error ? (
+        rows.length > 0 ? (
+          <div className="mobile-termination-table">
+            <div className="mobile-termination-table-head">
+              <span>运营名称</span>
+              <span>解约数</span>
+              <span>总数</span>
+              <span>解约率</span>
+            </div>
+            {rows.slice(0, 8).map((item) => (
+              <div className="mobile-termination-table-row" key={item.operatorName}>
+                <span className="mobile-termination-operator">{item.operatorName}</span>
+                <strong>{formatMobileCount(item.count)}</strong>
+                <span>{formatMobileCount(item.twoMonthSignedShopCount)}</span>
+                <strong className="mobile-termination-rate">
+                  {formatTerminationRate(item.terminationRate)}
+                </strong>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="mobile-empty">暂无新签解约数据</div>
+        )
+      ) : null}
     </section>
   );
 }
@@ -380,6 +446,10 @@ export function MobileBossDashboard() {
   const [workflowError, setWorkflowError] = useState("");
   const [aftersalesError, setAftersalesError] = useState("");
   const [aftersalesDate, setAftersalesDate] = useState(initialAftersalesDate);
+  const [recentSignedTerminationData, setRecentSignedTerminationData] =
+    useState<RecentSignedTerminationStatsResponse | null>(null);
+  const [recentSignedTerminationLoading, setRecentSignedTerminationLoading] = useState(true);
+  const [recentSignedTerminationError, setRecentSignedTerminationError] = useState("");
 
   useEffect(() => {
     let active = true;
@@ -428,6 +498,40 @@ export function MobileBossDashboard() {
 
   useEffect(() => {
     setExpanded(false);
+  }, [month]);
+
+  useEffect(() => {
+    let active = true;
+
+    setRecentSignedTerminationLoading(true);
+    setRecentSignedTerminationError("");
+    fetch(buildRecentSignedTerminationStatsUrl(month), {
+      credentials: "include"
+    })
+      .then((response) =>
+        parseMobileJsonResponse<RecentSignedTerminationStatsResponse>(
+          response,
+          "解约统计暂时无法加载，请稍后重试"
+        )
+      )
+      .then((terminationResult) => {
+        if (!active || !terminationResult) return;
+        setRecentSignedTerminationData(terminationResult);
+      })
+      .catch((requestError: unknown) => {
+        if (!active) return;
+        setRecentSignedTerminationError(
+          requestError instanceof Error ? requestError.message : "解约统计暂时无法加载，请稍后重试"
+        );
+        setRecentSignedTerminationData(null);
+      })
+      .finally(() => {
+        if (active) setRecentSignedTerminationLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
   }, [month]);
 
   useEffect(() => {
@@ -585,7 +689,11 @@ export function MobileBossDashboard() {
 
           <RankingList title="销售开单" items={dashboardData.rankings.sales} unit="家" />
           <RankingList title="运营回款" items={dashboardData.rankings.operatorAmount} unit="¥" />
-          <RankingList title="解约" items={dashboardData.rankings.operatorTermination} unit="家" />
+          <MobileRecentSignedTerminationSection
+            data={recentSignedTerminationData}
+            loading={recentSignedTerminationLoading}
+            error={recentSignedTerminationError}
+          />
           <MobileWorkflowProgressSection
             monitor={workflowMonitor}
             loading={workflowLoading}

@@ -52,3 +52,19 @@ describe("recent signed termination dashboard replacement", () => {
     expect(panelSource).toContain("解约率");
   });
 });
+
+describe("recent signed termination mobile replacement", () => {
+  it("手机看板解约板块使用新签解约接口四列表格", () => {
+    const mobileSource = read("components/mobile/mobile-boss-dashboard.tsx");
+    const styleSource = read("app/globals.css");
+
+    expect(mobileSource).toContain("MobileRecentSignedTerminationSection");
+    expect(mobileSource).toContain("buildRecentSignedTerminationStatsUrl");
+    expect(mobileSource).toContain("运营名称");
+    expect(mobileSource).toContain("解约数");
+    expect(mobileSource).toContain("总数");
+    expect(mobileSource).toContain("解约率");
+    expect(mobileSource).not.toContain('<RankingList title="解约"');
+    expect(styleSource).toContain("mobile-termination-table");
+  });
+});
