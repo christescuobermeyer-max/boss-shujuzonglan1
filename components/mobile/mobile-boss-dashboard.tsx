@@ -12,7 +12,6 @@ import {
   buildResourceStatsUrl
 } from "@/lib/mobile-api-client";
 import {
-  buildDailyOrderTrendData,
   buildEmptyMobileMonthlyStats,
   buildMobileDashboardData,
   formatMobileAmount,
@@ -44,7 +43,6 @@ import {
   getCurrentMonthValue
 } from "@/lib/stats/monthly-stats-defaults";
 import type { RecentSignedTerminationStatsResponse } from "@/lib/stats/recent-signed-termination-types";
-import type { BarChartDatum } from "@/components/charts/bar-chart";
 import type { TrendItem } from "@/lib/stats/types";
 
 type AccountGenerationItem = {
@@ -92,10 +90,6 @@ type ResourceStatsPayload = {
   yesterdayEnd: number;
   monthStart: number;
   monthEnd: number;
-};
-
-type MonthlyOrderTrendPayload = {
-  dailyOrderShopTrend?: TrendItem[];
 };
 
 function formatMonthLabel(value: string) {
@@ -718,9 +712,6 @@ export function MobileBossDashboard() {
   const [resourceStatsData, setResourceStatsData] = useState<ResourceStatsPayload | null>(null);
   const [resourceStatsLoading, setResourceStatsLoading] = useState(true);
   const [resourceStatsError, setResourceStatsError] = useState("");
-  const [dailyOrderTrendOverride, setDailyOrderTrendOverride] = useState<BarChartDatum[]>([]);
-  const [dailyOrderTrendLoading, setDailyOrderTrendLoading] = useState(true);
-  const [dailyOrderTrendError, setDailyOrderTrendError] = useState("");
 
   useEffect(() => {
     let active = true;
@@ -769,45 +760,6 @@ export function MobileBossDashboard() {
 
   useEffect(() => {
     setExpanded(false);
-  }, [month]);
-
-  useEffect(() => {
-    let active = true;
-    setDailyOrderTrendOverride([]);
-    setDailyOrderTrendLoading(true);
-    setDailyOrderTrendError("");
-
-    fetch(buildBossApiUrl(`/api/stats/monthly?month=${month}`), {
-      credentials: "include"
-    })
-      .then((response) =>
-        parseMobileJsonResponse<MonthlyOrderTrendPayload>(
-          response,
-          "每日开单趋势暂时无法加载，请稍后重试"
-        )
-      )
-      .then((monthlyResult) => {
-        if (!active || !monthlyResult) return;
-        setDailyOrderTrendOverride(
-          buildDailyOrderTrendData(monthlyResult.dailyOrderShopTrend)
-        );
-      })
-      .catch((requestError: unknown) => {
-        if (!active) return;
-        setDailyOrderTrendOverride([]);
-        setDailyOrderTrendError(
-          requestError instanceof Error
-            ? requestError.message
-            : "每日开单趋势暂时无法加载，请稍后重试"
-        );
-      })
-      .finally(() => {
-        if (active) setDailyOrderTrendLoading(false);
-      });
-
-    return () => {
-      active = false;
-    };
   }, [month]);
 
   useEffect(() => {
@@ -978,10 +930,7 @@ export function MobileBossDashboard() {
     () => buildMobileDashboardData(stats),
     [stats]
   );
-  const displayedDailyOrderTrendData =
-    dailyOrderTrendOverride.length > 0
-      ? dailyOrderTrendOverride
-      : dashboardData.dailyOrderTrendData;
+  const displayedDailyOrderTrendData = dashboardData.dailyOrderTrendData;
   const mobileKpis = useMemo<MobileKpi[]>(() => {
     const recentTerminationKpi: MobileKpi = {
       label: "两个月解约数",
@@ -1072,16 +1021,11 @@ export function MobileBossDashboard() {
               <span>按日查看本月新增开单数</span>
             </div>
 
-            {dailyOrderTrendLoading ? <div className="mobile-work-loading">数据加载中</div> : null}
-            {!dailyOrderTrendLoading && dailyOrderTrendError ? (
-              <div className="mobile-work-error">{dailyOrderTrendError}</div>
-            ) : null}
-
-            {!dailyOrderTrendLoading && !dailyOrderTrendError && displayedDailyOrderTrendData.length > 0 ? (
+            {displayedDailyOrderTrendData.length > 0 ? (
               <MobileOrderTrendChart data={displayedDailyOrderTrendData} />
             ) : null}
 
-            {!dailyOrderTrendLoading && !dailyOrderTrendError && displayedDailyOrderTrendData.length === 0 ? (
+            {displayedDailyOrderTrendData.length === 0 ? (
               <div className="mobile-empty">暂无每日开单数据</div>
             ) : null}
           </section>
