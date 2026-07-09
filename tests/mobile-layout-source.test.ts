@@ -61,11 +61,13 @@ describe("mobile boss quick view layout source", () => {
     expect(source).not.toContain("解约 Top");
   });
 
-  it("loads data from the mobile-only lightweight stats endpoint", () => {
+  it("loads mobile stats and falls back to monthly stats for daily order trend", () => {
     const source = readProjectFile("components", "mobile", "mobile-boss-dashboard.tsx");
 
     expect(source).toContain("/api/mobile/stats/monthly?month=");
-    expect(source).not.toContain("/api/stats/monthly");
+    expect(source).toContain("/api/stats/monthly?month=");
+    expect(source).toContain("setDailyOrderTrendOverride");
+    expect(source).toContain("dailyOrderTrendOverride");
     expect(source).toContain("response.text()");
     expect(source).toContain("JSON.parse");
   });
@@ -116,7 +118,7 @@ describe("mobile boss quick view layout source", () => {
 
     expect(source).toContain("MobileAmountTrendChart");
     expect(source).toContain("MobileOrderTrendChart");
-    expect(source).toContain("<MobileOrderTrendChart data={dashboardData.dailyOrderTrendData}");
+    expect(source).toContain("<MobileOrderTrendChart data={displayedDailyOrderTrendData}");
     expect(source).toContain("echarts-for-react");
     expect(source).toContain("height = 180");
   });

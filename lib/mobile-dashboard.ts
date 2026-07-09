@@ -64,6 +64,16 @@ function hasDailyOrderTrendData(item: TrendItem) {
   return Number(item.count ?? 0) > 0;
 }
 
+export function buildDailyOrderTrendData(items: TrendItem[] | undefined): BarChartDatum[] {
+  return (items ?? [])
+    .filter(hasDailyOrderTrendData)
+    .sort((left, right) => String(left.date ?? "").localeCompare(String(right.date ?? "")))
+    .map((item) => ({
+      label: String(item.date ?? ""),
+      value: Number(item.count ?? 0)
+    }));
+}
+
 function hasDailyRepaymentData(row: MobileDailyRepaymentRow) {
   return (
     Number(row.totalAmount ?? 0) !== 0 ||
@@ -198,13 +208,7 @@ export function buildMobileDashboardData(
     totalAmountTrendData: payload.dailyAmountTrend
       .filter(hasDailyTrendData)
       .sort((left, right) => left.date.localeCompare(right.date)),
-    dailyOrderTrendData: (payload.dailyOrderShopTrend ?? [])
-      .filter(hasDailyOrderTrendData)
-      .sort((left, right) => String(left.date ?? "").localeCompare(String(right.date ?? "")))
-      .map((item) => ({
-        label: String(item.date ?? ""),
-        value: Number(item.count ?? 0)
-      })),
+    dailyOrderTrendData: buildDailyOrderTrendData(payload.dailyOrderShopTrend),
     dailyRepaymentRows: payload.dailyRepaymentRows
       .filter(hasDailyRepaymentData)
       .sort((left, right) => right.date.localeCompare(left.date)),

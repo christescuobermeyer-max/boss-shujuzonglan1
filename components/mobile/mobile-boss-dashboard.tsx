@@ -12,6 +12,7 @@ import {
   buildResourceStatsUrl
 } from "@/lib/mobile-api-client";
 import {
+  buildDailyOrderTrendData,
   buildEmptyMobileMonthlyStats,
   buildMobileDashboardData,
   formatMobileAmount,
@@ -43,6 +44,8 @@ import {
   getCurrentMonthValue
 } from "@/lib/stats/monthly-stats-defaults";
 import type { RecentSignedTerminationStatsResponse } from "@/lib/stats/recent-signed-termination-types";
+import type { BarChartDatum } from "@/components/charts/bar-chart";
+import type { TrendItem } from "@/lib/stats/types";
 
 type AccountGenerationItem = {
   user_id: string;
@@ -89,6 +92,10 @@ type ResourceStatsPayload = {
   yesterdayEnd: number;
   monthStart: number;
   monthEnd: number;
+};
+
+type MonthlyOrderTrendPayload = {
+  dailyOrderShopTrend?: TrendItem[];
 };
 
 function formatMonthLabel(value: string) {
@@ -711,6 +718,7 @@ export function MobileBossDashboard() {
   const [resourceStatsData, setResourceStatsData] = useState<ResourceStatsPayload | null>(null);
   const [resourceStatsLoading, setResourceStatsLoading] = useState(true);
   const [resourceStatsError, setResourceStatsError] = useState("");
+  const [dailyOrderTrendOverride, setDailyOrderTrendOverride] = useState<BarChartDatum[]>([]);
 
   useEffect(() => {
     let active = true;
@@ -759,6 +767,34 @@ export function MobileBossDashboard() {
 
   useEffect(() => {
     setExpanded(false);
+  }, [month]);
+
+  useEffect(() => {
+    let active = true;
+    setDailyOrderTrendOverride([]);
+
+    fetch(buildBossApiUrl(`/api/stats/monthly?month=${month}`), {
+      credentials: "include"
+    })
+      .then((response) =>
+        parseMobileJsonResponse<MonthlyOrderTrendPayload>(
+          response,
+          "每日开单趋势暂时无法加载，请稍后重试"
+        )
+      )
+      .then((monthlyResult) => {
+        if (!active || !monthlyResult) return;
+        setDailyOrderTrendOverride(
+          buildDailyOrderTrendData(monthlyResult.dailyOrderShopTrend)
+        );
+      })
+      .catch(() => {
+        if (active) setDailyOrderTrendOverride([]);
+      });
+
+    return () => {
+      active = false;
+    };
   }, [month]);
 
   useEffect(() => {
@@ -929,6 +965,10 @@ export function MobileBossDashboard() {
     () => buildMobileDashboardData(stats),
     [stats]
   );
+  const displayedDailyOrderTrendData =
+    dailyOrderTrendOverride.length > 0
+      ? dailyOrderTrendOverride
+      : dashboardData.dailyOrderTrendData;
   const mobileKpis = useMemo<MobileKpi[]>(() => {
     const recentTerminationKpi: MobileKpi = {
       label: "两个月解约数",
@@ -1013,13 +1053,13 @@ export function MobileBossDashboard() {
             </section>
           ) : null}
 
-          {dashboardData.dailyOrderTrendData.length > 0 ? (
+          {displayedDailyOrderTrendData.length > 0 ? (
             <section className="mobile-section">
               <div className="mobile-section-head">
                 <h2>每日开单趋势</h2>
                 <span>按日查看本月新增开单数</span>
               </div>
-              <MobileOrderTrendChart data={dashboardData.dailyOrderTrendData} />
+              <MobileOrderTrendChart data={displayedDailyOrderTrendData} />
             </section>
           ) : null}
 
