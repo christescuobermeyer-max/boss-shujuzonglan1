@@ -96,6 +96,9 @@ describe("mobile boss quick view layout source", () => {
     expect(existsSync(filePath("app", "api", "mobile", "resource-stats", "route.ts"))).toBe(false);
     expect(dashboardSource).toContain("MobileResourceStatsSection");
     expect(dashboardSource).toContain("fetch(buildResourceStatsUrl())");
+    expect(dashboardSource).not.toContain(
+      "return Number(rightCounts.today ?? 0) - Number(leftCounts.today ?? 0);\n    })\n    .slice(0, 8);"
+    );
     expect(dashboardSource.indexOf("<MobileResourceStatsSection")).toBeGreaterThan(
       dashboardSource.indexOf("visibleDailyRows.map")
     );

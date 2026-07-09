@@ -363,8 +363,7 @@ function ResourceStatsTable({
       const monthDiff = Number(rightCounts.month ?? 0) - Number(leftCounts.month ?? 0);
       if (monthDiff !== 0) return monthDiff;
       return Number(rightCounts.today ?? 0) - Number(leftCounts.today ?? 0);
-    })
-    .slice(0, 8);
+    });
 
   return (
     <div className="mobile-resource-block">
