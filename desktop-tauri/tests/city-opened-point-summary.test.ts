@@ -106,4 +106,50 @@ describe("city opened point summary", () => {
       elemeAmount: 5
     });
   });
+
+  it("销售城市标签缺失时不按销售姓名归属武汉", () => {
+    const result = buildCityMonthlyPointSummary({
+      cityName: "武汉",
+      start: new Date("2026-04-01T00:00:00+08:00"),
+      end: new Date("2026-05-01T00:00:00+08:00"),
+      shops: [
+        {
+          shopName: "未打标签武汉销售店",
+          merchantId: "mt-untagged",
+          deliveryPlatform: "美团",
+          salesName: "李帅",
+          salesCity: "",
+          entryDate: "2026-04-02T00:00:00+08:00"
+        },
+        {
+          shopName: "已打标签武汉店",
+          merchantId: "mt-tagged",
+          deliveryPlatform: "美团",
+          salesName: "任意",
+          salesCity: "武汉",
+          entryDate: "2026-04-02T00:00:00+08:00"
+        }
+      ],
+      meituanDetails: [
+        {
+          platform: "meituan",
+          businessDateKey: "2026-04-05",
+          merchantId: "mt-untagged",
+          shopName: "未打标签武汉销售店",
+          amountValue: 100
+        },
+        {
+          platform: "meituan",
+          businessDateKey: "2026-04-05",
+          merchantId: "mt-tagged",
+          shopName: "已打标签武汉店",
+          amountValue: 30
+        }
+      ],
+      elemeDetails: []
+    });
+
+    expect(result.totalAmount).toBe(30);
+    expect(result.commissionShopCount).toBe(1);
+  });
 });
