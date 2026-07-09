@@ -44,6 +44,8 @@ describe("mobile boss quick view layout source", () => {
     expect(source).toContain("最新数据日期");
     expect(source).toContain("mobile-kpi-note");
     expect(source).toContain("每日回款趋势");
+    expect(source).toContain("每日开单趋势");
+    expect(source).toContain("dailyOrderTrendData");
     expect(source).toContain("每日回款列表");
     expect(source).toContain("展开本月全部");
     expect(source).toContain("资源统计");
@@ -53,7 +55,6 @@ describe("mobile boss quick view layout source", () => {
     expect(source).toContain("运营回款");
     expect(source).toContain("账号生图");
     expect(source).toContain("解约");
-    expect(source).not.toContain("每日开单趋势");
     expect(source).not.toContain("每日简报");
     expect(source).not.toContain("销售开单 Top");
     expect(source).not.toContain("运营回款 Top");
@@ -108,10 +109,14 @@ describe("mobile boss quick view layout source", () => {
   });
 
   it("uses mobile-specific chart wrappers", () => {
-    const source = readProjectFile("components", "mobile", "mobile-boss-charts.tsx");
+    const source = [
+      readProjectFile("components", "mobile", "mobile-boss-charts.tsx"),
+      readProjectFile("components", "mobile", "mobile-boss-dashboard.tsx")
+    ].join("\n");
 
     expect(source).toContain("MobileAmountTrendChart");
     expect(source).toContain("MobileOrderTrendChart");
+    expect(source).toContain("<MobileOrderTrendChart data={dashboardData.dailyOrderTrendData}");
     expect(source).toContain("echarts-for-react");
     expect(source).toContain("height = 180");
   });

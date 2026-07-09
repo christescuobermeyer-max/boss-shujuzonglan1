@@ -13,7 +13,10 @@ import { resolveMonthRange } from "@/lib/stats/month";
 import { shiftMonthValue } from "@/lib/stats/month-rotation";
 import { buildMonthlyPointSummary } from "@/lib/stats/monthly-point-summary";
 import { buildMonthlyShopCohorts } from "@/lib/stats/monthly-shop-cohorts";
-import { buildNamedCountTrend } from "@/lib/stats/monthly-stats-trends";
+import {
+  buildMonthlySignedShopTrend,
+  buildNamedCountTrend
+} from "@/lib/stats/monthly-stats-trends";
 import { getLatestOnlineShopSummary } from "@/lib/stats/latest-online-shop-service";
 import type { DailyTrendSeries } from "@/lib/stats/daily-trend-series";
 import type { DailyAmountPoint } from "@/lib/stats/daily-total-amount-trend";
@@ -256,8 +259,13 @@ export async function getMobileMonthlyStatsPayload(
     filteredTerminationShops,
     (shop) => String(shop.operatorName ?? "")
   );
+  const dailyOrderShopTrend = buildMonthlySignedShopTrend({
+    start,
+    end,
+    shops: filteredCandidateShops
+  });
   const dailyRepaymentRows = buildDailySummaryRows({
-    dailyOrderShopTrend: [],
+    dailyOrderShopTrend,
     meituanDailyPointShopTrend: meituanTrends.shopCountTrend,
     meituanDailyPointAmountTrend: meituanTrends.totalAmountTrend,
     elemeDailyPointShopTrend: elemeTrends.shopCountTrend,
@@ -286,6 +294,7 @@ export async function getMobileMonthlyStatsPayload(
       elemeCount: latestOnlineShopSummary.elemeCount
     },
     dailyAmountTrend,
+    dailyOrderShopTrend,
     dailyRepaymentRows,
     rankings: {
       sales: buildSalesRanking(

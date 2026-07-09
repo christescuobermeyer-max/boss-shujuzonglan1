@@ -1,5 +1,7 @@
 import type { DailySummaryRow } from "@/lib/stats/daily-summary-rows";
 import type { DailyAmountPoint } from "@/lib/stats/daily-total-amount-trend";
+import type { TrendItem } from "@/lib/stats/types";
+import type { BarChartDatum } from "@/components/charts/bar-chart";
 
 export type MobileKpi = {
   label: string;
@@ -33,6 +35,7 @@ export type MobileMonthlyStatsPayload = {
   yichangMonthlyPointAmount: number;
   onlineShopCounts: MobileOnlineShopCounts;
   dailyAmountTrend: DailyAmountPoint[];
+  dailyOrderShopTrend: TrendItem[];
   dailyRepaymentRows: MobileDailyRepaymentRow[];
   rankings: {
     sales: MobileRankItem[];
@@ -44,6 +47,7 @@ export type MobileMonthlyStatsPayload = {
 export type MobileDashboardData = {
   kpis: MobileKpi[];
   totalAmountTrendData: DailyAmountPoint[];
+  dailyOrderTrendData: BarChartDatum[];
   dailyRepaymentRows: MobileDailyRepaymentRow[];
   rankings: {
     sales: MobileRankItem[];
@@ -54,6 +58,10 @@ export type MobileDashboardData = {
 
 function hasDailyTrendData(item: DailyAmountPoint) {
   return Number(item.value ?? 0) !== 0;
+}
+
+function hasDailyOrderTrendData(item: TrendItem) {
+  return Number(item.count ?? 0) > 0;
 }
 
 function hasDailyRepaymentData(row: MobileDailyRepaymentRow) {
@@ -104,6 +112,7 @@ export function buildEmptyMobileMonthlyStats(month: string): MobileMonthlyStatsP
       elemeCount: 0
     },
     dailyAmountTrend: [],
+    dailyOrderShopTrend: [],
     dailyRepaymentRows: [],
     rankings: {
       sales: [],
@@ -189,6 +198,13 @@ export function buildMobileDashboardData(
     totalAmountTrendData: payload.dailyAmountTrend
       .filter(hasDailyTrendData)
       .sort((left, right) => left.date.localeCompare(right.date)),
+    dailyOrderTrendData: (payload.dailyOrderShopTrend ?? [])
+      .filter(hasDailyOrderTrendData)
+      .sort((left, right) => String(left.date ?? "").localeCompare(String(right.date ?? "")))
+      .map((item) => ({
+        label: String(item.date ?? ""),
+        value: Number(item.count ?? 0)
+      })),
     dailyRepaymentRows: payload.dailyRepaymentRows
       .filter(hasDailyRepaymentData)
       .sort((left, right) => right.date.localeCompare(left.date)),

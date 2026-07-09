@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { MobileAmountTrendChart } from "@/components/mobile/mobile-boss-charts";
+import {
+  MobileAmountTrendChart,
+  MobileOrderTrendChart
+} from "@/components/mobile/mobile-boss-charts";
 import {
   buildAccountGenerationSummaryUrl,
   buildBossApiUrl,
@@ -1007,6 +1010,16 @@ export function MobileBossDashboard() {
                 <span>按日查看本月回款变化</span>
               </div>
               <MobileAmountTrendChart data={dashboardData.totalAmountTrendData} />
+            </section>
+          ) : null}
+
+          {dashboardData.dailyOrderTrendData.length > 0 ? (
+            <section className="mobile-section">
+              <div className="mobile-section-head">
+                <h2>每日开单趋势</h2>
+                <span>按日查看本月新增开单数</span>
+              </div>
+              <MobileOrderTrendChart data={dashboardData.dailyOrderTrendData} />
             </section>
           ) : null}
 
