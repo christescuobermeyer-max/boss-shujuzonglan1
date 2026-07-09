@@ -29,4 +29,23 @@ describe("sealos monthly stats API", () => {
     expect(serviceSource).toContain("onlineShopCounts");
     expect(serviceSource).toContain("未分配");
   });
+
+  it("includes daily order trend in the mobile monthly stats payload", () => {
+    const serviceSource = readFileSync(
+      join(
+        process.cwd(),
+        "server",
+        "boss-shuju",
+        "src",
+        "services",
+        "mobile-monthly-stats-service.ts"
+      ),
+      "utf8"
+    );
+
+    expect(serviceSource).toContain("buildMonthlySignedShopTrend");
+    expect(serviceSource).toContain("const dailyOrderShopTrend = buildMonthlySignedShopTrend({");
+    expect(serviceSource).toContain("dailyOrderShopTrend,");
+    expect(serviceSource).not.toContain("dailyOrderShopTrend: []");
+  });
 });
