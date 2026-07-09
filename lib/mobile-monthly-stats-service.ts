@@ -25,7 +25,7 @@ import type { DailyPointDerivedRow, TrendItem } from "@/lib/stats/types";
 import { DailyPointDetail } from "@/models/daily-point-detail";
 import { Shop } from "@/models/shop";
 
-const CACHE_NAMESPACE = "mobile-stats-monthly";
+const CACHE_NAMESPACE = "mobile-stats-monthly-v2";
 
 type MobileShopStatsRow = {
   contractSignedDate?: Date | string;

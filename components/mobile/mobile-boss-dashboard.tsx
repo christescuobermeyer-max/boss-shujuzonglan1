@@ -719,6 +719,8 @@ export function MobileBossDashboard() {
   const [resourceStatsLoading, setResourceStatsLoading] = useState(true);
   const [resourceStatsError, setResourceStatsError] = useState("");
   const [dailyOrderTrendOverride, setDailyOrderTrendOverride] = useState<BarChartDatum[]>([]);
+  const [dailyOrderTrendLoading, setDailyOrderTrendLoading] = useState(true);
+  const [dailyOrderTrendError, setDailyOrderTrendError] = useState("");
 
   useEffect(() => {
     let active = true;
@@ -772,6 +774,8 @@ export function MobileBossDashboard() {
   useEffect(() => {
     let active = true;
     setDailyOrderTrendOverride([]);
+    setDailyOrderTrendLoading(true);
+    setDailyOrderTrendError("");
 
     fetch(buildBossApiUrl(`/api/stats/monthly?month=${month}`), {
       credentials: "include"
@@ -788,8 +792,17 @@ export function MobileBossDashboard() {
           buildDailyOrderTrendData(monthlyResult.dailyOrderShopTrend)
         );
       })
-      .catch(() => {
-        if (active) setDailyOrderTrendOverride([]);
+      .catch((requestError: unknown) => {
+        if (!active) return;
+        setDailyOrderTrendOverride([]);
+        setDailyOrderTrendError(
+          requestError instanceof Error
+            ? requestError.message
+            : "每日开单趋势暂时无法加载，请稍后重试"
+        );
+      })
+      .finally(() => {
+        if (active) setDailyOrderTrendLoading(false);
       });
 
     return () => {
@@ -1053,15 +1066,25 @@ export function MobileBossDashboard() {
             </section>
           ) : null}
 
-          {displayedDailyOrderTrendData.length > 0 ? (
-            <section className="mobile-section">
-              <div className="mobile-section-head">
-                <h2>每日开单趋势</h2>
-                <span>按日查看本月新增开单数</span>
-              </div>
+          <section className="mobile-section">
+            <div className="mobile-section-head">
+              <h2>每日开单趋势</h2>
+              <span>按日查看本月新增开单数</span>
+            </div>
+
+            {dailyOrderTrendLoading ? <div className="mobile-work-loading">数据加载中</div> : null}
+            {!dailyOrderTrendLoading && dailyOrderTrendError ? (
+              <div className="mobile-work-error">{dailyOrderTrendError}</div>
+            ) : null}
+
+            {!dailyOrderTrendLoading && !dailyOrderTrendError && displayedDailyOrderTrendData.length > 0 ? (
               <MobileOrderTrendChart data={displayedDailyOrderTrendData} />
-            </section>
-          ) : null}
+            ) : null}
+
+            {!dailyOrderTrendLoading && !dailyOrderTrendError && displayedDailyOrderTrendData.length === 0 ? (
+              <div className="mobile-empty">暂无每日开单数据</div>
+            ) : null}
+          </section>
 
           {dashboardData.dailyRepaymentRows.length > 0 ? (
             <section className="mobile-section">

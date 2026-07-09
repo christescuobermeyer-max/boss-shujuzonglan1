@@ -123,6 +123,15 @@ describe("mobile boss quick view layout source", () => {
     expect(source).toContain("height = 180");
   });
 
+  it("keeps the daily order trend section visible while data loads or is empty", () => {
+    const source = readProjectFile("components", "mobile", "mobile-boss-dashboard.tsx");
+
+    expect(source).toContain("dailyOrderTrendLoading");
+    expect(source).toContain("dailyOrderTrendError");
+    expect(source).toContain("暂无每日开单数据");
+    expect(source).not.toContain("{displayedDailyOrderTrendData.length > 0 ? (");
+  });
+
   it("adds mobile-prefixed CSS without rewriting desktop dashboard shells", () => {
     const source = readProjectFile("app", "globals.css");
 
