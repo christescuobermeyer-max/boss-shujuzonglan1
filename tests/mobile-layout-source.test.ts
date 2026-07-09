@@ -46,6 +46,9 @@ describe("mobile boss quick view layout source", () => {
     expect(source).toContain("每日回款趋势");
     expect(source).toContain("每日回款列表");
     expect(source).toContain("展开本月全部");
+    expect(source).toContain("资源统计");
+    expect(source).toContain("资源账号录入统计");
+    expect(source).toContain("销售跟进统计");
     expect(source).toContain("销售开单");
     expect(source).toContain("运营回款");
     expect(source).toContain("账号生图");
@@ -78,6 +81,26 @@ describe("mobile boss quick view layout source", () => {
     );
     expect(dashboardSource.indexOf("<MobileAccountGenerationSection")).toBeLessThan(
       dashboardSource.indexOf("<MobileRecentSignedTerminationSection")
+    );
+  });
+
+  it("loads direct resource stats between daily repayment and sales ranking", () => {
+    const dashboardSource = readProjectFile("components", "mobile", "mobile-boss-dashboard.tsx");
+    const clientSource = readProjectFile("lib", "mobile-api-client.ts");
+
+    expect(clientSource).toContain("buildResourceStatsUrl");
+    expect(clientSource).toContain("https://gw.hbcsch.pw/api/store-resources/stats/public-users");
+    expect(clientSource).not.toContain("https://gw.hbcsch.pw/api/store-resources/stats/users");
+    expect(clientSource).not.toContain("buildResourceStatsHeaders");
+    expect(clientSource).not.toContain("NEXT_PUBLIC_STORE_RESOURCES_ADMIN_TOKEN");
+    expect(existsSync(filePath("app", "api", "mobile", "resource-stats", "route.ts"))).toBe(false);
+    expect(dashboardSource).toContain("MobileResourceStatsSection");
+    expect(dashboardSource).toContain("fetch(buildResourceStatsUrl())");
+    expect(dashboardSource.indexOf("<MobileResourceStatsSection")).toBeGreaterThan(
+      dashboardSource.indexOf("visibleDailyRows.map")
+    );
+    expect(dashboardSource.indexOf("<MobileResourceStatsSection")).toBeLessThan(
+      dashboardSource.indexOf('<RankingList title="销售开单"')
     );
   });
 

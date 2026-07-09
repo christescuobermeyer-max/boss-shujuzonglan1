@@ -15,3 +15,7 @@ export function buildRecentSignedTerminationStatsUrl(month: string) {
 export function buildAccountGenerationSummaryUrl() {
   return "https://gw.hbcsch.pw/api/admin/account-generation-summary";
 }
+
+export function buildResourceStatsUrl() {
+  return "https://gw.hbcsch.pw/api/store-resources/stats/public-users";
+}

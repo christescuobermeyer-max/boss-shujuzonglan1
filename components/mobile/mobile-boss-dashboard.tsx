@@ -5,7 +5,8 @@ import { MobileAmountTrendChart } from "@/components/mobile/mobile-boss-charts";
 import {
   buildAccountGenerationSummaryUrl,
   buildBossApiUrl,
-  buildRecentSignedTerminationStatsUrl
+  buildRecentSignedTerminationStatsUrl,
+  buildResourceStatsUrl
 } from "@/lib/mobile-api-client";
 import {
   buildEmptyMobileMonthlyStats,
@@ -55,6 +56,36 @@ type AccountGenerationSummaryPayload = {
   month_start: string;
   month_end: string;
   accounts: AccountGenerationItem[];
+};
+
+type ResourceAccountStats = {
+  accountId: string;
+  username: string;
+  todayCreatedCount: number;
+  yesterdayCreatedCount: number;
+  monthCreatedCount: number;
+  totalCreatedCount: number;
+};
+
+type ResourceSalesStats = {
+  accountId: string;
+  username: string;
+  todayFollowCount: number;
+  yesterdayFollowCount: number;
+  monthFollowCount: number;
+  totalFollowCount: number;
+};
+
+type ResourceStatsPayload = {
+  resourceAccounts: ResourceAccountStats[];
+  sales: ResourceSalesStats[];
+  timezone: "Asia/Shanghai" | string;
+  todayStart: number;
+  todayEnd: number;
+  yesterdayStart: number;
+  yesterdayEnd: number;
+  monthStart: number;
+  monthEnd: number;
 };
 
 function formatMonthLabel(value: string) {
@@ -308,6 +339,136 @@ function MobileAccountGenerationSection({
   );
 }
 
+function ResourceStatsTable({
+  title,
+  rows,
+  emptyText,
+  getCounts
+}: {
+  title: string;
+  rows: Array<ResourceAccountStats | ResourceSalesStats>;
+  emptyText: string;
+  getCounts: (item: ResourceAccountStats | ResourceSalesStats) => {
+    today: number;
+    yesterday: number;
+    month: number;
+    total: number;
+  };
+}) {
+  const sortedRows = rows
+    .slice()
+    .sort((left, right) => {
+      const leftCounts = getCounts(left);
+      const rightCounts = getCounts(right);
+      const monthDiff = Number(rightCounts.month ?? 0) - Number(leftCounts.month ?? 0);
+      if (monthDiff !== 0) return monthDiff;
+      return Number(rightCounts.today ?? 0) - Number(leftCounts.today ?? 0);
+    })
+    .slice(0, 8);
+
+  return (
+    <div className="mobile-resource-block">
+      <h3>{title}</h3>
+      {sortedRows.length > 0 ? (
+        <div className="mobile-resource-table">
+          <div className="mobile-resource-table-head">
+            <span>账号</span>
+            <span>今日</span>
+            <span>昨日</span>
+            <span>本月</span>
+            <span>总数</span>
+          </div>
+          {sortedRows.map((item) => {
+            const counts = getCounts(item);
+            return (
+              <div className="mobile-resource-table-row" key={`${title}-${item.accountId}`}>
+                <span className="mobile-resource-name">{item.username || "未命名账号"}</span>
+                <strong>{formatMobileCount(counts.today)}</strong>
+                <span>{formatMobileCount(counts.yesterday)}</span>
+                <strong>{formatMobileCount(counts.month)}</strong>
+                <span>{formatMobileCount(counts.total)}</span>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="mobile-empty">{emptyText}</div>
+      )}
+    </div>
+  );
+}
+
+function MobileResourceStatsSection({
+  data,
+  loading,
+  error
+}: {
+  data: ResourceStatsPayload | null;
+  loading: boolean;
+  error: string;
+}) {
+  const resourceAccounts = data?.resourceAccounts ?? [];
+  const sales = data?.sales ?? [];
+  const monthCreatedTotal = resourceAccounts.reduce(
+    (sum, item) => sum + Number(item.monthCreatedCount ?? 0),
+    0
+  );
+  const monthFollowTotal = sales.reduce(
+    (sum, item) => sum + Number(item.monthFollowCount ?? 0),
+    0
+  );
+
+  return (
+    <section className="mobile-section mobile-resource-section">
+      <div className="mobile-section-head mobile-section-head-row">
+        <div>
+          <h2>资源统计</h2>
+          <span>今日 / 昨日 / 本月 / 总数，按账号展示</span>
+        </div>
+        <strong className="mobile-work-total">
+          {loading ? "..." : `${formatMobileCount(monthCreatedTotal + monthFollowTotal)}`}
+        </strong>
+      </div>
+
+      {loading ? <div className="mobile-work-loading">数据加载中</div> : null}
+      {!loading && error ? <div className="mobile-work-error">{error}</div> : null}
+
+      {!loading && !error ? (
+        <div className="mobile-resource-stack">
+          <ResourceStatsTable
+            title="资源账号录入统计"
+            rows={resourceAccounts}
+            emptyText="暂无资源账号录入数据"
+            getCounts={(item) => {
+              const account = item as ResourceAccountStats;
+              return {
+                today: Number(account.todayCreatedCount ?? 0),
+                yesterday: Number(account.yesterdayCreatedCount ?? 0),
+                month: Number(account.monthCreatedCount ?? 0),
+                total: Number(account.totalCreatedCount ?? 0)
+              };
+            }}
+          />
+          <ResourceStatsTable
+            title="销售跟进统计"
+            rows={sales}
+            emptyText="暂无销售跟进数据"
+            getCounts={(item) => {
+              const sale = item as ResourceSalesStats;
+              return {
+                today: Number(sale.todayFollowCount ?? 0),
+                yesterday: Number(sale.yesterdayFollowCount ?? 0),
+                month: Number(sale.monthFollowCount ?? 0),
+                total: Number(sale.totalFollowCount ?? 0)
+              };
+            }}
+          />
+        </div>
+      ) : null}
+    </section>
+  );
+}
+
 function DailyRepaymentCard({ row }: { row: MobileDailyRepaymentRow }) {
   return (
     <article className="mobile-daily-card">
@@ -545,6 +706,9 @@ export function MobileBossDashboard() {
     useState<AccountGenerationSummaryPayload | null>(null);
   const [accountGenerationLoading, setAccountGenerationLoading] = useState(true);
   const [accountGenerationError, setAccountGenerationError] = useState("");
+  const [resourceStatsData, setResourceStatsData] = useState<ResourceStatsPayload | null>(null);
+  const [resourceStatsLoading, setResourceStatsLoading] = useState(true);
+  const [resourceStatsError, setResourceStatsError] = useState("");
 
   useEffect(() => {
     let active = true;
@@ -654,6 +818,38 @@ export function MobileBossDashboard() {
       })
       .finally(() => {
         if (active) setAccountGenerationLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+
+    setResourceStatsLoading(true);
+    setResourceStatsError("");
+    fetch(buildResourceStatsUrl())
+      .then((response) =>
+        parseMobileJsonResponse<ResourceStatsPayload>(
+          response,
+          "资源统计暂时无法加载，请稍后重试"
+        )
+      )
+      .then((resourceResult) => {
+        if (!active || !resourceResult) return;
+        setResourceStatsData(resourceResult);
+      })
+      .catch((requestError: unknown) => {
+        if (!active) return;
+        setResourceStatsError(
+          requestError instanceof Error ? requestError.message : "资源统计暂时无法加载，请稍后重试"
+        );
+        setResourceStatsData(null);
+      })
+      .finally(() => {
+        if (active) setResourceStatsLoading(false);
       });
 
     return () => {
@@ -838,6 +1034,11 @@ export function MobileBossDashboard() {
             </section>
           ) : null}
 
+          <MobileResourceStatsSection
+            data={resourceStatsData}
+            loading={resourceStatsLoading}
+            error={resourceStatsError}
+          />
           <RankingList title="销售开单" items={dashboardData.rankings.sales} unit="家" />
           <RankingList title="运营回款" items={dashboardData.rankings.operatorAmount} unit="¥" />
           <MobileAccountGenerationSection
