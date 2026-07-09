@@ -48,6 +48,7 @@ describe("mobile boss quick view layout source", () => {
     expect(source).toContain("展开本月全部");
     expect(source).toContain("销售开单");
     expect(source).toContain("运营回款");
+    expect(source).toContain("账号生图");
     expect(source).toContain("解约");
     expect(source).not.toContain("每日开单趋势");
     expect(source).not.toContain("每日简报");
@@ -63,6 +64,21 @@ describe("mobile boss quick view layout source", () => {
     expect(source).not.toContain("/api/stats/monthly");
     expect(source).toContain("response.text()");
     expect(source).toContain("JSON.parse");
+  });
+
+  it("loads public account generation stats between operator repayment and termination", () => {
+    const dashboardSource = readProjectFile("components", "mobile", "mobile-boss-dashboard.tsx");
+    const clientSource = readProjectFile("lib", "mobile-api-client.ts");
+
+    expect(clientSource).toContain("buildAccountGenerationSummaryUrl");
+    expect(clientSource).toContain("https://gw.hbcsch.pw/api/admin/account-generation-summary");
+    expect(dashboardSource).toContain("MobileAccountGenerationSection");
+    expect(dashboardSource.indexOf('<RankingList title="运营回款"')).toBeLessThan(
+      dashboardSource.indexOf("<MobileAccountGenerationSection")
+    );
+    expect(dashboardSource.indexOf("<MobileAccountGenerationSection")).toBeLessThan(
+      dashboardSource.indexOf("<MobileRecentSignedTerminationSection")
+    );
   });
 
   it("uses mobile-specific chart wrappers", () => {

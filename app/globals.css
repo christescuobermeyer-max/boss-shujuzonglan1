@@ -1551,6 +1551,66 @@ button {
   color: #dc2626 !important;
 }
 
+.mobile-generation-section {
+  border-color: #dcdfe6;
+  background:
+    linear-gradient(180deg, #ffffff 0%, #fbfcff 100%);
+}
+
+.mobile-generation-table {
+  display: grid;
+  gap: 0;
+  margin-top: 4px;
+}
+
+.mobile-generation-table-head,
+.mobile-generation-table-row {
+  display: grid;
+  grid-template-columns: minmax(96px, 1fr) minmax(62px, 0.7fr) minmax(68px, 0.8fr);
+  align-items: center;
+  gap: 8px;
+}
+
+.mobile-generation-table-head {
+  border-bottom: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 0 0 8px;
+}
+
+.mobile-generation-table-head span:not(:first-child),
+.mobile-generation-table-row span:not(:first-child),
+.mobile-generation-table-row strong {
+  text-align: right;
+}
+
+.mobile-generation-table-row {
+  min-height: 38px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 13px;
+  padding: 9px 0;
+}
+
+.mobile-generation-table-row:last-child {
+  border-bottom: 0;
+}
+
+.mobile-generation-account {
+  color: var(--text-strong);
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mobile-generation-table-row strong {
+  color: var(--text-strong);
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
+}
+
 .mobile-work-section,
 .mobile-aftersales-section {
   border-color: #dcdfe6;

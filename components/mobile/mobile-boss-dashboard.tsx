@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { MobileAmountTrendChart } from "@/components/mobile/mobile-boss-charts";
 import {
+  buildAccountGenerationSummaryUrl,
   buildBossApiUrl,
   buildRecentSignedTerminationStatsUrl
 } from "@/lib/mobile-api-client";
@@ -38,6 +39,23 @@ import {
   getCurrentMonthValue
 } from "@/lib/stats/monthly-stats-defaults";
 import type { RecentSignedTerminationStatsResponse } from "@/lib/stats/recent-signed-termination-types";
+
+type AccountGenerationItem = {
+  user_id: string;
+  display_name: string;
+  role: "admin" | "user" | string;
+  is_active: boolean;
+  created_at: string | null;
+  last_login_at: string | null;
+  total_count: number;
+  month_count: number;
+};
+
+type AccountGenerationSummaryPayload = {
+  month_start: string;
+  month_end: string;
+  accounts: AccountGenerationItem[];
+};
 
 function formatMonthLabel(value: string) {
   const matched = value.match(/^(\d{4})-(\d{2})$/);
@@ -77,7 +95,8 @@ function getErrorMessage(result: unknown) {
       : "";
   if (detailMessage) return detailMessage;
   const message = responseObject.message;
-  return typeof message === "string" ? message : "";
+  if (typeof message === "string") return message;
+  return typeof responseObject.error === "string" ? responseObject.error : "";
 }
 
 async function parseMobileJsonResponse<T>(
@@ -212,6 +231,77 @@ function MobileRecentSignedTerminationSection({
           </div>
         ) : (
           <div className="mobile-empty">暂无新签解约数据</div>
+        )
+      ) : null}
+    </section>
+  );
+}
+
+function formatGenerationPeriod(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  return new Intl.DateTimeFormat("zh-CN", {
+    month: "numeric",
+    timeZone: "Asia/Shanghai"
+  }).format(date);
+}
+
+function MobileAccountGenerationSection({
+  data,
+  loading,
+  error
+}: {
+  data: AccountGenerationSummaryPayload | null;
+  loading: boolean;
+  error: string;
+}) {
+  const accounts = data?.accounts ?? [];
+  const rows = accounts
+    .slice()
+    .sort((left, right) => {
+      const monthDiff = Number(right.month_count ?? 0) - Number(left.month_count ?? 0);
+      if (monthDiff !== 0) return monthDiff;
+      return Number(right.total_count ?? 0) - Number(left.total_count ?? 0);
+    })
+    .slice(0, 8);
+  const monthTotal = accounts.reduce((sum, item) => sum + Number(item.month_count ?? 0), 0);
+  const periodLabel = data?.month_start ? `${formatGenerationPeriod(data.month_start)}生图统计` : "本月生图统计";
+
+  return (
+    <section className="mobile-section mobile-generation-section">
+      <div className="mobile-section-head mobile-section-head-row">
+        <div>
+          <h2>账号生图</h2>
+          <span>{periodLabel} · 按账号展示本月与累计生图数</span>
+        </div>
+        <strong className="mobile-work-total">
+          {loading ? "..." : `${formatMobileCount(monthTotal)}张`}
+        </strong>
+      </div>
+
+      {loading ? <div className="mobile-work-loading">数据加载中</div> : null}
+      {!loading && error ? <div className="mobile-work-error">{error}</div> : null}
+
+      {!loading && !error ? (
+        rows.length > 0 ? (
+          <div className="mobile-generation-table">
+            <div className="mobile-generation-table-head">
+              <span>账号</span>
+              <span>本月</span>
+              <span>累计</span>
+            </div>
+            {rows.map((item) => (
+              <div className="mobile-generation-table-row" key={item.user_id}>
+                <span className="mobile-generation-account">
+                  {item.display_name || "未命名账号"}
+                </span>
+                <strong>{formatMobileCount(item.month_count)}张</strong>
+                <span>{formatMobileCount(item.total_count)}张</span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="mobile-empty">暂无账号生图数据</div>
         )
       ) : null}
     </section>
@@ -451,6 +541,10 @@ export function MobileBossDashboard() {
     useState<RecentSignedTerminationStatsResponse | null>(null);
   const [recentSignedTerminationLoading, setRecentSignedTerminationLoading] = useState(true);
   const [recentSignedTerminationError, setRecentSignedTerminationError] = useState("");
+  const [accountGenerationData, setAccountGenerationData] =
+    useState<AccountGenerationSummaryPayload | null>(null);
+  const [accountGenerationLoading, setAccountGenerationLoading] = useState(true);
+  const [accountGenerationError, setAccountGenerationError] = useState("");
 
   useEffect(() => {
     let active = true;
@@ -534,6 +628,38 @@ export function MobileBossDashboard() {
       active = false;
     };
   }, [month]);
+
+  useEffect(() => {
+    let active = true;
+
+    setAccountGenerationLoading(true);
+    setAccountGenerationError("");
+    fetch(buildAccountGenerationSummaryUrl())
+      .then((response) =>
+        parseMobileJsonResponse<AccountGenerationSummaryPayload>(
+          response,
+          "账号生图统计暂时无法加载，请稍后重试"
+        )
+      )
+      .then((generationResult) => {
+        if (!active || !generationResult) return;
+        setAccountGenerationData(generationResult);
+      })
+      .catch((requestError: unknown) => {
+        if (!active) return;
+        setAccountGenerationError(
+          requestError instanceof Error ? requestError.message : "账号生图统计暂时无法加载，请稍后重试"
+        );
+        setAccountGenerationData(null);
+      })
+      .finally(() => {
+        if (active) setAccountGenerationLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -714,6 +840,11 @@ export function MobileBossDashboard() {
 
           <RankingList title="销售开单" items={dashboardData.rankings.sales} unit="家" />
           <RankingList title="运营回款" items={dashboardData.rankings.operatorAmount} unit="¥" />
+          <MobileAccountGenerationSection
+            data={accountGenerationData}
+            loading={accountGenerationLoading}
+            error={accountGenerationError}
+          />
           <MobileRecentSignedTerminationSection
             data={recentSignedTerminationData}
             loading={recentSignedTerminationLoading}

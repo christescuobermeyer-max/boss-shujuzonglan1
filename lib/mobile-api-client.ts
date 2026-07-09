@@ -11,3 +11,7 @@ export function buildRecentSignedTerminationStatsUrl(month: string) {
     `/api/termination/recent-signed-stats?month=${encodeURIComponent(month)}`
   );
 }
+
+export function buildAccountGenerationSummaryUrl() {
+  return "https://gw.hbcsch.pw/api/admin/account-generation-summary";
+}
