@@ -6,6 +6,7 @@ import {
   buildWorkflowProgressRows,
   filterAftersalesRecords,
   formatOpenApiDateTime,
+  getAftersalesShopCounts,
   getRecentAftersalesRecords,
   type AftersalesDailyRecordsPayload
 } from "@/lib/mobile-work-boards";
@@ -237,5 +238,65 @@ describe("mobile work board helpers", () => {
     expect(filterAftersalesRecords(payload, "冯姗姗").map((item) => item.shopName)).toEqual([
       "冯姗姗店"
     ]);
+  });
+
+  it("按商家编号优先并按店铺名称回退统计去重店铺数", () => {
+    const createRecord = (
+      operatorName: string,
+      merchantId: string,
+      shopName: string,
+      createdAt: string
+    ) => ({
+      shopName,
+      merchantId,
+      deliveryPlatform: "美团餐饮",
+      shopStatus: "正常",
+      actionType: "phone_followup",
+      actionLabel: "电话跟进",
+      operatorName,
+      note: "已沟通",
+      createdAt
+    });
+    const payload: AftersalesDailyRecordsPayload = {
+      dateKey: "2026-06-25",
+      totalCount: 6,
+      generatedAt: "2026-06-25T03:25:00.000Z",
+      employees: [
+        {
+          operatorName: "梁智",
+          actionCount: 2,
+          shopCount: 1,
+          records: [
+            createRecord("梁智", "100", "同一家店", "2026-06-25T01:00:00.000Z"),
+            createRecord("梁智", "100", "同一家店", "2026-06-25T02:00:00.000Z")
+          ]
+        },
+        {
+          operatorName: "朱雯雯",
+          actionCount: 1,
+          shopCount: 1,
+          records: [
+            createRecord("朱雯雯", "100", "跨人员同店", "2026-06-25T03:00:00.000Z")
+          ]
+        },
+        {
+          operatorName: "冯姗姗",
+          actionCount: 3,
+          shopCount: 1,
+          records: [
+            createRecord("冯姗姗", "", " 名称店 ", "2026-06-25T04:00:00.000Z"),
+            createRecord("冯姗姗", "", "名称店", "2026-06-25T05:00:00.000Z"),
+            createRecord("冯姗姗", "", "", "2026-06-25T06:00:00.000Z")
+          ]
+        }
+      ]
+    };
+
+    expect(getAftersalesShopCounts(payload)).toEqual({
+      all: 2,
+      梁智: 1,
+      朱雯雯: 1,
+      冯姗姗: 1
+    });
   });
 });

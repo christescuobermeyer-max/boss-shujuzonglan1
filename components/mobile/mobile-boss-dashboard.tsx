@@ -29,6 +29,7 @@ import {
   buildWorkflowProgressRows,
   filterAftersalesRecords,
   formatOpenApiDateTime,
+  getAftersalesShopCounts,
   getDefaultAftersalesDateKey,
   getShanghaiDateKey,
   type AftersalesDailyRecordsPayload,
@@ -614,6 +615,7 @@ function MobileAftersalesDailySection({
   const [selectedPerson, setSelectedPerson] =
     useState<AftersalesPersonFilter>("all");
   const filteredRecords = filterAftersalesRecords(daily, selectedPerson);
+  const shopCounts = getAftersalesShopCounts(daily);
 
   return (
     <section className="mobile-section mobile-aftersales-section">
@@ -643,7 +645,10 @@ function MobileAftersalesDailySection({
             onClick={() => setSelectedPerson(filter.value)}
             key={filter.value}
           >
-            {filter.label}
+            <span className="mobile-aftersales-person-count">
+              {formatMobileCount(shopCounts[filter.value])}店
+            </span>
+            <span className="mobile-aftersales-person-label">{filter.label}</span>
           </button>
         ))}
       </div>

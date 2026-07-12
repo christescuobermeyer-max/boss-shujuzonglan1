@@ -49,6 +49,8 @@ export const AFTERSALES_PERSON_FILTERS = [
 export type AftersalesPersonFilter =
   (typeof AFTERSALES_PERSON_FILTERS)[number]["value"];
 
+export type AftersalesShopCounts = Record<AftersalesPersonFilter, number>;
+
 function normalizeName(value: unknown) {
   const name = String(value ?? "").trim();
   return name || "未分配";
@@ -176,6 +178,29 @@ export function filterAftersalesRecords(
   return person === "all"
     ? records
     : records.filter((record) => record.operatorName === person);
+}
+
+function getAftersalesShopKey(record: AftersalesRecord) {
+  const merchantId = String(record.merchantId ?? "").trim();
+  if (merchantId) return `merchant:${merchantId}`;
+
+  const shopName = String(record.shopName ?? "").trim();
+  return shopName ? `name:${shopName}` : "";
+}
+
+function countUniqueAftersalesShops(records: AftersalesRecord[]) {
+  return new Set(records.map(getAftersalesShopKey).filter(Boolean)).size;
+}
+
+export function getAftersalesShopCounts(
+  payload: AftersalesDailyRecordsPayload
+): AftersalesShopCounts {
+  return Object.fromEntries(
+    AFTERSALES_PERSON_FILTERS.map(({ value }) => [
+      value,
+      countUniqueAftersalesShops(filterAftersalesRecords(payload, value))
+    ])
+  ) as AftersalesShopCounts;
 }
 
 export function formatOpenApiDateTime(value: string) {

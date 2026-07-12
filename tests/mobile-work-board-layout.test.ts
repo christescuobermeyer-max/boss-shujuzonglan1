@@ -69,13 +69,19 @@ describe("mobile work board layout", () => {
 
     expect(source).toContain("AFTERSALES_PERSON_FILTERS");
     expect(source).toContain("filterAftersalesRecords");
+    expect(source).toContain("getAftersalesShopCounts");
+    expect(source).toContain("shopCounts[filter.value]");
     expect(source).toContain('useState<AftersalesPersonFilter>("all")');
     expect(source).toContain("aria-pressed={selectedPerson === filter.value}");
+    expect(source).toContain('className="mobile-aftersales-person-count"');
+    expect(source).toContain('className="mobile-aftersales-person-label"');
     expect(source).toContain("该人员当日暂无售后记录");
     expect(source).toContain("所选日期暂无售后记录");
     expect(source).toContain("MobileWorkflowProgressSection");
     expect(source).toContain("buildWorkflowProgressRows");
     expect(styles).toContain(".mobile-aftersales-person-filter");
     expect(styles).toContain(".mobile-aftersales-person-button");
+    expect(styles).toContain(".mobile-aftersales-person-count");
+    expect(styles).toContain(".mobile-aftersales-person-label");
   });
 });
