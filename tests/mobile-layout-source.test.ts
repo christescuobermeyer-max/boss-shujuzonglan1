@@ -14,7 +14,9 @@ describe("mobile boss quick view layout source", () => {
   it("defines mobile login, dashboard, and lightweight stats routes", () => {
     expect(existsSync(filePath("app", "mobile", "login", "page.tsx"))).toBe(true);
     expect(existsSync(filePath("app", "mobile", "page.tsx"))).toBe(true);
-    expect(existsSync(filePath("app", "api", "mobile", "stats", "monthly", "route.ts"))).toBe(true);
+    expect(
+      existsSync(filePath("server", "boss-shuju", "src", "routes", "mobile-stats.ts"))
+    ).toBe(true);
   });
 
   it("renders the mobile login shell with password flow copy", () => {
@@ -131,14 +133,14 @@ describe("mobile boss quick view layout source", () => {
     expect(source).not.toContain("{displayedDailyOrderTrendData.length > 0 ? (\n            <section");
   });
 
-  it("adds mobile-prefixed CSS without rewriting desktop dashboard shells", () => {
+  it("keeps the active stylesheet scoped to mobile pages", () => {
     const source = readProjectFile("app", "globals.css");
 
     expect(source).toContain(".mobile-page");
     expect(source).toContain(".mobile-kpi-grid");
     expect(source).toContain(".mobile-daily-card");
     expect(source).toContain("@media (max-width: 430px)");
-    expect(source).toContain(".dashboard-shell");
+    expect(source).not.toContain(".dashboard-shell");
   });
 
   it("lays out the three online shop KPI cards in one equal-width row", () => {

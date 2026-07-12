@@ -38,21 +38,6 @@ describe("recent signed termination frontend source", () => {
   });
 });
 
-describe("recent signed termination dashboard replacement", () => {
-  it("桌面解约位置替换为新签解约运营汇总组件", () => {
-    const overviewSource = read("components/stats/dashboard-overview-section.tsx");
-    const dashboardSource = read("components/stats/monthly-stats-dashboard.tsx");
-    const panelSource = read("components/stats/recent-signed-termination-panel.tsx");
-
-    expect(overviewSource).toContain("RecentSignedTerminationPanel");
-    expect(overviewSource).not.toContain('title="运营解约店铺数"');
-    expect(dashboardSource).toContain("buildRecentSignedTerminationStatsUrl");
-    expect(panelSource).toContain("新签解约运营汇总");
-    expect(panelSource).toContain("两个月总数");
-    expect(panelSource).toContain("解约率");
-  });
-});
-
 describe("recent signed termination mobile replacement", () => {
   it("手机看板解约板块使用新签解约接口四列表格", () => {
     const mobileSource = read("components/mobile/mobile-boss-dashboard.tsx");

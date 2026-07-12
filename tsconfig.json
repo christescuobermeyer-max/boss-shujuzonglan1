@@ -37,7 +37,7 @@
   ],
   "exclude": [
     "node_modules",
-    "desktop-tauri",
+    "archive",
     "server"
   ]
 }

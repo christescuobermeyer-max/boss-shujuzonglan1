@@ -5,7 +5,7 @@ import {
   getNextRotationMonth,
   getPreviousMonthValue,
   shiftMonthValue
-} from "@/lib/stats/month-rotation";
+} from "@/lib/mobile-month";
 
 describe("month rotation", () => {
   it("生成从当前月向前的月份选项", () => {

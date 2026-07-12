@@ -1,7 +1,9 @@
-import type { DailySummaryRow } from "@/lib/stats/daily-summary-rows";
-import type { DailyAmountPoint } from "@/lib/stats/daily-total-amount-trend";
-import type { TrendItem } from "@/lib/stats/types";
-import type { BarChartDatum } from "@/components/charts/bar-chart";
+import type {
+  BarChartDatum,
+  DailyAmountPoint,
+  DailySummaryRow,
+  TrendItem
+} from "@/lib/mobile-contracts";
 
 export type MobileKpi = {
   label: string;

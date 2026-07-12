@@ -35,15 +35,15 @@ import {
   type AftersalesRecord,
   type WorkflowDailyMonitorPayload
 } from "@/lib/mobile-work-boards";
+import type {
+  RecentSignedTerminationStatsResponse,
+  TrendItem
+} from "@/lib/mobile-contracts";
 import {
+  getCurrentMonthValue,
   getNextAllowedMonth,
   getPreviousMonthValue
-} from "@/lib/stats/month-rotation";
-import {
-  getCurrentMonthValue
-} from "@/lib/stats/monthly-stats-defaults";
-import type { RecentSignedTerminationStatsResponse } from "@/lib/stats/recent-signed-termination-types";
-import type { TrendItem } from "@/lib/stats/types";
+} from "@/lib/mobile-month";
 
 type AccountGenerationItem = {
   user_id: string;

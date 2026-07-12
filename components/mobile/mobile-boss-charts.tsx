@@ -1,8 +1,7 @@
 "use client";
 
 import ReactECharts from "echarts-for-react";
-import type { BarChartDatum } from "@/components/charts/bar-chart";
-import type { DailyAmountPoint } from "@/lib/stats/daily-total-amount-trend";
+import type { BarChartDatum, DailyAmountPoint } from "@/lib/mobile-contracts";
 
 function formatAxisAmount(value: number) {
   if (Math.abs(value) >= 10000) {

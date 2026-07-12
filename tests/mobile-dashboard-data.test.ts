@@ -44,6 +44,7 @@ function buildPayloadFixture(): MobileMonthlyStatsPayload {
       { date: "2026-04-09", value: 770 },
       { date: "2026-04-10", value: 880 }
     ],
+    dailyOrderShopTrend: [],
     dailyRepaymentRows: [
       buildDailyRow("2026-04-01", 0),
       buildDailyRow("2026-04-02", 110),
