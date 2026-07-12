@@ -106,7 +106,9 @@ describe("mobile boss quick view layout source", () => {
     expect(dashboardSource).toContain("待转接");
     expect(dashboardSource).toContain("已转接");
     expect(dashboardSource).toContain("todayCustomerServiceCount");
-    expect(dashboardSource).toContain("今日 我的 / 客服 / 合计");
+    expect(dashboardSource).toContain("mobile-resource-breakdown-divider");
+    expect(dashboardSource).toContain("今日 我的 | 客服 | 合计");
+    expect(dashboardSource).not.toContain("今日 我的 / 客服 / 合计");
     expect(dashboardSource).not.toContain(
       "return Number(rightCounts.today ?? 0) - Number(leftCounts.today ?? 0);\n    })\n    .slice(0, 8);"
     );

@@ -491,7 +491,9 @@ function ResourceSalesBreakdownCell({
   return (
     <span className="mobile-resource-breakdown">
       <em>{formatMobileCount(own)}</em>
+      <span className="mobile-resource-breakdown-divider">|</span>
       <em>{formatMobileCount(customerService)}</em>
+      <span className="mobile-resource-breakdown-divider">|</span>
       <strong>{formatMobileCount(total)}</strong>
     </span>
   );
@@ -513,10 +515,10 @@ function SalesResourceStatsTable({ rows }: { rows: ResourceSalesStats[] }) {
         <div className="mobile-resource-table">
           <div className="mobile-resource-table-head mobile-resource-sales-table-head">
             <span>销售</span>
-            <span>今日 我的 / 客服 / 合计</span>
-            <span>昨日 我的 / 客服 / 合计</span>
-            <span>本月 我的 / 客服 / 合计</span>
-            <span>累计 我的 / 客服 / 合计</span>
+            <span>今日 我的 | 客服 | 合计</span>
+            <span>昨日 我的 | 客服 | 合计</span>
+            <span>本月 我的 | 客服 | 合计</span>
+            <span>累计 我的 | 客服 | 合计</span>
           </div>
           {sortedRows.map((item) => (
             <div

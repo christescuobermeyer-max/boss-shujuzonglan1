@@ -797,7 +797,7 @@ button {
 
 .mobile-resource-breakdown {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr);
   gap: 2px;
   color: var(--text-muted);
   font-family: var(--font-num);
@@ -820,6 +820,12 @@ button {
 .mobile-resource-breakdown strong {
   color: var(--text-strong);
   font-weight: 700;
+}
+
+.mobile-resource-breakdown-divider {
+  color: var(--border-strong);
+  font-family: var(--font-app);
+  text-align: center;
 }
 
 .mobile-work-total {
