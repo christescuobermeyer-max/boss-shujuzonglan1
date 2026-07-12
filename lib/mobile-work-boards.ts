@@ -39,6 +39,16 @@ export type AftersalesDailyRecordsPayload = {
   generatedAt: string;
 };
 
+export const AFTERSALES_PERSON_FILTERS = [
+  { value: "all", label: "全部" },
+  { value: "梁智", label: "梁智" },
+  { value: "朱雯雯", label: "朱雯雯" },
+  { value: "冯姗姗", label: "冯姗姗" }
+] as const;
+
+export type AftersalesPersonFilter =
+  (typeof AFTERSALES_PERSON_FILTERS)[number]["value"];
+
 function normalizeName(value: unknown) {
   const name = String(value ?? "").trim();
   return name || "未分配";
@@ -156,6 +166,16 @@ export function getRecentAftersalesRecords(
     });
 
   return typeof limit === "number" ? records.slice(0, limit) : records;
+}
+
+export function filterAftersalesRecords(
+  payload: AftersalesDailyRecordsPayload,
+  person: AftersalesPersonFilter
+) {
+  const records = getRecentAftersalesRecords(payload);
+  return person === "all"
+    ? records
+    : records.filter((record) => record.operatorName === person);
 }
 
 export function formatOpenApiDateTime(value: string) {

@@ -923,11 +923,31 @@ button {
   margin-top: 8px;
 }
 
-.mobile-aftersales-employee-grid {
+.mobile-aftersales-person-filter {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
   margin-bottom: 12px;
+}
+
+.mobile-aftersales-person-button {
+  min-width: 0;
+  height: 36px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--text-muted);
+  padding: 0 4px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.mobile-aftersales-person-button[aria-pressed="true"] {
+  border-color: #000000;
+  background: #000000;
+  color: #ffffff;
 }
 
 .mobile-aftersales-head {

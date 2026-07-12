@@ -23,15 +23,16 @@ import {
   type MobileRankItem
 } from "@/lib/mobile-dashboard";
 import {
-  buildAftersalesEmployeeRows,
+  AFTERSALES_PERSON_FILTERS,
   buildEmptyAftersalesDailyRecords,
   buildEmptyWorkflowDailyMonitor,
   buildWorkflowProgressRows,
+  filterAftersalesRecords,
   formatOpenApiDateTime,
   getDefaultAftersalesDateKey,
   getShanghaiDateKey,
-  getRecentAftersalesRecords,
   type AftersalesDailyRecordsPayload,
+  type AftersalesPersonFilter,
   type AftersalesRecord,
   type WorkflowDailyMonitorPayload
 } from "@/lib/mobile-work-boards";
@@ -610,8 +611,9 @@ function MobileAftersalesDailySection({
   maxDate: string;
   onDateChange: (date: string) => void;
 }) {
-  const employees = buildAftersalesEmployeeRows(daily, 6);
-  const recentRecords = getRecentAftersalesRecords(daily);
+  const [selectedPerson, setSelectedPerson] =
+    useState<AftersalesPersonFilter>("all");
+  const filteredRecords = filterAftersalesRecords(daily, selectedPerson);
 
   return (
     <section className="mobile-section mobile-aftersales-section">
@@ -620,7 +622,7 @@ function MobileAftersalesDailySection({
           <h2>售后每日工作</h2>
           <span>{formatMobileDateLabel(daily.dateKey)} · {formatOpenApiDateTime(daily.generatedAt)}</span>
         </div>
-        <strong className="mobile-work-total">{formatMobileCount(daily.totalCount)}条</strong>
+        <strong className="mobile-work-total">{formatMobileCount(filteredRecords.length)}条</strong>
       </div>
       <label className="mobile-aftersales-date-filter">
         <span>筛选日期</span>
@@ -632,32 +634,39 @@ function MobileAftersalesDailySection({
           aria-label="筛选售后每日工作日期"
         />
       </label>
+      <div className="mobile-aftersales-person-filter" aria-label="筛选售后人员">
+        {AFTERSALES_PERSON_FILTERS.map((filter) => (
+          <button
+            type="button"
+            className="mobile-aftersales-person-button"
+            aria-pressed={selectedPerson === filter.value}
+            onClick={() => setSelectedPerson(filter.value)}
+            key={filter.value}
+          >
+            {filter.label}
+          </button>
+        ))}
+      </div>
 
       {loading ? <div className="mobile-work-loading">数据加载中</div> : null}
       {!loading && error ? <div className="mobile-work-error">{error}</div> : null}
 
       {!loading && !error ? (
-        daily.totalCount > 0 ? (
-          <>
-            <div className="mobile-aftersales-employee-grid">
-              {employees.map((employee) => (
-                <div className="mobile-aftersales-employee" key={employee.operatorName}>
-                  <strong>{employee.operatorName}</strong>
-                  <span>{formatMobileCount(employee.actionCount)}条 / {formatMobileCount(employee.shopCount)}店</span>
-                </div>
-              ))}
-            </div>
-            <div className="mobile-aftersales-record-list">
-              {recentRecords.map((record, index) => (
-                <AftersalesRecordCard
-                  key={`${record.operatorName}-${record.shopName}-${record.createdAt}-${index}`}
-                  record={record}
-                />
-              ))}
-            </div>
-          </>
+        filteredRecords.length > 0 ? (
+          <div className="mobile-aftersales-record-list">
+            {filteredRecords.map((record, index) => (
+              <AftersalesRecordCard
+                key={`${record.operatorName}-${record.shopName}-${record.createdAt}-${index}`}
+                record={record}
+              />
+            ))}
+          </div>
         ) : (
-          <div className="mobile-empty">暂无售后跟进记录</div>
+          <div className="mobile-empty">
+            {selectedPerson === "all"
+              ? "所选日期暂无售后记录"
+              : "该人员当日暂无售后记录"}
+          </div>
         )
       ) : null}
     </section>

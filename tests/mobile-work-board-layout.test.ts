@@ -53,7 +53,29 @@ describe("mobile work board layout", () => {
       "utf8"
     );
 
-    expect(source).toContain("getRecentAftersalesRecords(daily)");
-    expect(source).not.toContain("getRecentAftersalesRecords(daily, 6)");
+    expect(source).toContain("filterAftersalesRecords(daily, selectedPerson)");
+    expect(source).not.toContain("filterAftersalesRecords(daily, selectedPerson,");
+  });
+
+  it("售后每日工作提供固定人员筛选且保留运营工作板块", () => {
+    const source = readFileSync(
+      join(process.cwd(), "components", "mobile", "mobile-boss-dashboard.tsx"),
+      "utf8"
+    );
+    const styles = readFileSync(
+      join(process.cwd(), "app", "globals.css"),
+      "utf8"
+    );
+
+    expect(source).toContain("AFTERSALES_PERSON_FILTERS");
+    expect(source).toContain("filterAftersalesRecords");
+    expect(source).toContain('useState<AftersalesPersonFilter>("all")');
+    expect(source).toContain("aria-pressed={selectedPerson === filter.value}");
+    expect(source).toContain("该人员当日暂无售后记录");
+    expect(source).toContain("所选日期暂无售后记录");
+    expect(source).toContain("MobileWorkflowProgressSection");
+    expect(source).toContain("buildWorkflowProgressRows");
+    expect(styles).toContain(".mobile-aftersales-person-filter");
+    expect(styles).toContain(".mobile-aftersales-person-button");
   });
 });
