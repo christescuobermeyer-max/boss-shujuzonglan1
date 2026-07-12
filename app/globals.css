@@ -745,6 +745,16 @@ button {
   gap: 6px;
 }
 
+.mobile-resource-service-table-head,
+.mobile-resource-service-table-row {
+  grid-template-columns: minmax(62px, 1fr) repeat(6, minmax(34px, 0.52fr));
+}
+
+.mobile-resource-sales-table-head,
+.mobile-resource-sales-table-row {
+  grid-template-columns: minmax(58px, 0.8fr) repeat(4, minmax(52px, 0.86fr));
+}
+
 .mobile-resource-table-head {
   border-bottom: 1px solid var(--border);
   color: var(--text-muted);
@@ -783,6 +793,33 @@ button {
   color: var(--text-strong);
   font-family: var(--font-num);
   font-variant-numeric: tabular-nums;
+}
+
+.mobile-resource-breakdown {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2px;
+  color: var(--text-muted);
+  font-family: var(--font-num);
+  font-size: 11px;
+  font-style: normal;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.mobile-resource-breakdown em,
+.mobile-resource-breakdown strong {
+  min-width: 0;
+  color: inherit;
+  font-style: normal;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mobile-resource-breakdown strong {
+  color: var(--text-strong);
+  font-weight: 700;
 }
 
 .mobile-work-total {

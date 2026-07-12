@@ -80,10 +80,34 @@ type ResourceSalesStats = {
   yesterdayFollowCount: number;
   monthFollowCount: number;
   totalFollowCount: number;
+  todayOwnCount: number;
+  todayCustomerServiceCount: number;
+  todayTotalCount: number;
+  yesterdayOwnCount: number;
+  yesterdayCustomerServiceCount: number;
+  yesterdayTotalCount: number;
+  monthOwnCount: number;
+  monthCustomerServiceCount: number;
+  monthTotalCount: number;
+  totalOwnCount: number;
+  totalCustomerServiceCount: number;
+  totalCount: number;
+};
+
+type ResourceCustomerServiceStats = {
+  accountId: string;
+  username: string;
+  todayAcceptedCount: number;
+  yesterdayAcceptedCount: number;
+  monthAcceptedCount: number;
+  totalAcceptedCount: number;
+  pendingHandoffCount: number;
+  transferredCount: number;
 };
 
 type ResourceStatsPayload = {
   resourceAccounts: ResourceAccountStats[];
+  customerService: ResourceCustomerServiceStats[];
   sales: ResourceSalesStats[];
   timezone: "Asia/Shanghai" | string;
   todayStart: number;
@@ -349,12 +373,14 @@ function ResourceStatsTable({
   title,
   rows,
   emptyText,
+  accountLabel = "账号",
   getCounts
 }: {
   title: string;
-  rows: Array<ResourceAccountStats | ResourceSalesStats>;
+  rows: ResourceAccountStats[];
   emptyText: string;
-  getCounts: (item: ResourceAccountStats | ResourceSalesStats) => {
+  accountLabel?: string;
+  getCounts: (item: ResourceAccountStats) => {
     today: number;
     yesterday: number;
     month: number;
@@ -377,7 +403,7 @@ function ResourceStatsTable({
       {sortedRows.length > 0 ? (
         <div className="mobile-resource-table">
           <div className="mobile-resource-table-head">
-            <span>账号</span>
+            <span>{accountLabel}</span>
             <span>今日</span>
             <span>昨日</span>
             <span>本月</span>
@@ -403,6 +429,131 @@ function ResourceStatsTable({
   );
 }
 
+function CustomerServiceResourceStatsTable({
+  rows
+}: {
+  rows: ResourceCustomerServiceStats[];
+}) {
+  const sortedRows = rows
+    .slice()
+    .sort((left, right) => {
+      const monthDiff =
+        Number(right.monthAcceptedCount ?? 0) - Number(left.monthAcceptedCount ?? 0);
+      if (monthDiff !== 0) return monthDiff;
+      return Number(right.todayAcceptedCount ?? 0) - Number(left.todayAcceptedCount ?? 0);
+    });
+
+  return (
+    <div className="mobile-resource-block">
+      <h3>客服资源统计</h3>
+      {sortedRows.length > 0 ? (
+        <div className="mobile-resource-table">
+          <div className="mobile-resource-table-head mobile-resource-service-table-head">
+            <span>客服</span>
+            <span>今日</span>
+            <span>昨日</span>
+            <span>本月</span>
+            <span>总数</span>
+            <span>待转接</span>
+            <span>已转接</span>
+          </div>
+          {sortedRows.map((item) => (
+            <div
+              className="mobile-resource-table-row mobile-resource-service-table-row"
+              key={`客服资源统计-${item.accountId}`}
+            >
+              <span className="mobile-resource-name">{item.username || "未命名客服"}</span>
+              <strong>{formatMobileCount(item.todayAcceptedCount)}</strong>
+              <span>{formatMobileCount(item.yesterdayAcceptedCount)}</span>
+              <strong>{formatMobileCount(item.monthAcceptedCount)}</strong>
+              <span>{formatMobileCount(item.totalAcceptedCount)}</span>
+              <strong>{formatMobileCount(item.pendingHandoffCount)}</strong>
+              <span>{formatMobileCount(item.transferredCount)}</span>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="mobile-empty">暂无客服资源数据</div>
+      )}
+    </div>
+  );
+}
+
+function ResourceSalesBreakdownCell({
+  own,
+  customerService,
+  total
+}: {
+  own: number;
+  customerService: number;
+  total: number;
+}) {
+  return (
+    <span className="mobile-resource-breakdown">
+      <em>{formatMobileCount(own)}</em>
+      <em>{formatMobileCount(customerService)}</em>
+      <strong>{formatMobileCount(total)}</strong>
+    </span>
+  );
+}
+
+function SalesResourceStatsTable({ rows }: { rows: ResourceSalesStats[] }) {
+  const sortedRows = rows
+    .slice()
+    .sort((left, right) => {
+      const monthDiff = Number(right.monthTotalCount ?? 0) - Number(left.monthTotalCount ?? 0);
+      if (monthDiff !== 0) return monthDiff;
+      return Number(right.todayTotalCount ?? 0) - Number(left.todayTotalCount ?? 0);
+    });
+
+  return (
+    <div className="mobile-resource-block">
+      <h3>销售跟进统计</h3>
+      {sortedRows.length > 0 ? (
+        <div className="mobile-resource-table">
+          <div className="mobile-resource-table-head mobile-resource-sales-table-head">
+            <span>销售</span>
+            <span>今日 我的 / 客服 / 合计</span>
+            <span>昨日 我的 / 客服 / 合计</span>
+            <span>本月 我的 / 客服 / 合计</span>
+            <span>累计 我的 / 客服 / 合计</span>
+          </div>
+          {sortedRows.map((item) => (
+            <div
+              className="mobile-resource-table-row mobile-resource-sales-table-row"
+              key={`销售跟进统计-${item.accountId}`}
+            >
+              <span className="mobile-resource-name">{item.username || "未命名销售"}</span>
+              <ResourceSalesBreakdownCell
+                own={Number(item.todayOwnCount ?? 0)}
+                customerService={Number(item.todayCustomerServiceCount ?? 0)}
+                total={Number(item.todayTotalCount ?? item.todayFollowCount ?? 0)}
+              />
+              <ResourceSalesBreakdownCell
+                own={Number(item.yesterdayOwnCount ?? 0)}
+                customerService={Number(item.yesterdayCustomerServiceCount ?? 0)}
+                total={Number(item.yesterdayTotalCount ?? item.yesterdayFollowCount ?? 0)}
+              />
+              <ResourceSalesBreakdownCell
+                own={Number(item.monthOwnCount ?? 0)}
+                customerService={Number(item.monthCustomerServiceCount ?? 0)}
+                total={Number(item.monthTotalCount ?? item.monthFollowCount ?? 0)}
+              />
+              <ResourceSalesBreakdownCell
+                own={Number(item.totalOwnCount ?? 0)}
+                customerService={Number(item.totalCustomerServiceCount ?? 0)}
+                total={Number(item.totalCount ?? item.totalFollowCount ?? 0)}
+              />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="mobile-empty">暂无销售跟进数据</div>
+      )}
+    </div>
+  );
+}
+
 function MobileResourceStatsSection({
   data,
   loading,
@@ -413,13 +564,18 @@ function MobileResourceStatsSection({
   error: string;
 }) {
   const resourceAccounts = data?.resourceAccounts ?? [];
+  const customerService = data?.customerService ?? [];
   const sales = data?.sales ?? [];
   const monthCreatedTotal = resourceAccounts.reduce(
     (sum, item) => sum + Number(item.monthCreatedCount ?? 0),
     0
   );
-  const monthFollowTotal = sales.reduce(
-    (sum, item) => sum + Number(item.monthFollowCount ?? 0),
+  const monthCustomerServiceTotal = customerService.reduce(
+    (sum, item) => sum + Number(item.monthAcceptedCount ?? 0),
+    0
+  );
+  const monthSalesTotal = sales.reduce(
+    (sum, item) => sum + Number(item.monthTotalCount ?? item.monthFollowCount ?? 0),
     0
   );
 
@@ -428,10 +584,10 @@ function MobileResourceStatsSection({
       <div className="mobile-section-head mobile-section-head-row">
         <div>
           <h2>资源统计</h2>
-          <span>今日 / 昨日 / 本月 / 总数，按账号展示</span>
+          <span>资源录入、客服领取、销售跟进三段纵向展示</span>
         </div>
         <strong className="mobile-work-total">
-          {loading ? "..." : `${formatMobileCount(monthCreatedTotal + monthFollowTotal)}`}
+          {loading ? "..." : `${formatMobileCount(monthCreatedTotal + monthCustomerServiceTotal + monthSalesTotal)}`}
         </strong>
       </div>
 
@@ -445,29 +601,16 @@ function MobileResourceStatsSection({
             rows={resourceAccounts}
             emptyText="暂无资源账号录入数据"
             getCounts={(item) => {
-              const account = item as ResourceAccountStats;
               return {
-                today: Number(account.todayCreatedCount ?? 0),
-                yesterday: Number(account.yesterdayCreatedCount ?? 0),
-                month: Number(account.monthCreatedCount ?? 0),
-                total: Number(account.totalCreatedCount ?? 0)
+                today: Number(item.todayCreatedCount ?? 0),
+                yesterday: Number(item.yesterdayCreatedCount ?? 0),
+                month: Number(item.monthCreatedCount ?? 0),
+                total: Number(item.totalCreatedCount ?? 0)
               };
             }}
           />
-          <ResourceStatsTable
-            title="销售跟进统计"
-            rows={sales}
-            emptyText="暂无销售跟进数据"
-            getCounts={(item) => {
-              const sale = item as ResourceSalesStats;
-              return {
-                today: Number(sale.todayFollowCount ?? 0),
-                yesterday: Number(sale.yesterdayFollowCount ?? 0),
-                month: Number(sale.monthFollowCount ?? 0),
-                total: Number(sale.totalFollowCount ?? 0)
-              };
-            }}
-          />
+          <CustomerServiceResourceStatsTable rows={customerService} />
+          <SalesResourceStatsTable rows={sales} />
         </div>
       ) : null}
     </section>
