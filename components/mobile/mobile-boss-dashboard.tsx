@@ -489,12 +489,27 @@ function ResourceSalesBreakdownCell({
   total: number;
 }) {
   return (
-    <span className="mobile-resource-breakdown">
-      <em>{formatMobileCount(own)}</em>
-      <span className="mobile-resource-breakdown-divider">|</span>
-      <em>{formatMobileCount(customerService)}</em>
-      <span className="mobile-resource-breakdown-divider">|</span>
-      <strong>{formatMobileCount(total)}</strong>
+    <span className="mobile-resource-period-cell">
+      <span className="mobile-resource-breakdown">
+        <em>{formatMobileCount(own)}</em>
+        <em>{formatMobileCount(customerService)}</em>
+        <strong>{formatMobileCount(total)}</strong>
+      </span>
+    </span>
+  );
+}
+
+function ResourceSalesPeriodHead({
+  label
+}: {
+  label: string;
+}) {
+  return (
+    <span className="mobile-resource-period-head">
+      <b>{label}</b>
+      <em>我的</em>
+      <em>客服</em>
+      <em>合计</em>
     </span>
   );
 }
@@ -515,10 +530,11 @@ function SalesResourceStatsTable({ rows }: { rows: ResourceSalesStats[] }) {
         <div className="mobile-resource-table">
           <div className="mobile-resource-table-head mobile-resource-sales-table-head">
             <span>销售</span>
-            <span>今日 我的 | 客服 | 合计</span>
-            <span>昨日 我的 | 客服 | 合计</span>
-            <span>本月 我的 | 客服 | 合计</span>
-            <span>累计 我的 | 客服 | 合计</span>
+            <ResourceSalesPeriodHead label="今日" />
+            <ResourceSalesPeriodHead label="昨日" />
+            <ResourceSalesPeriodHead label="本月" />
+            <ResourceSalesPeriodHead label="累计" />
+            <span className="mobile-resource-sales-a11y-label">今日 我的 客服 合计</span>
           </div>
           {sortedRows.map((item) => (
             <div
