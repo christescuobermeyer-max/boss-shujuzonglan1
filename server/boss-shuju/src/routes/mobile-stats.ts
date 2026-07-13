@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { connectMongo } from "../db/mongodb.js";
 import { mobileAuthMiddleware } from "../middleware/auth.js";
+import { getAllRepaymentTrendPayload } from "../services/all-repayment-trend-service.js";
 import { getMobileMonthlyStatsPayload } from "../services/mobile-monthly-stats-service.js";
 
 export const mobileStatsRoute = new Hono();
@@ -23,4 +24,23 @@ mobileStatsRoute.get("/api/mobile/stats/monthly", mobileAuthMiddleware, async (c
     );
   }
 });
+
+mobileStatsRoute.get(
+  "/api/mobile/stats/repayment-trend/all",
+  mobileAuthMiddleware,
+  async (c) => {
+    try {
+      await connectMongo();
+      const payload = await getAllRepaymentTrendPayload();
+      return c.json(payload);
+    } catch {
+      return c.json(
+        {
+          message: "获取全部日期回款趋势失败"
+        },
+        500
+      );
+    }
+  }
+);
 

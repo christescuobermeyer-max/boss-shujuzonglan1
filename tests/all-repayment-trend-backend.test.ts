@@ -104,4 +104,25 @@ describe("all repayment trend backend", () => {
       "setCachedReportPayload(CACHE_NAMESPACE, CACHE_KEY, payload)"
     );
   });
+
+  it("registers an authenticated all repayment trend route", () => {
+    const source = readFileSync(
+      join(
+        process.cwd(),
+        "server",
+        "boss-shuju",
+        "src",
+        "routes",
+        "mobile-stats.ts"
+      ),
+      "utf8"
+    );
+
+    expect(source).toMatch(
+      /mobileStatsRoute\.get\(\s*"\/api\/mobile\/stats\/repayment-trend\/all"\s*,\s*mobileAuthMiddleware/
+    );
+    expect(source).toContain("await connectMongo()");
+    expect(source).toContain("await getAllRepaymentTrendPayload()");
+    expect(source).toContain("获取全部日期回款趋势失败");
+  });
 });
