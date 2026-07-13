@@ -18,7 +18,7 @@ type AggregatedAmountTrendRow = {
   value?: unknown;
 };
 
-function normalizeAggregatedAmountTrend(
+export function normalizeAllDailyPointAmountTrend(
   rows: AggregatedAmountTrendRow[]
 ): DailyAmountPoint[] {
   const totalByDate = new Map<string, number>();
@@ -213,6 +213,6 @@ export async function fetchAllDailyPointAmountTrend() {
     { $sort: { date: 1 } }
   ]).allowDiskUse(true);
 
-  return normalizeAggregatedAmountTrend(rows);
+  return normalizeAllDailyPointAmountTrend(rows);
 }
 
