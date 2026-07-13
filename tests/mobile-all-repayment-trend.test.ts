@@ -28,4 +28,22 @@ describe("mobile all repayment trend", () => {
     expect(source).toContain("endDate: string | null");
     expect(source).toContain("points: DailyAmountPoint[]");
   });
+
+  it("defines a full-history chart with concise axes and zoom controls", () => {
+    const source = readProjectFile(
+      "components",
+      "mobile",
+      "mobile-boss-charts.tsx"
+    );
+
+    expect(source).toContain("MobileAllRepaymentTrendChart");
+    expect(source).toContain("hideOverlap: true");
+    expect(source).toContain("shouldShowHistoryDateLabel");
+    expect(source).toContain('type: "inside"');
+    expect(source).toContain('type: "slider"');
+    expect(source).toContain("start: 0");
+    expect(source).toContain("end: 100");
+    expect(source).toContain('symbol: "none"');
+    expect(source).toContain("animation: false");
+  });
 });
