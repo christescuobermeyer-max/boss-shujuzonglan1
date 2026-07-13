@@ -441,6 +441,98 @@ button {
   line-height: 1.25;
 }
 
+.mobile-icon-button {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border-strong);
+  border-radius: 7px;
+  background: #ffffff;
+  color: var(--text-strong);
+  padding: 0;
+  cursor: pointer;
+}
+
+.mobile-icon-button:hover {
+  background: var(--bg-soft);
+}
+
+.mobile-icon-button:focus-visible {
+  outline: 2px solid #000000;
+  outline-offset: 2px;
+}
+
+.mobile-all-repayment-section {
+  min-width: 0;
+}
+
+.mobile-all-repayment-chart-shell {
+  min-width: 0;
+  min-height: 220px;
+  overflow: hidden;
+}
+
+.mobile-all-repayment-skeleton {
+  width: 100%;
+  height: 220px;
+  border-radius: 6px;
+}
+
+.mobile-all-repayment-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  background: #ffffff;
+  padding: max(12px, env(safe-area-inset-top))
+    max(12px, env(safe-area-inset-right))
+    max(12px, env(safe-area-inset-bottom))
+    max(12px, env(safe-area-inset-left));
+}
+
+.mobile-all-repayment-overlay-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+  padding-bottom: 8px;
+}
+
+.mobile-all-repayment-overlay-head div {
+  min-width: 0;
+}
+
+.mobile-all-repayment-overlay-head h2 {
+  margin: 0;
+  color: var(--text-strong);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: 0;
+}
+
+.mobile-all-repayment-overlay-head span {
+  display: block;
+  margin-top: 4px;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.mobile-all-repayment-overlay-chart {
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
 .mobile-link-button {
   flex: 0 0 auto;
   border-radius: 7px;

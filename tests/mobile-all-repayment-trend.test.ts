@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import * as mobileApiClientModule from "@/lib/mobile-api-client";
@@ -45,5 +45,88 @@ describe("mobile all repayment trend", () => {
     expect(source).toContain("end: 100");
     expect(source).toContain('symbol: "none"');
     expect(source).toContain("animation: false");
+  });
+
+  it("provides a dedicated all repayment trend component", () => {
+    expect(
+      existsSync(
+        join(
+          process.cwd(),
+          "components",
+          "mobile",
+          "mobile-all-repayment-trend.tsx"
+        )
+      )
+    ).toBe(true);
+  });
+
+  it("loads the all-time trend independently with authenticated credentials", () => {
+    const source = readProjectFile(
+      "components",
+      "mobile",
+      "mobile-all-repayment-trend.tsx"
+    );
+
+    expect(source).toContain("buildAllRepaymentTrendUrl()");
+    expect(source).toContain('credentials: "include"');
+    expect(source).toContain('window.location.href = "/mobile/login"');
+    expect(source).toContain("useEffect(() => {");
+    expect(source).not.toContain("[month]");
+  });
+
+  it("provides accessible maximize and close controls", () => {
+    const source = readProjectFile(
+      "components",
+      "mobile",
+      "mobile-all-repayment-trend.tsx"
+    );
+
+    expect(source).toContain("Maximize2");
+    expect(source).toContain("X");
+    expect(source).toContain('aria-label="最大化全部日期回款趋势"');
+    expect(source).toContain('aria-label="关闭全部日期回款趋势全屏"');
+    expect(source).toContain('role="dialog"');
+    expect(source).toContain('aria-modal="true"');
+    expect(source).toContain('event.key !== "Escape"');
+    expect(source).toContain('document.body.style.overflow = "hidden"');
+    expect(source).toContain("previousOverflow");
+  });
+
+  it("shows explicit loading, empty, and failure states", () => {
+    const source = readProjectFile(
+      "components",
+      "mobile",
+      "mobile-all-repayment-trend.tsx"
+    );
+
+    expect(source).toContain("mobile-all-repayment-skeleton");
+    expect(source).toContain("暂无全部日期回款数据");
+    expect(source).toContain("全部日期回款趋势暂时无法加载");
+  });
+
+  it("places the all-time chart between monthly repayment and daily orders", () => {
+    const source = readProjectFile(
+      "components",
+      "mobile",
+      "mobile-boss-dashboard.tsx"
+    );
+
+    const monthlyTrendIndex = source.indexOf("每日回款趋势");
+    const allTrendIndex = source.indexOf("<MobileAllRepaymentTrend />");
+    const orderTrendIndex = source.indexOf("每日开单趋势");
+
+    expect(monthlyTrendIndex).toBeGreaterThan(-1);
+    expect(allTrendIndex).toBeGreaterThan(monthlyTrendIndex);
+    expect(orderTrendIndex).toBeGreaterThan(allTrendIndex);
+  });
+
+  it("defines a full-viewport overlay without horizontal overflow", () => {
+    const source = readProjectFile("app", "globals.css");
+
+    expect(source).toContain(".mobile-all-repayment-overlay");
+    expect(source).toContain("position: fixed");
+    expect(source).toContain("inset: 0");
+    expect(source).toContain("100dvh");
+    expect(source).toContain("overflow: hidden");
   });
 });

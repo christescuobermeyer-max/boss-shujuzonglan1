@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { MobileAllRepaymentTrend } from "@/components/mobile/mobile-all-repayment-trend";
 import {
   MobileAmountTrendChart,
   MobileOrderTrendChart
@@ -1189,6 +1190,8 @@ export function MobileBossDashboard() {
               <MobileAmountTrendChart data={dashboardData.totalAmountTrendData} />
             </section>
           ) : null}
+
+          <MobileAllRepaymentTrend />
 
           <section className="mobile-section">
             <div className="mobile-section-head">
