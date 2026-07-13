@@ -9,6 +9,12 @@ export type DailyAmountPoint = {
   value: number;
 };
 
+export type AllRepaymentTrendResponse = {
+  startDate: string | null;
+  endDate: string | null;
+  points: DailyAmountPoint[];
+};
+
 export type DailySummaryRow = {
   date: string;
   dailyPointShopCount: number;

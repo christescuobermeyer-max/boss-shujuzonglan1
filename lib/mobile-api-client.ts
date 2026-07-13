@@ -6,6 +6,10 @@ export function buildBossApiUrl(path: string) {
   return `${base}${path}`;
 }
 
+export function buildAllRepaymentTrendUrl() {
+  return buildBossApiUrl("/api/mobile/stats/repayment-trend/all");
+}
+
 export function buildRecentSignedTerminationStatsUrl(month: string) {
   return buildBossApiUrl(
     `/api/termination/recent-signed-stats?month=${encodeURIComponent(month)}`
