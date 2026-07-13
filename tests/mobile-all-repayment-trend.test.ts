@@ -120,6 +120,25 @@ describe("mobile all repayment trend", () => {
     expect(orderTrendIndex).toBeGreaterThan(allTrendIndex);
   });
 
+  it("keeps the all-time chart mounted while monthly data reloads", () => {
+    const source = readProjectFile(
+      "components",
+      "mobile",
+      "mobile-boss-dashboard.tsx"
+    );
+
+    const firstMonthlyLoadingBlock = source.indexOf("{!loading ? (");
+    const allTrendIndex = source.indexOf("<MobileAllRepaymentTrend />");
+    const secondMonthlyLoadingBlock = source.indexOf("{!loading ? (", allTrendIndex);
+
+    expect(firstMonthlyLoadingBlock).toBeGreaterThan(-1);
+    expect(allTrendIndex).toBeGreaterThan(firstMonthlyLoadingBlock);
+    expect(source.slice(firstMonthlyLoadingBlock, allTrendIndex)).toContain(
+      ") : null}"
+    );
+    expect(secondMonthlyLoadingBlock).toBeGreaterThan(allTrendIndex);
+  });
+
   it("defines a full-viewport overlay without horizontal overflow", () => {
     const source = readProjectFile("app", "globals.css");
 

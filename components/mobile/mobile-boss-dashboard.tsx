@@ -1190,9 +1190,13 @@ export function MobileBossDashboard() {
               <MobileAmountTrendChart data={dashboardData.totalAmountTrendData} />
             </section>
           ) : null}
+        </>
+      ) : null}
 
-          <MobileAllRepaymentTrend />
+      <MobileAllRepaymentTrend />
 
+      {!loading ? (
+        <>
           <section className="mobile-section">
             <div className="mobile-section-head">
               <h2>每日开单趋势</h2>
