@@ -55,4 +55,12 @@ describe("mobile-only project boundary", () => {
     expect(backendEnv).toContain("MOBILE_SESSION_SECRET");
     expect(backendEnv).toContain("BOSS_WEB_ORIGIN");
   });
+
+  it("keeps test-only backend imports out of the Next production typecheck", () => {
+    const tsconfig = JSON.parse(
+      readFileSync(projectPath("tsconfig.json"), "utf8")
+    ) as { exclude?: string[] };
+
+    expect(tsconfig.exclude).toContain("tests");
+  });
 });
