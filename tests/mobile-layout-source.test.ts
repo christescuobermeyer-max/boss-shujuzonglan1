@@ -31,6 +31,7 @@ describe("mobile boss quick view layout source", () => {
   it("renders the agreed mobile dashboard sections", () => {
     const source = [
       readProjectFile("components", "mobile", "mobile-boss-dashboard.tsx"),
+      readProjectFile("components", "mobile", "mobile-all-online-shop-trend.tsx"),
       readProjectFile("lib", "mobile-dashboard.ts")
     ].join("\n");
 
@@ -45,9 +46,9 @@ describe("mobile boss quick view layout source", () => {
     expect(source).toContain("饿了么在线店铺数");
     expect(source).toContain("最新数据日期");
     expect(source).toContain("mobile-kpi-note");
-    expect(source).toContain("每日在线店铺趋势");
+    expect(source).toContain("全部日期在线店铺趋势");
     expect(source).toContain("总在线 · 美团 · 饿了么");
-    expect(source).toContain("本月暂无在线店铺快照");
+    expect(source).toContain("暂无在线店铺历史数据");
     expect(source).toContain("每日回款趋势");
     expect(source).toContain("每日开单趋势");
     expect(source).toContain("dailyOrderTrendData");
@@ -129,6 +130,7 @@ describe("mobile boss quick view layout source", () => {
   it("uses mobile-specific chart wrappers", () => {
     const source = [
       readProjectFile("components", "mobile", "mobile-boss-charts.tsx"),
+      readProjectFile("components", "mobile", "mobile-all-online-shop-trend.tsx"),
       readProjectFile("components", "mobile", "mobile-boss-dashboard.tsx")
     ].join("\n");
 
@@ -136,7 +138,7 @@ describe("mobile boss quick view layout source", () => {
     expect(source).toContain("MobileOnlineShopTrendChart");
     expect(source).toContain("MobileOrderTrendChart");
     expect(source).toContain(
-      "<MobileOnlineShopTrendChart data={dashboardData.onlineShopTrendData}"
+      "<MobileOnlineShopTrendChart data={payload.points}"
     );
     expect(source).toContain('name: "总在线"');
     expect(source).toContain('name: "美团"');

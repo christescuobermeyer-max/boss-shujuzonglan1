@@ -15,7 +15,6 @@ import { buildMonthlyPointSummary } from "../lib/stats/monthly-point-summary.js"
 import { buildMonthlyShopCohorts } from "../lib/stats/monthly-shop-cohorts.js";
 import { buildMonthlySignedShopTrend, buildNamedCountTrend } from "../lib/stats/monthly-stats-trends.js";
 import { getLatestOnlineShopSummary } from "../lib/stats/latest-online-shop-service.js";
-import { getMonthlyOnlineShopTrend } from "../lib/stats/online-shop-trend-service.js";
 import type { DailyTrendSeries } from "../lib/stats/daily-trend-series.js";
 import type { DailyAmountPoint } from "../lib/stats/daily-total-amount-trend.js";
 import type { MobileMonthlyStatsPayload, MobileRankItem } from "../lib/mobile-dashboard.js";
@@ -164,8 +163,7 @@ export async function getMobileMonthlyStatsPayload(
     meituanNextMonthDetails,
     elemeDetails,
     elemeNextMonthDetails,
-    latestOnlineShopSummary,
-    onlineShopDailyTrend
+    latestOnlineShopSummary
   ] = await Promise.all([
     Shop.find({
       $or: [
@@ -201,8 +199,7 @@ export async function getMobileMonthlyStatsPayload(
     fetchMonthlyMobileDerivedDetails("meituan", nextMonth),
     fetchMonthlyMobileDerivedDetails("eleme", month),
     fetchMonthlyMobileDerivedDetails("eleme", nextMonth),
-    getLatestOnlineShopSummary(),
-    getMonthlyOnlineShopTrend(month)
+    getLatestOnlineShopSummary()
   ]);
 
   const filteredCandidateShops = candidateShops.filter((shop) => matchesDept(shop, dept));
@@ -293,7 +290,6 @@ export async function getMobileMonthlyStatsPayload(
       meituanCount: latestOnlineShopSummary.meituanCount,
       elemeCount: latestOnlineShopSummary.elemeCount
     },
-    onlineShopDailyTrend,
     dailyAmountTrend,
     dailyOrderShopTrend,
     dailyRepaymentRows,

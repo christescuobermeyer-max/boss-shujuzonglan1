@@ -10,6 +10,10 @@ export function buildAllRepaymentTrendUrl() {
   return buildBossApiUrl("/api/mobile/stats/repayment-trend/all");
 }
 
+export function buildAllOnlineShopTrendUrl() {
+  return buildBossApiUrl("/api/mobile/stats/online-shop-trend/all");
+}
+
 export function buildRecentSignedTerminationStatsUrl(month: string) {
   return buildBossApiUrl(
     `/api/termination/recent-signed-stats?month=${encodeURIComponent(month)}`

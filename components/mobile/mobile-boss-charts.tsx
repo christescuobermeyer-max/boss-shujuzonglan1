@@ -26,14 +26,18 @@ function formatShopCount(value: number | null | undefined) {
 
 export function MobileOnlineShopTrendChart({
   data,
-  height = 220
+  height = 220,
+  fullScreen = false
 }: {
   data: OnlineShopDailyTrendPoint[];
-  height?: number;
+  height?: number | string;
+  fullScreen?: boolean;
 }) {
+  const lastIndex = Math.max(0, data.length - 1);
   const option = {
+    animation: false,
     color: ["#111111", "#d97706", "#1677ff"],
-    grid: { top: 38, right: 10, bottom: 24, left: 42 },
+    grid: { top: 38, right: 10, bottom: 54, left: 42 },
     legend: {
       top: 0,
       right: 0,
@@ -72,8 +76,15 @@ export function MobileOnlineShopTrendChart({
       axisLabel: {
         color: "#999999",
         fontSize: 9,
-        interval: 3,
-        formatter: (value: string) => value.slice(5)
+        hideOverlap: true,
+        interval: (index: number, value: string) =>
+          shouldShowOnlineShopHistoryDateLabel({
+            date: value,
+            index,
+            lastIndex,
+            fullScreen
+          }),
+        formatter: (value: string) => value.slice(0, 7)
       },
       axisLine: { lineStyle: { color: "#eaeaea" } },
       axisTick: { show: false }
@@ -89,6 +100,28 @@ export function MobileOnlineShopTrendChart({
       },
       splitLine: { lineStyle: { color: "#f2f2f2", type: "dashed" } }
     },
+    dataZoom: [
+      {
+        type: "inside",
+        start: 0,
+        end: 100,
+        zoomOnMouseWheel: true,
+        moveOnMouseMove: true,
+        moveOnMouseWheel: false
+      },
+      {
+        type: "slider",
+        start: 0,
+        end: 100,
+        height: 16,
+        bottom: 6,
+        borderColor: "#eaeaea",
+        backgroundColor: "#f7f7f7",
+        fillerColor: "rgba(0, 0, 0, 0.12)",
+        handleSize: 12,
+        showDetail: false
+      }
+    ],
     series: [
       {
         name: "总在线",
@@ -118,6 +151,20 @@ export function MobileOnlineShopTrendChart({
   };
 
   return <ReactECharts option={option} notMerge lazyUpdate style={{ height }} />;
+}
+
+function shouldShowOnlineShopHistoryDateLabel(params: {
+  date: string;
+  index: number;
+  lastIndex: number;
+  fullScreen: boolean;
+}) {
+  if (params.index === 0 || params.index === params.lastIndex) return true;
+  if (!params.date.endsWith("-01")) return false;
+  if (params.fullScreen) return true;
+
+  const month = Number(params.date.slice(5, 7));
+  return Number.isFinite(month) && (month - 1) % 3 === 0;
 }
 
 export function MobileAmountTrendChart({

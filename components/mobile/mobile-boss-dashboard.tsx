@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { MobileAllOnlineShopTrend } from "@/components/mobile/mobile-all-online-shop-trend";
 import { MobileAllRepaymentTrend } from "@/components/mobile/mobile-all-repayment-trend";
 import {
   MobileAmountTrendChart,
-  MobileOnlineShopTrendChart,
   MobileOrderTrendChart
 } from "@/components/mobile/mobile-boss-charts";
 import {
@@ -1168,8 +1168,7 @@ export function MobileBossDashboard() {
       {loading ? <LoadingSkeleton /> : null}
 
       {!loading ? (
-        <>
-          <section className="mobile-kpi-grid" aria-label="手机关键指标">
+        <section className="mobile-kpi-grid" aria-label="手机关键指标">
             {mobileKpis.map((item) => (
               <article
                 className={`mobile-kpi-card mobile-kpi-${item.accent}${item.prominent ? " mobile-kpi-card-primary" : ""}${isOnlineShopKpi(item.label) ? " mobile-kpi-online" : ""}`}
@@ -1180,20 +1179,13 @@ export function MobileBossDashboard() {
                 {item.note ? <small className="mobile-kpi-note">{item.note}</small> : null}
               </article>
             ))}
-          </section>
+        </section>
+      ) : null}
 
-          <section className="mobile-section">
-            <div className="mobile-section-head">
-              <h2>每日在线店铺趋势</h2>
-              <span>总在线 · 美团 · 饿了么</span>
-            </div>
-            {dashboardData.onlineShopTrendData.length > 0 ? (
-              <MobileOnlineShopTrendChart data={dashboardData.onlineShopTrendData} />
-            ) : (
-              <div className="mobile-empty">本月暂无在线店铺快照</div>
-            )}
-          </section>
+      <MobileAllOnlineShopTrend />
 
+      {!loading ? (
+        <>
           {dashboardData.totalAmountTrendData.length > 0 ? (
             <section className="mobile-section">
               <div className="mobile-section-head">

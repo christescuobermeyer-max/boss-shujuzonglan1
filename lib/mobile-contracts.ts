@@ -22,6 +22,12 @@ export type AllRepaymentTrendResponse = {
   points: DailyAmountPoint[];
 };
 
+export type AllOnlineShopTrendResponse = {
+  startDate: string | null;
+  endDate: string | null;
+  points: OnlineShopDailyTrendPoint[];
+};
+
 export type DailySummaryRow = {
   date: string;
   dailyPointShopCount: number;

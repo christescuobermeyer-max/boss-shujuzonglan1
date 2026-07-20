@@ -27,8 +27,8 @@ describe("sealos monthly stats API", () => {
     expect(serviceSource).toContain("meituanMonthlyPointAmount");
     expect(serviceSource).toContain("elemeMonthlyPointAmount");
     expect(serviceSource).toContain("onlineShopCounts");
-    expect(serviceSource).toContain("getMonthlyOnlineShopTrend");
-    expect(serviceSource).toContain("onlineShopDailyTrend");
+    expect(serviceSource).not.toContain("getMonthlyOnlineShopTrend");
+    expect(serviceSource).not.toContain("onlineShopDailyTrend");
     expect(serviceSource).toContain("未分配");
   });
 
