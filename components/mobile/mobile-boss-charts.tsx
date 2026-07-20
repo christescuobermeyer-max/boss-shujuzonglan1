@@ -1,7 +1,11 @@
 "use client";
 
 import ReactECharts from "echarts-for-react";
-import type { BarChartDatum, DailyAmountPoint } from "@/lib/mobile-contracts";
+import type {
+  BarChartDatum,
+  DailyAmountPoint,
+  OnlineShopDailyTrendPoint
+} from "@/lib/mobile-contracts";
 
 function formatAxisAmount(value: number) {
   if (Math.abs(value) >= 10000) {
@@ -11,6 +15,109 @@ function formatAxisAmount(value: number) {
     return `${Math.round(value / 1000)}k`;
   }
   return `${Math.round(value)}`;
+}
+
+function formatShopCount(value: number | null | undefined) {
+  if (value === null || value === undefined || !Number.isFinite(value)) {
+    return "暂无数据";
+  }
+  return `${value.toLocaleString("zh-CN")}家`;
+}
+
+export function MobileOnlineShopTrendChart({
+  data,
+  height = 220
+}: {
+  data: OnlineShopDailyTrendPoint[];
+  height?: number;
+}) {
+  const option = {
+    color: ["#111111", "#d97706", "#1677ff"],
+    grid: { top: 38, right: 10, bottom: 24, left: 42 },
+    legend: {
+      top: 0,
+      right: 0,
+      itemWidth: 9,
+      itemHeight: 9,
+      icon: "circle",
+      textStyle: { color: "#666666", fontSize: 10 }
+    },
+    tooltip: {
+      trigger: "axis",
+      backgroundColor: "#ffffff",
+      borderColor: "#eaeaea",
+      textStyle: { color: "#000000", fontSize: 11 },
+      formatter: (
+        params: Array<{
+          axisValue?: string;
+          marker?: string;
+          seriesName?: string;
+          value?: number | null;
+        }>
+      ) => {
+        const date = params[0]?.axisValue ?? "";
+        const values = params.map(
+          (item) =>
+            `${item.marker ?? ""}${item.seriesName ?? ""}：<b>${formatShopCount(
+              item.value
+            )}</b>`
+        );
+        return [date, ...values].join("<br/>");
+      }
+    },
+    xAxis: {
+      type: "category",
+      boundaryGap: false,
+      data: data.map((item) => item.date),
+      axisLabel: {
+        color: "#999999",
+        fontSize: 9,
+        interval: 3,
+        formatter: (value: string) => value.slice(5)
+      },
+      axisLine: { lineStyle: { color: "#eaeaea" } },
+      axisTick: { show: false }
+    },
+    yAxis: {
+      type: "value",
+      scale: true,
+      minInterval: 1,
+      axisLabel: {
+        color: "#999999",
+        fontSize: 9,
+        formatter: (value: number) => Math.round(value).toLocaleString("zh-CN")
+      },
+      splitLine: { lineStyle: { color: "#f2f2f2", type: "dashed" } }
+    },
+    series: [
+      {
+        name: "总在线",
+        type: "line",
+        data: data.map((item) => item.totalCount),
+        connectNulls: false,
+        showSymbol: false,
+        lineStyle: { width: 2.5 }
+      },
+      {
+        name: "美团",
+        type: "line",
+        data: data.map((item) => item.meituanCount),
+        connectNulls: false,
+        showSymbol: false,
+        lineStyle: { width: 1.5 }
+      },
+      {
+        name: "饿了么",
+        type: "line",
+        data: data.map((item) => item.elemeCount),
+        connectNulls: false,
+        showSymbol: false,
+        lineStyle: { width: 1.5 }
+      }
+    ]
+  };
+
+  return <ReactECharts option={option} notMerge lazyUpdate style={{ height }} />;
 }
 
 export function MobileAmountTrendChart({

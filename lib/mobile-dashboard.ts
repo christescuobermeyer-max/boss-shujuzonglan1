@@ -2,6 +2,7 @@ import type {
   BarChartDatum,
   DailyAmountPoint,
   DailySummaryRow,
+  OnlineShopDailyTrendPoint,
   TrendItem
 } from "@/lib/mobile-contracts";
 
@@ -36,6 +37,7 @@ export type MobileMonthlyStatsPayload = {
   wuhanMonthlyPointAmount: number;
   yichangMonthlyPointAmount: number;
   onlineShopCounts: MobileOnlineShopCounts;
+  onlineShopDailyTrend: OnlineShopDailyTrendPoint[];
   dailyAmountTrend: DailyAmountPoint[];
   dailyOrderShopTrend: TrendItem[];
   dailyRepaymentRows: MobileDailyRepaymentRow[];
@@ -48,6 +50,7 @@ export type MobileMonthlyStatsPayload = {
 
 export type MobileDashboardData = {
   kpis: MobileKpi[];
+  onlineShopTrendData: OnlineShopDailyTrendPoint[];
   totalAmountTrendData: DailyAmountPoint[];
   dailyOrderTrendData: BarChartDatum[];
   dailyRepaymentRows: MobileDailyRepaymentRow[];
@@ -123,6 +126,7 @@ export function buildEmptyMobileMonthlyStats(month: string): MobileMonthlyStatsP
       meituanCount: 0,
       elemeCount: 0
     },
+    onlineShopDailyTrend: [],
     dailyAmountTrend: [],
     dailyOrderShopTrend: [],
     dailyRepaymentRows: [],
@@ -207,6 +211,9 @@ export function buildMobileDashboardData(
         accent: "blue"
       }
     ],
+    onlineShopTrendData: [...(payload.onlineShopDailyTrend ?? [])].sort((left, right) =>
+      left.date.localeCompare(right.date)
+    ),
     totalAmountTrendData: payload.dailyAmountTrend
       .filter(hasDailyTrendData)
       .sort((left, right) => left.date.localeCompare(right.date)),

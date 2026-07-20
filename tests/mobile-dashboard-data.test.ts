@@ -32,6 +32,20 @@ function buildPayloadFixture(): MobileMonthlyStatsPayload {
       meituanCount: 108,
       elemeCount: 72
     },
+    onlineShopDailyTrend: [
+      {
+        date: "2026-04-03",
+        totalCount: 176,
+        meituanCount: 106,
+        elemeCount: 70
+      },
+      {
+        date: "2026-04-02",
+        totalCount: 173,
+        meituanCount: 104,
+        elemeCount: 69
+      }
+    ],
     dailyAmountTrend: [
       { date: "2026-04-01", value: 0 },
       { date: "2026-04-02", value: 110 },
@@ -133,6 +147,15 @@ describe("mobile dashboard data", () => {
     ]);
     expect(getVisibleDailyRepaymentRows(data.dailyRepaymentRows, false)).toHaveLength(7);
     expect(getVisibleDailyRepaymentRows(data.dailyRepaymentRows, true)).toHaveLength(8);
+  });
+
+  it("keeps online shop trend points in chronological order", () => {
+    const data = buildMobileDashboardData(buildPayloadFixture());
+
+    expect(data.onlineShopTrendData.map((item) => item.date)).toEqual([
+      "2026-04-02",
+      "2026-04-03"
+    ]);
   });
 
   it("keeps all sales, operator amount, and termination ranking rows", () => {

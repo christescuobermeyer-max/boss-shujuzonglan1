@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { MobileAllRepaymentTrend } from "@/components/mobile/mobile-all-repayment-trend";
 import {
   MobileAmountTrendChart,
+  MobileOnlineShopTrendChart,
   MobileOrderTrendChart
 } from "@/components/mobile/mobile-boss-charts";
 import {
@@ -1179,6 +1180,18 @@ export function MobileBossDashboard() {
                 {item.note ? <small className="mobile-kpi-note">{item.note}</small> : null}
               </article>
             ))}
+          </section>
+
+          <section className="mobile-section">
+            <div className="mobile-section-head">
+              <h2>每日在线店铺趋势</h2>
+              <span>总在线 · 美团 · 饿了么</span>
+            </div>
+            {dashboardData.onlineShopTrendData.length > 0 ? (
+              <MobileOnlineShopTrendChart data={dashboardData.onlineShopTrendData} />
+            ) : (
+              <div className="mobile-empty">本月暂无在线店铺快照</div>
+            )}
           </section>
 
           {dashboardData.totalAmountTrendData.length > 0 ? (

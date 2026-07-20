@@ -9,6 +9,13 @@ export type DailyAmountPoint = {
   value: number;
 };
 
+export type OnlineShopDailyTrendPoint = {
+  date: string;
+  totalCount: number | null;
+  meituanCount: number | null;
+  elemeCount: number | null;
+};
+
 export type AllRepaymentTrendResponse = {
   startDate: string | null;
   endDate: string | null;

@@ -1,5 +1,6 @@
 import type { DailySummaryRow } from "./stats/daily-summary-rows.js";
 import type { DailyAmountPoint } from "./stats/daily-total-amount-trend.js";
+import type { OnlineShopDailyTrendPoint } from "./stats/online-shop-daily-trend.js";
 import type { TrendItem } from "./stats/types.js";
 
 export type MobileKpi = {
@@ -33,6 +34,7 @@ export type MobileMonthlyStatsPayload = {
   wuhanMonthlyPointAmount: number;
   yichangMonthlyPointAmount: number;
   onlineShopCounts: MobileOnlineShopCounts;
+  onlineShopDailyTrend: OnlineShopDailyTrendPoint[];
   dailyAmountTrend: DailyAmountPoint[];
   dailyOrderShopTrend: TrendItem[];
   dailyRepaymentRows: MobileDailyRepaymentRow[];
@@ -105,6 +107,7 @@ export function buildEmptyMobileMonthlyStats(month: string): MobileMonthlyStatsP
       meituanCount: 0,
       elemeCount: 0
     },
+    onlineShopDailyTrend: [],
     dailyAmountTrend: [],
     dailyOrderShopTrend: [],
     dailyRepaymentRows: [],
