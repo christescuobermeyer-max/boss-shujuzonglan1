@@ -47,7 +47,6 @@ describe("mobile boss quick view layout source", () => {
     expect(source).toContain("最新数据日期");
     expect(source).toContain("mobile-kpi-note");
     expect(source).toContain("全部日期在线店铺趋势");
-    expect(source).toContain("总在线 · 美团 · 饿了么");
     expect(source).toContain("暂无在线店铺历史数据");
     expect(source).toContain("每日回款趋势");
     expect(source).toContain("每日开单趋势");

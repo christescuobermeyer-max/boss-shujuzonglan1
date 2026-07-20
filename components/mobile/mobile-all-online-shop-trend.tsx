@@ -115,7 +115,7 @@ export function MobileAllOnlineShopTrend() {
       <div className="mobile-section-head mobile-section-head-row">
         <div>
           <h2 id={sectionTitleId}>全部日期在线店铺趋势</h2>
-          <span>{dateRange} · 总在线 · 美团 · 饿了么</span>
+          <span>{dateRange}</span>
         </div>
         {payload.points.length > 0 ? (
           <button
