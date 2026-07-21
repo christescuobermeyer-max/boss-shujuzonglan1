@@ -76,6 +76,37 @@ export function buildDailyOrderTrendData(items: TrendItem[] | undefined): BarCha
     }));
 }
 
+export function buildMonthlyDailyOrderAverage(
+  items: TrendItem[] | undefined,
+  month: string,
+  todayDateKey: string
+) {
+  const matchedMonth = month.match(/^(\d{4})-(\d{2})$/);
+  const matchedToday = todayDateKey.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!matchedMonth || !matchedToday) return 0;
+
+  const year = Number(matchedMonth[1]);
+  const monthNumber = Number(matchedMonth[2]);
+  if (monthNumber < 1 || monthNumber > 12) return 0;
+
+  const daysInMonth = new Date(Date.UTC(year, monthNumber, 0)).getUTCDate();
+  const todayMonth = todayDateKey.slice(0, 7);
+  const elapsedDays =
+    month < todayMonth
+      ? daysInMonth
+      : month === todayMonth
+        ? Math.min(daysInMonth, Math.max(1, Number(matchedToday[3])))
+        : 0;
+  if (elapsedDays === 0) return 0;
+
+  const totalOrders = (items ?? []).reduce((sum, item) => {
+    const count = Number(item.count ?? 0);
+    return Number.isFinite(count) ? sum + count : sum;
+  }, 0);
+
+  return totalOrders / elapsedDays;
+}
+
 function hasDailyRepaymentData(row: MobileDailyRepaymentRow) {
   return (
     Number(row.totalAmount ?? 0) !== 0 ||

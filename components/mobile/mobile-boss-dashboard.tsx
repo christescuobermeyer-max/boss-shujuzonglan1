@@ -16,6 +16,7 @@ import {
 import {
   buildEmptyMobileMonthlyStats,
   buildMobileDashboardData,
+  buildMonthlyDailyOrderAverage,
   formatMobileAmount,
   getVisibleDailyRepaymentRows,
   type MobileKpi,
@@ -860,6 +861,7 @@ export function MobileBossDashboard() {
   const initialAftersalesDate = useMemo(() => getDefaultAftersalesDateKey(), []);
   const maxAftersalesDate = useMemo(() => getShanghaiDateKey(), []);
   const [month, setMonth] = useState(initialMonth);
+  const [shanghaiToday, setShanghaiToday] = useState(maxAftersalesDate);
   const [stats, setStats] = useState<MobileMonthlyStatsPayload>(
     buildEmptyMobileMonthlyStats(initialMonth)
   );
@@ -938,6 +940,12 @@ export function MobileBossDashboard() {
   useEffect(() => {
     setExpanded(false);
   }, [month]);
+
+  useEffect(() => {
+    const refreshShanghaiDate = () => setShanghaiToday(getShanghaiDateKey());
+    const timer = window.setInterval(refreshShanghaiDate, 60_000);
+    return () => window.clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -1108,6 +1116,15 @@ export function MobileBossDashboard() {
     [stats]
   );
   const displayedDailyOrderTrendData = dashboardData.dailyOrderTrendData;
+  const dailyOrderAverage = useMemo(
+    () =>
+      buildMonthlyDailyOrderAverage(
+        stats.dailyOrderShopTrend,
+        stats.month,
+        shanghaiToday
+      ),
+    [shanghaiToday, stats.dailyOrderShopTrend, stats.month]
+  );
   const mobileKpis = useMemo<MobileKpi[]>(() => {
     const recentTerminationKpi: MobileKpi = {
       label: "两个月解约数",
@@ -1203,9 +1220,17 @@ export function MobileBossDashboard() {
       {!loading ? (
         <>
           <section className="mobile-section">
-            <div className="mobile-section-head">
-              <h2>每日开单趋势</h2>
-              <span>按日查看本月新增开单数</span>
+            <div className="mobile-section-head mobile-section-head-row">
+              <div>
+                <h2>每日开单趋势</h2>
+                <span>按日查看本月新增开单数</span>
+              </div>
+              <strong
+                className="mobile-work-total mobile-daily-order-average"
+                aria-label={`当月每日平均开单数 ${dailyOrderAverage.toFixed(1)} 单`}
+              >
+                日均 {dailyOrderAverage.toFixed(1)}单
+              </strong>
             </div>
 
             {displayedDailyOrderTrendData.length > 0 ? (

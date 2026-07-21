@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   buildMobileDashboardData,
+  buildMonthlyDailyOrderAverage,
   formatMobileAmount,
   getVisibleDailyRepaymentRows,
   type MobileMonthlyStatsPayload
@@ -79,6 +80,20 @@ function buildPayloadFixture(): MobileMonthlyStatsPayload {
 }
 
 describe("mobile dashboard data", () => {
+  it("calculates the current-month daily order average using elapsed Shanghai days", () => {
+    const trend = [
+      { date: "2026-07-13", count: 34 },
+      { date: "2026-07-14", count: 18 }
+    ];
+
+    expect(buildMonthlyDailyOrderAverage(trend, "2026-07", "2026-07-14")).toBeCloseTo(
+      52 / 14
+    );
+    expect(buildMonthlyDailyOrderAverage(trend, "2026-06", "2026-07-14")).toBeCloseTo(
+      52 / 30
+    );
+  });
+
   it("builds the selected boss KPI cards from the mobile payload", () => {
     const data = buildMobileDashboardData(buildPayloadFixture());
 

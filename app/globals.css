@@ -1032,6 +1032,11 @@ button {
   font-variant-numeric: tabular-nums;
 }
 
+.mobile-daily-order-average {
+  min-width: 88px;
+  white-space: nowrap;
+}
+
 .mobile-work-loading,
 .mobile-work-error {
   border-radius: 10px;
