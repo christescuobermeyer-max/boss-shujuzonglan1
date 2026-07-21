@@ -1,14 +1,17 @@
 type TrendDateValue = Date | string | null | undefined;
 
+const SHANGHAI_DATE_FORMATTER = new Intl.DateTimeFormat("en-CA", {
+  timeZone: "Asia/Shanghai",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit"
+});
+
 function toDateKey(date: TrendDateValue) {
   if (!date) return "";
   const parsed = date instanceof Date ? date : new Date(String(date));
   if (Number.isNaN(parsed.getTime())) return "";
-  return [
-    parsed.getFullYear(),
-    String(parsed.getMonth() + 1).padStart(2, "0"),
-    String(parsed.getDate()).padStart(2, "0")
-  ].join("-");
+  return SHANGHAI_DATE_FORMATTER.format(parsed);
 }
 
 export function buildCountTrendByDate<T>(
