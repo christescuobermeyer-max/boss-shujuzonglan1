@@ -51,6 +51,8 @@ describe("mobile boss quick view layout source", () => {
     expect(source).toContain("每日回款趋势");
     expect(source).toContain("每日开单趋势");
     expect(source).toContain("dailyOrderTrendData");
+    expect(source).toContain("美团 / 饿了么每日开单趋势");
+    expect(source).toContain("dailyOrderPlatformTrendData");
     expect(source).toContain("mobile-daily-order-average");
     expect(source).toContain("日均 {dailyOrderAverage.toFixed(1)}单");
     expect(source).toContain("每日回款列表");
@@ -138,6 +140,7 @@ describe("mobile boss quick view layout source", () => {
     expect(source).toContain("MobileAmountTrendChart");
     expect(source).toContain("MobileOnlineShopTrendChart");
     expect(source).toContain("MobileOrderTrendChart");
+    expect(source).toContain("MobilePlatformOrderTrendChart");
     expect(source).toContain(
       "<MobileOnlineShopTrendChart data={payload.points}"
     );
@@ -146,6 +149,9 @@ describe("mobile boss quick view layout source", () => {
     expect(source).toContain('name: "饿了么"');
     expect(source).toContain("connectNulls: false");
     expect(source).toContain("<MobileOrderTrendChart data={displayedDailyOrderTrendData}");
+    expect(source).toContain(
+      "data={displayedDailyOrderPlatformTrendData}"
+    );
     expect(source).toContain("echarts-for-react");
     expect(source).toContain("height = 180");
   });

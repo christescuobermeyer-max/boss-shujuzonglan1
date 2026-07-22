@@ -5,7 +5,8 @@ import { MobileAllOnlineShopTrend } from "@/components/mobile/mobile-all-online-
 import { MobileAllRepaymentTrend } from "@/components/mobile/mobile-all-repayment-trend";
 import {
   MobileAmountTrendChart,
-  MobileOrderTrendChart
+  MobileOrderTrendChart,
+  MobilePlatformOrderTrendChart
 } from "@/components/mobile/mobile-boss-charts";
 import {
   buildAccountGenerationSummaryUrl,
@@ -1116,6 +1117,8 @@ export function MobileBossDashboard() {
     [stats]
   );
   const displayedDailyOrderTrendData = dashboardData.dailyOrderTrendData;
+  const displayedDailyOrderPlatformTrendData =
+    dashboardData.dailyOrderPlatformTrendData;
   const dailyOrderAverage = useMemo(
     () =>
       buildMonthlyDailyOrderAverage(
@@ -1235,6 +1238,18 @@ export function MobileBossDashboard() {
 
             {displayedDailyOrderTrendData.length > 0 ? (
               <MobileOrderTrendChart data={displayedDailyOrderTrendData} />
+            ) : null}
+
+            {displayedDailyOrderPlatformTrendData.length > 0 ? (
+              <div className="mobile-order-platform-trend">
+                <div className="mobile-order-platform-trend-head">
+                  <h3>美团 / 饿了么每日开单趋势</h3>
+                  <span>按平台拆分本月新增开单数</span>
+                </div>
+                <MobilePlatformOrderTrendChart
+                  data={displayedDailyOrderPlatformTrendData}
+                />
+              </div>
             ) : null}
 
             {displayedDailyOrderTrendData.length === 0 ? (

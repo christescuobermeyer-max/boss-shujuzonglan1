@@ -42,6 +42,12 @@ export type BarChartDatum = {
   value: number;
 };
 
+export type PlatformOrderTrendDatum = {
+  label: string;
+  meituanValue: number;
+  elemeValue: number;
+};
+
 export type RecentSignedTerminationOperatorStat = {
   operatorName: string;
   count: number;

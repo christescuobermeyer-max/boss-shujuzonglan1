@@ -2,6 +2,7 @@ import type {
   BarChartDatum,
   DailyAmountPoint,
   DailySummaryRow,
+  PlatformOrderTrendDatum,
   TrendItem
 } from "@/lib/mobile-contracts";
 
@@ -27,6 +28,11 @@ export type MobileOnlineShopCounts = {
   elemeCount: number;
 };
 
+export type MobileDailyOrderShopTrendByPlatform = {
+  meituan: TrendItem[];
+  eleme: TrendItem[];
+};
+
 export type MobileMonthlyStatsPayload = {
   month: string;
   monthlyShopCount: number;
@@ -38,6 +44,7 @@ export type MobileMonthlyStatsPayload = {
   onlineShopCounts: MobileOnlineShopCounts;
   dailyAmountTrend: DailyAmountPoint[];
   dailyOrderShopTrend: TrendItem[];
+  dailyOrderShopTrendByPlatform?: MobileDailyOrderShopTrendByPlatform;
   dailyRepaymentRows: MobileDailyRepaymentRow[];
   rankings: {
     sales: MobileRankItem[];
@@ -50,6 +57,7 @@ export type MobileDashboardData = {
   kpis: MobileKpi[];
   totalAmountTrendData: DailyAmountPoint[];
   dailyOrderTrendData: BarChartDatum[];
+  dailyOrderPlatformTrendData: PlatformOrderTrendDatum[];
   dailyRepaymentRows: MobileDailyRepaymentRow[];
   rankings: {
     sales: MobileRankItem[];
@@ -74,6 +82,40 @@ export function buildDailyOrderTrendData(items: TrendItem[] | undefined): BarCha
       label: String(item.date ?? ""),
       value: Number(item.count ?? 0)
     }));
+}
+
+export function buildDailyOrderPlatformTrendData(
+  trends: MobileDailyOrderShopTrendByPlatform | undefined
+): PlatformOrderTrendDatum[] {
+  const valuesByDate = new Map<
+    string,
+    { meituanValue: number; elemeValue: number }
+  >();
+
+  function addPlatformItems(
+    platform: "meituanValue" | "elemeValue",
+    items: TrendItem[] | undefined
+  ) {
+    (items ?? []).forEach((item) => {
+      const date = String(item.date ?? "").trim();
+      const count = Number(item.count ?? 0);
+      if (!date || !Number.isFinite(count) || count <= 0) return;
+
+      const current = valuesByDate.get(date) ?? {
+        meituanValue: 0,
+        elemeValue: 0
+      };
+      current[platform] += count;
+      valuesByDate.set(date, current);
+    });
+  }
+
+  addPlatformItems("meituanValue", trends?.meituan);
+  addPlatformItems("elemeValue", trends?.eleme);
+
+  return Array.from(valuesByDate.entries())
+    .sort(([leftDate], [rightDate]) => leftDate.localeCompare(rightDate))
+    .map(([label, values]) => ({ label, ...values }));
 }
 
 export function buildMonthlyDailyOrderAverage(
@@ -156,6 +198,10 @@ export function buildEmptyMobileMonthlyStats(month: string): MobileMonthlyStatsP
     },
     dailyAmountTrend: [],
     dailyOrderShopTrend: [],
+    dailyOrderShopTrendByPlatform: {
+      meituan: [],
+      eleme: []
+    },
     dailyRepaymentRows: [],
     rankings: {
       sales: [],
@@ -242,6 +288,9 @@ export function buildMobileDashboardData(
       .filter(hasDailyTrendData)
       .sort((left, right) => left.date.localeCompare(right.date)),
     dailyOrderTrendData: buildDailyOrderTrendData(payload.dailyOrderShopTrend),
+    dailyOrderPlatformTrendData: buildDailyOrderPlatformTrendData(
+      payload.dailyOrderShopTrendByPlatform
+    ),
     dailyRepaymentRows: payload.dailyRepaymentRows
       .filter(hasDailyRepaymentData)
       .sort((left, right) => right.date.localeCompare(left.date)),

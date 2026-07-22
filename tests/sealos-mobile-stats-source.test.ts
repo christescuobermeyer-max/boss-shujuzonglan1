@@ -47,7 +47,11 @@ describe("sealos monthly stats API", () => {
 
     expect(serviceSource).toContain("buildMonthlySignedShopTrend");
     expect(serviceSource).toContain("const dailyOrderShopTrend = buildMonthlySignedShopTrend({");
+    expect(serviceSource).toContain(
+      "const dailyOrderShopTrendByPlatform = buildMonthlySignedShopTrendByPlatform({"
+    );
     expect(serviceSource).toContain("dailyOrderShopTrend,");
+    expect(serviceSource).toContain("dailyOrderShopTrendByPlatform,");
     expect(serviceSource).not.toContain("dailyOrderShopTrend: []");
   });
 });

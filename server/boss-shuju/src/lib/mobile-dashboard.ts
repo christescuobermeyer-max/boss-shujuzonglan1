@@ -24,6 +24,11 @@ export type MobileOnlineShopCounts = {
   elemeCount: number;
 };
 
+export type MobileDailyOrderShopTrendByPlatform = {
+  meituan: TrendItem[];
+  eleme: TrendItem[];
+};
+
 export type MobileMonthlyStatsPayload = {
   month: string;
   monthlyShopCount: number;
@@ -35,6 +40,7 @@ export type MobileMonthlyStatsPayload = {
   onlineShopCounts: MobileOnlineShopCounts;
   dailyAmountTrend: DailyAmountPoint[];
   dailyOrderShopTrend: TrendItem[];
+  dailyOrderShopTrendByPlatform: MobileDailyOrderShopTrendByPlatform;
   dailyRepaymentRows: MobileDailyRepaymentRow[];
   rankings: {
     sales: MobileRankItem[];
@@ -107,6 +113,10 @@ export function buildEmptyMobileMonthlyStats(month: string): MobileMonthlyStatsP
     },
     dailyAmountTrend: [],
     dailyOrderShopTrend: [],
+    dailyOrderShopTrendByPlatform: {
+      meituan: [],
+      eleme: []
+    },
     dailyRepaymentRows: [],
     rankings: {
       sales: [],

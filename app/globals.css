@@ -1037,6 +1037,25 @@ button {
   white-space: nowrap;
 }
 
+.mobile-order-platform-trend {
+  border-top: 1px solid #eeeeee;
+  margin-top: 16px;
+  padding-top: 16px;
+}
+
+.mobile-order-platform-trend-head h3 {
+  font-size: 14px;
+  line-height: 1.35;
+  margin: 0;
+}
+
+.mobile-order-platform-trend-head span {
+  color: #777777;
+  display: block;
+  font-size: 11px;
+  margin-top: 3px;
+}
+
 .mobile-work-loading,
 .mobile-work-error {
   border-radius: 10px;

@@ -1,3 +1,5 @@
+import { resolveDailyPointPlatform } from "./daily-point-shop-matcher.js";
+
 type TrendDateValue = Date | string | null | undefined;
 
 const SHANGHAI_DATE_FORMATTER = new Intl.DateTimeFormat("en-CA", {
@@ -44,6 +46,39 @@ export function buildMonthlySignedShopTrend<T extends { contractSignedDate?: Tre
   });
 
   return buildCountTrendByDate(signedShops, (shop) => shop.contractSignedDate);
+}
+
+export function buildMonthlySignedShopTrendByPlatform<
+  T extends {
+    contractSignedDate?: TrendDateValue;
+    deliveryPlatform?: string;
+  }
+>(params: {
+  start: Date;
+  end: Date;
+  shops: T[];
+}) {
+  const shopsByPlatform = {
+    meituan: [] as T[],
+    eleme: [] as T[]
+  };
+
+  params.shops.forEach((shop) => {
+    shopsByPlatform[resolveDailyPointPlatform(shop.deliveryPlatform)].push(shop);
+  });
+
+  return {
+    meituan: buildMonthlySignedShopTrend({
+      start: params.start,
+      end: params.end,
+      shops: shopsByPlatform.meituan
+    }),
+    eleme: buildMonthlySignedShopTrend({
+      start: params.start,
+      end: params.end,
+      shops: shopsByPlatform.eleme
+    })
+  };
 }
 
 export function buildNamedCountTrend<T>(rows: T[], pickName: (row: T) => string) {

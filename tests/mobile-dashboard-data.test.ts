@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  buildDailyOrderPlatformTrendData,
   buildMobileDashboardData,
   buildMonthlyDailyOrderAverage,
   formatMobileAmount,
@@ -45,7 +46,20 @@ function buildPayloadFixture(): MobileMonthlyStatsPayload {
       { date: "2026-04-09", value: 770 },
       { date: "2026-04-10", value: 880 }
     ],
-    dailyOrderShopTrend: [],
+    dailyOrderShopTrend: [
+      { date: "2026-04-02", count: 3 },
+      { date: "2026-04-03", count: 4 }
+    ],
+    dailyOrderShopTrendByPlatform: {
+      meituan: [
+        { date: "2026-04-02", count: 2 },
+        { date: "2026-04-03", count: 1 }
+      ],
+      eleme: [
+        { date: "2026-04-02", count: 1 },
+        { date: "2026-04-03", count: 3 }
+      ]
+    },
     dailyRepaymentRows: [
       buildDailyRow("2026-04-01", 0),
       buildDailyRow("2026-04-02", 110),
@@ -80,6 +94,25 @@ function buildPayloadFixture(): MobileMonthlyStatsPayload {
 }
 
 describe("mobile dashboard data", () => {
+  it("merges platform order dates and fills a missing platform with zero", () => {
+    expect(
+      buildDailyOrderPlatformTrendData({
+        meituan: [
+          { date: "2026-07-13", count: 30 },
+          { date: "2026-07-14", count: 18 }
+        ],
+        eleme: [
+          { date: "2026-07-13", count: 4 },
+          { date: "2026-07-15", count: 2 }
+        ]
+      })
+    ).toEqual([
+      { label: "2026-07-13", meituanValue: 30, elemeValue: 4 },
+      { label: "2026-07-14", meituanValue: 18, elemeValue: 0 },
+      { label: "2026-07-15", meituanValue: 0, elemeValue: 2 }
+    ]);
+  });
+
   it("calculates the current-month daily order average using elapsed Shanghai days", () => {
     const trend = [
       { date: "2026-07-13", count: 34 },
@@ -125,6 +158,11 @@ describe("mobile dashboard data", () => {
 
   it("keeps only daily repayment dates that have data", () => {
     const data = buildMobileDashboardData(buildPayloadFixture());
+
+    expect(data.dailyOrderPlatformTrendData).toEqual([
+      { label: "2026-04-02", meituanValue: 2, elemeValue: 1 },
+      { label: "2026-04-03", meituanValue: 1, elemeValue: 3 }
+    ]);
 
     expect(data.totalAmountTrendData.map((item) => item.date)).toEqual([
       "2026-04-02",

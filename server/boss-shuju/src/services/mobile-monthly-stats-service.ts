@@ -13,7 +13,11 @@ import { resolveMonthRange } from "../lib/stats/month.js";
 import { shiftMonthValue } from "../lib/stats/month-rotation.js";
 import { buildMonthlyPointSummary } from "../lib/stats/monthly-point-summary.js";
 import { buildMonthlyShopCohorts } from "../lib/stats/monthly-shop-cohorts.js";
-import { buildMonthlySignedShopTrend, buildNamedCountTrend } from "../lib/stats/monthly-stats-trends.js";
+import {
+  buildMonthlySignedShopTrend,
+  buildMonthlySignedShopTrendByPlatform,
+  buildNamedCountTrend
+} from "../lib/stats/monthly-stats-trends.js";
 import { getLatestOnlineShopSummary } from "../lib/stats/latest-online-shop-service.js";
 import type { DailyTrendSeries } from "../lib/stats/daily-trend-series.js";
 import type { DailyAmountPoint } from "../lib/stats/daily-total-amount-trend.js";
@@ -261,6 +265,11 @@ export async function getMobileMonthlyStatsPayload(
     end,
     shops: filteredCandidateShops
   });
+  const dailyOrderShopTrendByPlatform = buildMonthlySignedShopTrendByPlatform({
+    start,
+    end,
+    shops: filteredCandidateShops
+  });
   const dailyRepaymentRows = buildDailySummaryRows({
     dailyOrderShopTrend,
     meituanDailyPointShopTrend: meituanTrends.shopCountTrend,
@@ -292,6 +301,7 @@ export async function getMobileMonthlyStatsPayload(
     },
     dailyAmountTrend,
     dailyOrderShopTrend,
+    dailyOrderShopTrendByPlatform,
     dailyRepaymentRows,
     rankings: {
       sales: buildSalesRanking(

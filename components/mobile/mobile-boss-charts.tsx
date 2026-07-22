@@ -4,7 +4,8 @@ import ReactECharts from "echarts-for-react";
 import type {
   BarChartDatum,
   DailyAmountPoint,
-  OnlineShopDailyTrendPoint
+  OnlineShopDailyTrendPoint,
+  PlatformOrderTrendDatum
 } from "@/lib/mobile-contracts";
 
 function formatAxisAmount(value: number) {
@@ -385,6 +386,66 @@ export function MobileOrderTrendChart({
           borderRadius: [4, 4, 0, 0],
           color: "#000000"
         }
+      }
+    ]
+  };
+
+  return <ReactECharts option={option} notMerge lazyUpdate style={{ height }} />;
+}
+
+export function MobilePlatformOrderTrendChart({
+  data,
+  height = 200
+}: {
+  data: PlatformOrderTrendDatum[];
+  height?: number;
+}) {
+  const option = {
+    animation: false,
+    color: ["#d97706", "#1677ff"],
+    grid: { top: 34, right: 10, bottom: 24, left: 34 },
+    legend: {
+      top: 0,
+      right: 0,
+      itemWidth: 9,
+      itemHeight: 9,
+      icon: "circle",
+      textStyle: { color: "#666666", fontSize: 10 }
+    },
+    tooltip: {
+      trigger: "axis",
+      axisPointer: { type: "shadow" },
+      backgroundColor: "#ffffff",
+      borderColor: "#eaeaea",
+      textStyle: { color: "#000000", fontSize: 11 }
+    },
+    xAxis: {
+      type: "category",
+      data: data.map((item) => item.label.slice(5)),
+      axisLabel: { color: "#999999", fontSize: 9, interval: 3 },
+      axisLine: { lineStyle: { color: "#eaeaea" } },
+      axisTick: { show: false }
+    },
+    yAxis: {
+      type: "value",
+      minInterval: 1,
+      axisLabel: { color: "#999999", fontSize: 9 },
+      splitLine: { lineStyle: { color: "#f2f2f2", type: "dashed" } }
+    },
+    series: [
+      {
+        name: "美团",
+        type: "bar",
+        data: data.map((item) => item.meituanValue),
+        barMaxWidth: 10,
+        itemStyle: { borderRadius: [3, 3, 0, 0] }
+      },
+      {
+        name: "饿了么",
+        type: "bar",
+        data: data.map((item) => item.elemeValue),
+        barMaxWidth: 10,
+        itemStyle: { borderRadius: [3, 3, 0, 0] }
       }
     ]
   };
