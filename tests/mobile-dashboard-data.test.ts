@@ -3,6 +3,7 @@ import {
   buildDailyOrderPlatformTrendData,
   buildMobileDashboardData,
   buildMonthlyDailyOrderAverage,
+  buildPlatformDailyOrderAverages,
   formatMobileAmount,
   getVisibleDailyRepaymentRows,
   type MobileMonthlyStatsPayload
@@ -125,6 +126,26 @@ describe("mobile dashboard data", () => {
     expect(buildMonthlyDailyOrderAverage(trend, "2026-06", "2026-07-14")).toBeCloseTo(
       52 / 30
     );
+  });
+
+  it("calculates each platform daily order average with the same month divisor", () => {
+    const result = buildPlatformDailyOrderAverages(
+      {
+        meituan: [
+          { date: "2026-07-13", count: 30 },
+          { date: "2026-07-14", count: 18 }
+        ],
+        eleme: [
+          { date: "2026-07-13", count: 4 },
+          { date: "2026-07-14", count: 6 }
+        ]
+      },
+      "2026-07",
+      "2026-07-14"
+    );
+
+    expect(result.meituan).toBeCloseTo(48 / 14);
+    expect(result.eleme).toBeCloseTo(10 / 14);
   });
 
   it("builds the selected boss KPI cards from the mobile payload", () => {

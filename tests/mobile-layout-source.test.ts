@@ -53,6 +53,10 @@ describe("mobile boss quick view layout source", () => {
     expect(source).toContain("dailyOrderTrendData");
     expect(source).toContain("美团 / 饿了么每日开单趋势");
     expect(source).toContain("dailyOrderPlatformTrendData");
+    expect(source).toContain("美团日均");
+    expect(source).toContain("饿了么日均");
+    expect(source).toContain("mobile-order-platform-averages");
+    expect(source).toContain("buildPlatformDailyOrderAverages");
     expect(source).toContain("mobile-daily-order-average");
     expect(source).toContain("日均 {dailyOrderAverage.toFixed(1)}单");
     expect(source).toContain("每日回款列表");

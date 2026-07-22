@@ -149,6 +149,25 @@ export function buildMonthlyDailyOrderAverage(
   return totalOrders / elapsedDays;
 }
 
+export function buildPlatformDailyOrderAverages(
+  trends: MobileDailyOrderShopTrendByPlatform | undefined,
+  month: string,
+  todayDateKey: string
+) {
+  return {
+    meituan: buildMonthlyDailyOrderAverage(
+      trends?.meituan,
+      month,
+      todayDateKey
+    ),
+    eleme: buildMonthlyDailyOrderAverage(
+      trends?.eleme,
+      month,
+      todayDateKey
+    )
+  };
+}
+
 function hasDailyRepaymentData(row: MobileDailyRepaymentRow) {
   return (
     Number(row.totalAmount ?? 0) !== 0 ||

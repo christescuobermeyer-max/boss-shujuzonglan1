@@ -18,6 +18,7 @@ import {
   buildEmptyMobileMonthlyStats,
   buildMobileDashboardData,
   buildMonthlyDailyOrderAverage,
+  buildPlatformDailyOrderAverages,
   formatMobileAmount,
   getVisibleDailyRepaymentRows,
   type MobileKpi,
@@ -1128,6 +1129,15 @@ export function MobileBossDashboard() {
       ),
     [shanghaiToday, stats.dailyOrderShopTrend, stats.month]
   );
+  const platformDailyOrderAverages = useMemo(
+    () =>
+      buildPlatformDailyOrderAverages(
+        stats.dailyOrderShopTrendByPlatform,
+        stats.month,
+        shanghaiToday
+      ),
+    [shanghaiToday, stats.dailyOrderShopTrendByPlatform, stats.month]
+  );
   const mobileKpis = useMemo<MobileKpi[]>(() => {
     const recentTerminationKpi: MobileKpi = {
       label: "两个月解约数",
@@ -1245,6 +1255,25 @@ export function MobileBossDashboard() {
                 <div className="mobile-order-platform-trend-head">
                   <h3>美团 / 饿了么每日开单趋势</h3>
                   <span>按平台拆分本月新增开单数</span>
+                </div>
+                <div
+                  className="mobile-order-platform-averages"
+                  aria-label={`平台每日平均开单数 美团 ${platformDailyOrderAverages.meituan.toFixed(1)} 单 饿了么 ${platformDailyOrderAverages.eleme.toFixed(1)} 单`}
+                >
+                  <div>
+                    <span>
+                      <i className="mobile-order-platform-dot mobile-order-platform-dot-meituan" />
+                      美团日均
+                    </span>
+                    <strong>{platformDailyOrderAverages.meituan.toFixed(1)}单</strong>
+                  </div>
+                  <div>
+                    <span>
+                      <i className="mobile-order-platform-dot mobile-order-platform-dot-eleme" />
+                      饿了么日均
+                    </span>
+                    <strong>{platformDailyOrderAverages.eleme.toFixed(1)}单</strong>
+                  </div>
                 </div>
                 <MobilePlatformOrderTrendChart
                   data={displayedDailyOrderPlatformTrendData}
