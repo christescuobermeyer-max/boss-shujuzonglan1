@@ -61,9 +61,9 @@ describe("mobile boss quick view layout source", () => {
     expect(source).toContain("日均 {dailyOrderAverage.toFixed(1)}单");
     expect(source).toContain("每日回款列表");
     expect(source).toContain("展开本月全部");
-    expect(source).toContain("资源统计");
-    expect(source).toContain("资源账号录入统计");
-    expect(source).toContain("销售跟进统计");
+    expect(source).not.toContain("资源统计");
+    expect(source).not.toContain("资源账号录入统计");
+    expect(source).not.toContain("销售跟进统计");
     expect(source).toContain("销售开单");
     expect(source).toContain("运营回款");
     expect(source).toContain("账号生图");
@@ -100,38 +100,16 @@ describe("mobile boss quick view layout source", () => {
     );
   });
 
-  it("loads direct resource stats between daily repayment and sales ranking", () => {
+  it("does not request or render resource stats on the mobile dashboard", () => {
     const dashboardSource = readProjectFile("components", "mobile", "mobile-boss-dashboard.tsx");
     const clientSource = readProjectFile("lib", "mobile-api-client.ts");
 
-    expect(clientSource).toContain("buildResourceStatsUrl");
-    expect(clientSource).toContain("https://gw.hbcsch.pw/api/store-resources/stats/public-users");
-    expect(clientSource).not.toContain("https://gw.hbcsch.pw/api/store-resources/stats/users");
-    expect(clientSource).not.toContain("buildResourceStatsHeaders");
-    expect(clientSource).not.toContain("NEXT_PUBLIC_STORE_RESOURCES_ADMIN_TOKEN");
-    expect(existsSync(filePath("app", "api", "mobile", "resource-stats", "route.ts"))).toBe(false);
-    expect(dashboardSource).toContain("MobileResourceStatsSection");
-    expect(dashboardSource).toContain("fetch(buildResourceStatsUrl())");
-    expect(dashboardSource).toContain("customerService: ResourceCustomerServiceStats[]");
-    expect(dashboardSource).toContain("客服资源统计");
-    expect(dashboardSource).toContain("待转接");
-    expect(dashboardSource).toContain("已转接");
-    expect(dashboardSource).toContain("todayCustomerServiceCount");
-    expect(dashboardSource).toContain("mobile-resource-period-head");
-    expect(dashboardSource).toContain("mobile-resource-period-cell");
-    expect(dashboardSource).toContain("今日 我的 客服 合计");
-    expect(dashboardSource).not.toContain("mobile-resource-breakdown-divider");
-    expect(dashboardSource).not.toContain("今日 我的 | 客服 | 合计");
-    expect(dashboardSource).not.toContain("今日 我的 / 客服 / 合计");
-    expect(dashboardSource).not.toContain(
-      "return Number(rightCounts.today ?? 0) - Number(leftCounts.today ?? 0);\n    })\n    .slice(0, 8);"
-    );
-    expect(dashboardSource.indexOf("<MobileResourceStatsSection")).toBeGreaterThan(
-      dashboardSource.indexOf("visibleDailyRows.map")
-    );
-    expect(dashboardSource.indexOf("<MobileResourceStatsSection")).toBeLessThan(
-      dashboardSource.indexOf('<RankingList title="销售开单"')
-    );
+    expect(clientSource).not.toContain("buildResourceStatsUrl");
+    expect(clientSource).not.toContain("store-resources/stats/public-users");
+    expect(dashboardSource).not.toContain("MobileResourceStatsSection");
+    expect(dashboardSource).not.toContain("ResourceStatsPayload");
+    expect(dashboardSource).not.toContain("资源统计");
+    expect(dashboardSource).not.toContain("fetch(buildResourceStatsUrl())");
   });
 
   it("uses mobile-specific chart wrappers", () => {
