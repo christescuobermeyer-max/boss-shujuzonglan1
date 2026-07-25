@@ -21,6 +21,14 @@ describe("sealos work board APIs", () => {
     expect(clientSource).toContain("DEFAULT_RETRY_COUNT");
     expect(workflowSource).toContain("/api/open/workflow/daily-monitor");
     expect(aftersalesSource).toContain("/api/open/aftersales/daily-records");
+    expect(aftersalesSource).toContain("/api/mobile/aftersales/charge-stats");
+    expect(aftersalesSource).toContain("/api/open/aftersales/charge-stats");
+    expect(aftersalesSource).toContain("mobileAuthMiddleware");
+    expect(aftersalesSource).toContain("CHARGE_STATS_QUERY_KEYS");
+    expect(aftersalesSource).toContain('"type"');
+    expect(aftersalesSource).toContain('"period"');
+    expect(aftersalesSource).toContain('"month"');
+    expect(aftersalesSource).toContain('"pageSize"');
     expect(aftersalesSource).toContain('query("date")');
   });
 });

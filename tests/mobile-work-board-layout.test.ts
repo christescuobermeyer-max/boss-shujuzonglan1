@@ -84,4 +84,34 @@ describe("mobile work board layout", () => {
     expect(styles).toContain(".mobile-aftersales-person-count");
     expect(styles).toContain(".mobile-aftersales-person-label");
   });
+
+  it("售后每日工作上方展示付费推广和自动出餐收费统计", () => {
+    const source = readFileSync(
+      join(process.cwd(), "components", "mobile", "mobile-boss-dashboard.tsx"),
+      "utf8"
+    );
+    const styles = readFileSync(
+      join(process.cwd(), "app", "globals.css"),
+      "utf8"
+    );
+
+    expect(source).toContain("售后收费统计");
+    expect(source).toContain("付费推广统计");
+    expect(source).toContain("自动出餐统计");
+    expect(source).toContain("AFTERSALES_CHARGE_STATS_CONFIGS");
+    expect(source).toContain("/api/mobile/aftersales/charge-stats?");
+    expect(source).toContain('type="month"');
+    expect(source).toContain('type="date"');
+    expect(source).toContain("chargeLoadingMore");
+    expect(source).toContain("mergeAftersalesChargeStatsPage");
+    expect(source).toContain("加载更多");
+    expect(source.indexOf("售后收费统计")).toBeLessThan(source.indexOf("售后每日工作"));
+    expect(source.indexOf("付费推广统计")).toBeLessThan(source.indexOf("售后每日工作"));
+    expect(source.indexOf("自动出餐统计")).toBeLessThan(source.indexOf("售后每日工作"));
+    expect(styles).toContain(".mobile-aftersales-charge-filter-section");
+    expect(styles).toContain(".mobile-aftersales-charge-summary");
+    expect(styles).toContain(".mobile-aftersales-charge-employees");
+    expect(styles).toContain(".mobile-aftersales-charge-detail-list");
+    expect(styles).toContain(".mobile-aftersales-load-more");
+  });
 });

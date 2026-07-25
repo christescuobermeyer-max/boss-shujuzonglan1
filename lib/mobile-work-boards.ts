@@ -39,6 +39,50 @@ export type AftersalesDailyRecordsPayload = {
   generatedAt: string;
 };
 
+export type AftersalesChargeStatsType = "paid-promotion" | "auto-meal";
+
+export type AftersalesChargeStatsPeriod = "month" | "day";
+
+export type AftersalesChargeStatsEmployee = {
+  operatorName: string;
+  totalAmount: number;
+  totalCount: number;
+};
+
+export type AftersalesChargeStatsItem = {
+  id: string;
+  actionDate: string;
+  createdAt: string;
+  operatorName: string;
+  shopId: string;
+  shopName: string;
+  merchantId: string;
+  deliveryPlatform: string;
+  amount: number;
+  rechargeMode?: "auto" | "manual" | string;
+  serviceType?: "monthly" | "permanent" | string;
+  serviceMonths?: number;
+  serviceExpiresOn?: string;
+  serviceDurationLabel?: string;
+};
+
+export type AftersalesChargeStatsPayload = {
+  type: AftersalesChargeStatsType;
+  period: AftersalesChargeStatsPeriod;
+  dateKey: string;
+  totalAmount: number;
+  totalCount: number;
+  employeeCount: number;
+  employees: AftersalesChargeStatsEmployee[];
+  details: {
+    page: number;
+    pageSize: number;
+    total: number;
+    items: AftersalesChargeStatsItem[];
+  };
+  generatedAt: string;
+};
+
 export const AFTERSALES_PERSON_FILTERS = [
   { value: "all", label: "全部" },
   { value: "梁智", label: "梁智" },
@@ -81,6 +125,12 @@ export function getShanghaiDateKey(date = new Date()) {
   return `${year}-${month}-${day}`;
 }
 
+export function getShanghaiMonthKey(date = new Date()) {
+  const { year, month } = getShanghaiDateParts(date);
+  if (!year || !month) return "";
+  return `${year}-${month}`;
+}
+
 export function getDefaultAftersalesDateKey(now = new Date()) {
   const { year, month, day } = getShanghaiDateParts(now);
   if (!year || !month || !day) return "";
@@ -108,6 +158,50 @@ export function buildEmptyAftersalesDailyRecords(): AftersalesDailyRecordsPayloa
     totalCount: 0,
     employees: [],
     generatedAt: ""
+  };
+}
+
+export function buildEmptyAftersalesChargeStats(
+  type: AftersalesChargeStatsType,
+  period: AftersalesChargeStatsPeriod = "month",
+  dateKey = ""
+): AftersalesChargeStatsPayload {
+  return {
+    type,
+    period,
+    dateKey,
+    totalAmount: 0,
+    totalCount: 0,
+    employeeCount: 0,
+    employees: [],
+    details: {
+      page: 1,
+      pageSize: 20,
+      total: 0,
+      items: []
+    },
+    generatedAt: ""
+  };
+}
+
+export function mergeAftersalesChargeStatsPage(
+  current: AftersalesChargeStatsPayload,
+  next: AftersalesChargeStatsPayload
+): AftersalesChargeStatsPayload {
+  const existingIds = new Set(
+    (current.details?.items ?? []).map((item) => String(item.id ?? ""))
+  );
+  const appendedItems = (next.details?.items ?? []).filter((item) => {
+    const id = String(item.id ?? "");
+    return !id || !existingIds.has(id);
+  });
+
+  return {
+    ...next,
+    details: {
+      ...next.details,
+      items: [...(current.details?.items ?? []), ...appendedItems]
+    }
   };
 }
 

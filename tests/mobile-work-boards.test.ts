@@ -2,12 +2,16 @@ import { describe, expect, it } from "vitest";
 import {
   AFTERSALES_PERSON_FILTERS,
   buildAftersalesEmployeeRows,
+  buildEmptyAftersalesChargeStats,
   getDefaultAftersalesDateKey,
+  getShanghaiMonthKey,
   buildWorkflowProgressRows,
   filterAftersalesRecords,
   formatOpenApiDateTime,
   getAftersalesShopCounts,
   getRecentAftersalesRecords,
+  mergeAftersalesChargeStatsPage,
+  type AftersalesChargeStatsPayload,
   type AftersalesDailyRecordsPayload
 } from "@/lib/mobile-work-boards";
 
@@ -144,6 +148,87 @@ describe("mobile work board helpers", () => {
     const result = getDefaultAftersalesDateKey(new Date("2026-06-26T01:30:00+08:00"));
 
     expect(result).toBe("2026-06-25");
+  });
+
+  it("售后收费统计默认使用上海时区当前月并构造空态", () => {
+    expect(getShanghaiMonthKey(new Date("2026-07-01T00:30:00+08:00"))).toBe("2026-07");
+
+    expect(buildEmptyAftersalesChargeStats("paid-promotion", "month", "2026-07")).toEqual({
+      type: "paid-promotion",
+      period: "month",
+      dateKey: "2026-07",
+      totalAmount: 0,
+      totalCount: 0,
+      employeeCount: 0,
+      employees: [],
+      details: {
+        page: 1,
+        pageSize: 20,
+        total: 0,
+        items: []
+      },
+      generatedAt: ""
+    });
+  });
+
+  it("售后收费统计加载更多时追加明细并保留服务端汇总", () => {
+    const firstPage: AftersalesChargeStatsPayload = {
+      type: "auto-meal",
+      period: "month",
+      dateKey: "2026-07",
+      totalAmount: 300,
+      totalCount: 3,
+      employeeCount: 1,
+      employees: [{ operatorName: "售后A", totalAmount: 300, totalCount: 3 }],
+      details: {
+        page: 1,
+        pageSize: 2,
+        total: 3,
+        items: [
+          {
+            id: "1",
+            actionDate: "2026-07-03",
+            createdAt: "2026-07-03 12:00:00",
+            operatorName: "售后A",
+            shopId: "s1",
+            shopName: "A店",
+            merchantId: "m1",
+            deliveryPlatform: "美团餐饮",
+            amount: 100
+          }
+        ]
+      },
+      generatedAt: "2026-07-03T04:00:00.000Z"
+    };
+    const secondPage: AftersalesChargeStatsPayload = {
+      ...firstPage,
+      totalAmount: 500,
+      details: {
+        page: 2,
+        pageSize: 2,
+        total: 3,
+        items: [
+          firstPage.details.items[0],
+          {
+            id: "2",
+            actionDate: "2026-07-02",
+            createdAt: "2026-07-02 12:00:00",
+            operatorName: "售后A",
+            shopId: "s2",
+            shopName: "B店",
+            merchantId: "m2",
+            deliveryPlatform: "饿了么餐饮",
+            amount: 200
+          }
+        ]
+      }
+    };
+
+    const merged = mergeAftersalesChargeStatsPage(firstPage, secondPage);
+
+    expect(merged.totalAmount).toBe(500);
+    expect(merged.details.page).toBe(2);
+    expect(merged.details.items.map((item) => item.id)).toEqual(["1", "2"]);
   });
 
   it("按固定人员筛选售后记录并继承外层人员名称", () => {

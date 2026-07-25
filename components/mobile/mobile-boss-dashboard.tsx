@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { RefreshCw } from "lucide-react";
 import { MobileAllOnlineShopTrend } from "@/components/mobile/mobile-all-online-shop-trend";
 import { MobileAllRepaymentTrend } from "@/components/mobile/mobile-all-repayment-trend";
 import {
@@ -28,6 +29,7 @@ import {
 } from "@/lib/mobile-dashboard";
 import {
   AFTERSALES_PERSON_FILTERS,
+  buildEmptyAftersalesChargeStats,
   buildEmptyAftersalesDailyRecords,
   buildEmptyWorkflowDailyMonitor,
   buildWorkflowProgressRows,
@@ -36,6 +38,12 @@ import {
   getAftersalesShopCounts,
   getDefaultAftersalesDateKey,
   getShanghaiDateKey,
+  getShanghaiMonthKey,
+  mergeAftersalesChargeStatsPage,
+  type AftersalesChargeStatsItem,
+  type AftersalesChargeStatsPayload,
+  type AftersalesChargeStatsPeriod,
+  type AftersalesChargeStatsType,
   type AftersalesDailyRecordsPayload,
   type AftersalesPersonFilter,
   type AftersalesRecord,
@@ -146,6 +154,117 @@ function formatMobileDateLabel(value: string) {
   const matched = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
   if (!matched) return value || "今日";
   return `${Number(matched[2])}月${Number(matched[3])}日`;
+}
+
+function formatChargeStatsPeriodLabel(
+  period: AftersalesChargeStatsPeriod,
+  dateKey: string
+) {
+  if (period === "month") return formatMonthLabel(dateKey);
+  return formatMobileDateLabel(dateKey);
+}
+
+const AFTERSALES_CHARGE_STATS_PAGE_SIZE = 20;
+
+const AFTERSALES_CHARGE_STATS_CONFIGS = [
+  {
+    type: "paid-promotion",
+    title: "付费推广统计",
+    description: "付费推广充值收费登记",
+    emptyText: "当前期间暂无付费推广收费记录"
+  },
+  {
+    type: "auto-meal",
+    title: "自动出餐统计",
+    description: "自动出餐收费登记",
+    emptyText: "当前期间暂无自动出餐收费记录"
+  }
+] as const satisfies ReadonlyArray<{
+  type: AftersalesChargeStatsType;
+  title: string;
+  description: string;
+  emptyText: string;
+}>;
+
+type AftersalesChargeStatsByType = Record<
+  AftersalesChargeStatsType,
+  AftersalesChargeStatsPayload
+>;
+
+type AftersalesChargeStatsBooleanByType = Record<
+  AftersalesChargeStatsType,
+  boolean
+>;
+
+type AftersalesChargeStatsErrorByType = Record<
+  AftersalesChargeStatsType,
+  string
+>;
+
+function buildEmptyChargeStatsByType(
+  period: AftersalesChargeStatsPeriod,
+  dateKey: string
+): AftersalesChargeStatsByType {
+  return {
+    "paid-promotion": buildEmptyAftersalesChargeStats(
+      "paid-promotion",
+      period,
+      dateKey
+    ),
+    "auto-meal": buildEmptyAftersalesChargeStats("auto-meal", period, dateKey)
+  };
+}
+
+function buildAftersalesChargeStatsUrl(
+  type: AftersalesChargeStatsType,
+  period: AftersalesChargeStatsPeriod,
+  dateKey: string,
+  page: number
+) {
+  const params = new URLSearchParams({
+    type,
+    period,
+    page: String(page),
+    pageSize: String(AFTERSALES_CHARGE_STATS_PAGE_SIZE)
+  });
+  if (period === "month") {
+    params.set("month", dateKey);
+  } else {
+    params.set("date", dateKey);
+  }
+  return buildBossApiUrl(`/api/mobile/aftersales/charge-stats?${params.toString()}`);
+}
+
+async function fetchAftersalesChargeStats(
+  type: AftersalesChargeStatsType,
+  period: AftersalesChargeStatsPeriod,
+  dateKey: string,
+  page: number
+) {
+  const response = await fetch(
+    buildAftersalesChargeStatsUrl(type, period, dateKey, page),
+    { credentials: "include" }
+  );
+  return parseMobileJsonResponse<AftersalesChargeStatsPayload>(
+    response,
+    "售后收费统计暂时无法加载，请稍后重试"
+  );
+}
+
+function getChargeModeLabel(item: AftersalesChargeStatsItem) {
+  if (item.rechargeMode === "auto") return "自动充值";
+  if (item.rechargeMode === "manual") return "手动充值";
+  return item.rechargeMode || "";
+}
+
+function getChargeDetailExtra(
+  type: AftersalesChargeStatsType,
+  item: AftersalesChargeStatsItem
+) {
+  if (type === "paid-promotion") return getChargeModeLabel(item);
+  const duration = item.serviceDurationLabel || "";
+  const expires = item.serviceExpiresOn ? `到期 ${item.serviceExpiresOn}` : "";
+  return [duration, expires].filter(Boolean).join(" · ");
 }
 
 function RankingList({
@@ -442,6 +561,130 @@ function AftersalesRecordCard({ record }: { record: AftersalesRecord }) {
   );
 }
 
+function AftersalesChargeDetailCard({
+  type,
+  item
+}: {
+  type: AftersalesChargeStatsType;
+  item: AftersalesChargeStatsItem;
+}) {
+  const extra = getChargeDetailExtra(type, item);
+
+  return (
+    <article className="mobile-aftersales-charge-detail">
+      <div className="mobile-aftersales-record-head">
+        <strong>{item.shopName || "未命名店铺"}</strong>
+        <span>{formatMobileAmount(Number(item.amount ?? 0))}</span>
+      </div>
+      <div className="mobile-aftersales-record-meta">
+        <span>{item.actionDate || "未填日期"}</span>
+        <span>{item.operatorName || "未分配"}</span>
+        <span>{item.deliveryPlatform || "未知平台"}</span>
+      </div>
+      <div className="mobile-aftersales-charge-submeta">
+        {item.merchantId ? <span>商家ID {item.merchantId}</span> : null}
+        {item.createdAt ? <span>提交 {item.createdAt}</span> : null}
+        {extra ? <span>{extra}</span> : null}
+      </div>
+    </article>
+  );
+}
+
+function MobileAftersalesChargeStatsSection({
+  config,
+  data,
+  loading,
+  error,
+  loadingMore,
+  onLoadMore
+}: {
+  config: (typeof AFTERSALES_CHARGE_STATS_CONFIGS)[number];
+  data: AftersalesChargeStatsPayload;
+  loading: boolean;
+  error: string;
+  loadingMore: boolean;
+  onLoadMore: () => void;
+}) {
+  const items = data.details?.items ?? [];
+  const hasMore = items.length < Number(data.details?.total ?? 0);
+
+  return (
+    <section className="mobile-section mobile-aftersales-charge-section">
+      <div className="mobile-section-head mobile-section-head-row">
+        <div>
+          <h2>{config.title}</h2>
+          <span>
+            {formatChargeStatsPeriodLabel(data.period, data.dateKey)} · {config.description} · {formatOpenApiDateTime(data.generatedAt)}
+          </span>
+        </div>
+        <strong className="mobile-work-total">{formatMobileAmount(data.totalAmount)}</strong>
+      </div>
+
+      {loading ? <div className="mobile-work-loading">数据加载中</div> : null}
+      {!loading && error ? <div className="mobile-work-error">{error}</div> : null}
+
+      {!loading && !error ? (
+        <>
+          <div className="mobile-aftersales-charge-summary">
+            <div>
+              <span>总金额</span>
+              <strong>{formatMobileAmount(data.totalAmount)}</strong>
+            </div>
+            <div>
+              <span>总笔数</span>
+              <strong>{formatMobileCount(data.totalCount)}笔</strong>
+            </div>
+            <div>
+              <span>登记人数</span>
+              <strong>{formatMobileCount(data.employeeCount)}人</strong>
+            </div>
+          </div>
+
+          {data.employees.length > 0 ? (
+            <div className="mobile-aftersales-charge-employees">
+              {data.employees.map((employee) => (
+                <div
+                  className="mobile-aftersales-charge-employee"
+                  key={`${config.type}-${employee.operatorName}`}
+                >
+                  <span>{employee.operatorName || "未分配"}</span>
+                  <strong>{formatMobileAmount(employee.totalAmount)}</strong>
+                  <em>{formatMobileCount(employee.totalCount)}笔</em>
+                </div>
+              ))}
+            </div>
+          ) : null}
+
+          {items.length > 0 ? (
+            <div className="mobile-aftersales-charge-detail-list">
+              {items.map((item, index) => (
+                <AftersalesChargeDetailCard
+                  key={`${config.type}-${item.id || index}`}
+                  type={config.type}
+                  item={item}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="mobile-empty">{config.emptyText}</div>
+          )}
+
+          {hasMore ? (
+            <button
+              type="button"
+              className="mobile-link-button mobile-aftersales-load-more"
+              disabled={loadingMore}
+              onClick={onLoadMore}
+            >
+              {loadingMore ? "加载中" : "加载更多"}
+            </button>
+          ) : null}
+        </>
+      ) : null}
+    </section>
+  );
+}
+
 function MobileAftersalesDailySection({
   daily,
   loading,
@@ -459,67 +702,239 @@ function MobileAftersalesDailySection({
 }) {
   const [selectedPerson, setSelectedPerson] =
     useState<AftersalesPersonFilter>("all");
+  const initialChargeMonth = useMemo(() => getShanghaiMonthKey(), []);
+  const initialChargeDate = useMemo(() => getShanghaiDateKey(), []);
+  const [chargePeriod, setChargePeriod] =
+    useState<AftersalesChargeStatsPeriod>("month");
+  const [chargeMonth, setChargeMonth] = useState(initialChargeMonth);
+  const [chargeDate, setChargeDate] = useState(initialChargeDate);
+  const [chargeRefreshVersion, setChargeRefreshVersion] = useState(0);
+  const chargeDateKey = chargePeriod === "month" ? chargeMonth : chargeDate;
+  const chargeFilterKey = `${chargePeriod}:${chargeDateKey}`;
+  const chargeFilterKeyRef = useRef(chargeFilterKey);
+  const [chargeStats, setChargeStats] = useState<AftersalesChargeStatsByType>(
+    () => buildEmptyChargeStatsByType("month", initialChargeMonth)
+  );
+  const [chargeLoading, setChargeLoading] =
+    useState<AftersalesChargeStatsBooleanByType>({
+      "paid-promotion": true,
+      "auto-meal": true
+    });
+  const [chargeLoadingMore, setChargeLoadingMore] =
+    useState<AftersalesChargeStatsBooleanByType>({
+      "paid-promotion": false,
+      "auto-meal": false
+    });
+  const [chargeErrors, setChargeErrors] =
+    useState<AftersalesChargeStatsErrorByType>({
+      "paid-promotion": "",
+      "auto-meal": ""
+    });
   const filteredRecords = filterAftersalesRecords(daily, selectedPerson);
   const shopCounts = getAftersalesShopCounts(daily);
 
+  useEffect(() => {
+    chargeFilterKeyRef.current = chargeFilterKey;
+  }, [chargeFilterKey]);
+
+  useEffect(() => {
+    let active = true;
+    const requestFilterKey = chargeFilterKey;
+
+    setChargeStats(buildEmptyChargeStatsByType(chargePeriod, chargeDateKey));
+    setChargeLoading({ "paid-promotion": true, "auto-meal": true });
+    setChargeLoadingMore({ "paid-promotion": false, "auto-meal": false });
+    setChargeErrors({ "paid-promotion": "", "auto-meal": "" });
+
+    for (const config of AFTERSALES_CHARGE_STATS_CONFIGS) {
+      fetchAftersalesChargeStats(config.type, chargePeriod, chargeDateKey, 1)
+        .then((result) => {
+          if (!active || !result || chargeFilterKeyRef.current !== requestFilterKey) return;
+          setChargeStats((current) => ({
+            ...current,
+            [config.type]: result
+          }));
+        })
+        .catch((requestError: unknown) => {
+          if (!active || chargeFilterKeyRef.current !== requestFilterKey) return;
+          setChargeErrors((current) => ({
+            ...current,
+            [config.type]: requestError instanceof Error
+              ? requestError.message
+              : "售后收费统计暂时无法加载，请稍后重试"
+          }));
+        })
+        .finally(() => {
+          if (!active || chargeFilterKeyRef.current !== requestFilterKey) return;
+          setChargeLoading((current) => ({
+            ...current,
+            [config.type]: false
+          }));
+        });
+    }
+
+    return () => {
+      active = false;
+    };
+  }, [chargeDateKey, chargeFilterKey, chargePeriod, chargeRefreshVersion]);
+
+  const handleChargeLoadMore = (type: AftersalesChargeStatsType) => {
+    const current = chargeStats[type];
+    const nextPage = Number(current.details?.page ?? 1) + 1;
+    const requestFilterKey = chargeFilterKey;
+
+    setChargeLoadingMore((state) => ({ ...state, [type]: true }));
+    setChargeErrors((state) => ({ ...state, [type]: "" }));
+
+    fetchAftersalesChargeStats(type, chargePeriod, chargeDateKey, nextPage)
+      .then((result) => {
+        if (!result || chargeFilterKeyRef.current !== requestFilterKey) return;
+        setChargeStats((state) => ({
+          ...state,
+          [type]: mergeAftersalesChargeStatsPage(state[type], result)
+        }));
+      })
+      .catch((requestError: unknown) => {
+        if (chargeFilterKeyRef.current !== requestFilterKey) return;
+        setChargeErrors((state) => ({
+          ...state,
+          [type]: requestError instanceof Error
+            ? requestError.message
+            : "售后收费统计暂时无法加载，请稍后重试"
+        }));
+      })
+      .finally(() => {
+        if (chargeFilterKeyRef.current !== requestFilterKey) return;
+        setChargeLoadingMore((state) => ({ ...state, [type]: false }));
+      });
+  };
+
   return (
-    <section className="mobile-section mobile-aftersales-section">
-      <div className="mobile-section-head mobile-section-head-row mobile-aftersales-head">
-        <div>
-          <h2>售后每日工作</h2>
-          <span>{formatMobileDateLabel(daily.dateKey)} · {formatOpenApiDateTime(daily.generatedAt)}</span>
-        </div>
-        <strong className="mobile-work-total">{formatMobileCount(filteredRecords.length)}条</strong>
-      </div>
-      <label className="mobile-aftersales-date-filter">
-        <span>筛选日期</span>
-        <input
-          type="date"
-          value={selectedDate}
-          max={maxDate}
-          onChange={(event) => onDateChange(event.target.value)}
-          aria-label="筛选售后每日工作日期"
-        />
-      </label>
-      <div className="mobile-aftersales-person-filter" aria-label="筛选售后人员">
-        {AFTERSALES_PERSON_FILTERS.map((filter) => (
+    <>
+      <section className="mobile-section mobile-aftersales-charge-filter-section">
+        <div className="mobile-section-head mobile-section-head-row">
+          <div>
+            <h2>售后收费统计</h2>
+            <span>{formatChargeStatsPeriodLabel(chargePeriod, chargeDateKey)} · 两个统计区共用筛选</span>
+          </div>
           <button
             type="button"
-            className="mobile-aftersales-person-button"
-            aria-pressed={selectedPerson === filter.value}
-            onClick={() => setSelectedPerson(filter.value)}
-            key={filter.value}
+            className="mobile-icon-button mobile-aftersales-refresh-button"
+            onClick={() => setChargeRefreshVersion((value) => value + 1)}
+            aria-label="刷新售后收费统计"
           >
-            <span className="mobile-aftersales-person-count">
-              {formatMobileCount(shopCounts[filter.value])}店
-            </span>
-            <span className="mobile-aftersales-person-label">{filter.label}</span>
+            <RefreshCw size={16} aria-hidden="true" />
           </button>
-        ))}
-      </div>
+        </div>
 
-      {loading ? <div className="mobile-work-loading">数据加载中</div> : null}
-      {!loading && error ? <div className="mobile-work-error">{error}</div> : null}
-
-      {!loading && !error ? (
-        filteredRecords.length > 0 ? (
-          <div className="mobile-aftersales-record-list">
-            {filteredRecords.map((record, index) => (
-              <AftersalesRecordCard
-                key={`${record.operatorName}-${record.shopName}-${record.createdAt}-${index}`}
-                record={record}
+        <div className="mobile-aftersales-charge-filter">
+          <div className="mobile-aftersales-charge-period-toggle" aria-label="收费统计周期">
+            <button
+              type="button"
+              aria-pressed={chargePeriod === "month"}
+              onClick={() => setChargePeriod("month")}
+            >
+              按月
+            </button>
+            <button
+              type="button"
+              aria-pressed={chargePeriod === "day"}
+              onClick={() => setChargePeriod("day")}
+            >
+              按日
+            </button>
+          </div>
+          <label className="mobile-aftersales-charge-date">
+            <span>{chargePeriod === "month" ? "统计月份" : "统计日期"}</span>
+            {chargePeriod === "month" ? (
+              <input
+                type="month"
+                value={chargeMonth}
+                onChange={(event) => setChargeMonth(event.target.value)}
+                aria-label="筛选售后收费统计月份"
               />
-            ))}
+            ) : (
+              <input
+                type="date"
+                value={chargeDate}
+                onChange={(event) => setChargeDate(event.target.value)}
+                aria-label="筛选售后收费统计日期"
+              />
+            )}
+          </label>
+        </div>
+      </section>
+
+      {AFTERSALES_CHARGE_STATS_CONFIGS.map((config) => (
+        <MobileAftersalesChargeStatsSection
+          key={config.type}
+          config={config}
+          data={chargeStats[config.type]}
+          loading={chargeLoading[config.type]}
+          error={chargeErrors[config.type]}
+          loadingMore={chargeLoadingMore[config.type]}
+          onLoadMore={() => handleChargeLoadMore(config.type)}
+        />
+      ))}
+
+      <section className="mobile-section mobile-aftersales-section">
+        <div className="mobile-section-head mobile-section-head-row mobile-aftersales-head">
+          <div>
+            <h2>售后每日工作</h2>
+            <span>{formatMobileDateLabel(daily.dateKey)} · {formatOpenApiDateTime(daily.generatedAt)}</span>
           </div>
-        ) : (
-          <div className="mobile-empty">
-            {selectedPerson === "all"
-              ? "所选日期暂无售后记录"
-              : "该人员当日暂无售后记录"}
-          </div>
-        )
-      ) : null}
-    </section>
+          <strong className="mobile-work-total">{formatMobileCount(filteredRecords.length)}条</strong>
+        </div>
+        <label className="mobile-aftersales-date-filter">
+          <span>筛选日期</span>
+          <input
+            type="date"
+            value={selectedDate}
+            max={maxDate}
+            onChange={(event) => onDateChange(event.target.value)}
+            aria-label="筛选售后每日工作日期"
+          />
+        </label>
+        <div className="mobile-aftersales-person-filter" aria-label="筛选售后人员">
+          {AFTERSALES_PERSON_FILTERS.map((filter) => (
+            <button
+              type="button"
+              className="mobile-aftersales-person-button"
+              aria-pressed={selectedPerson === filter.value}
+              onClick={() => setSelectedPerson(filter.value)}
+              key={filter.value}
+            >
+              <span className="mobile-aftersales-person-count">
+                {formatMobileCount(shopCounts[filter.value])}店
+              </span>
+              <span className="mobile-aftersales-person-label">{filter.label}</span>
+            </button>
+          ))}
+        </div>
+
+        {loading ? <div className="mobile-work-loading">数据加载中</div> : null}
+        {!loading && error ? <div className="mobile-work-error">{error}</div> : null}
+
+        {!loading && !error ? (
+          filteredRecords.length > 0 ? (
+            <div className="mobile-aftersales-record-list">
+              {filteredRecords.map((record, index) => (
+                <AftersalesRecordCard
+                  key={`${record.operatorName}-${record.shopName}-${record.createdAt}-${index}`}
+                  record={record}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="mobile-empty">
+              {selectedPerson === "all"
+                ? "所选日期暂无售后记录"
+                : "该人员当日暂无售后记录"}
+            </div>
+          )
+        ) : null}
+      </section>
+    </>
   );
 }
 

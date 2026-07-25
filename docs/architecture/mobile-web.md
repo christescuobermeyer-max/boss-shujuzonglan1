@@ -21,6 +21,7 @@ Browser -> gw.hbcsch.pw for generation/resource public statistics
 - `GET /api/termination/recent-signed-stats?month=YYYY-MM`
 - `GET /api/mobile/workflow/daily-monitor`
 - `GET /api/mobile/aftersales/daily-records?date=YYYY-MM-DD`
+- `GET /api/mobile/aftersales/charge-stats?type=paid-promotion|auto-meal&period=month|day&month=YYYY-MM&date=YYYY-MM-DD&page=1&pageSize=20`
 
 所有业务接口由 Hono `mobileAuthMiddleware` 保护；`/healthz` 不需要登录。
 
@@ -31,4 +32,4 @@ Browser -> gw.hbcsch.pw for generation/resource public statistics
 - `lib/mobile-api-client.ts`：请求地址。
 - `lib/mobile-contracts.ts`：浏览器端 API 和图表类型。
 - `lib/mobile-dashboard.ts`：服务端 payload 到卡片、趋势、排行的转换。
-- `lib/mobile-work-boards.ts`：工作流和售后展示转换。
+- `lib/mobile-work-boards.ts`：工作流、售后每日工作和售后收费统计展示转换。
