@@ -61,6 +61,8 @@ describe("mobile boss quick view layout source", () => {
     expect(source).toContain("日均 {dailyOrderAverage.toFixed(1)}单");
     expect(source).toContain("每日回款列表");
     expect(source).toContain("展开本月全部");
+    expect(source).toContain("dashboardData.dailyRepaymentRows.length > 3");
+    expect(source).toContain("rows.slice(0, 3)");
     expect(source).not.toContain("资源统计");
     expect(source).not.toContain("资源账号录入统计");
     expect(source).not.toContain("销售跟进统计");

@@ -104,6 +104,9 @@ describe("mobile work board layout", () => {
     expect(source).toContain('type="date"');
     expect(source).toContain("chargeLoadingMore");
     expect(source).toContain("mergeAftersalesChargeStatsPage");
+    expect(source).toContain("detailsExpanded");
+    expect(source).toContain("查看明细");
+    expect(source).toContain("收起明细");
     expect(source).toContain("加载更多");
     expect(source.indexOf("售后收费统计")).toBeLessThan(source.indexOf("售后每日工作"));
     expect(source.indexOf("付费推广统计")).toBeLessThan(source.indexOf("售后每日工作"));
@@ -112,6 +115,7 @@ describe("mobile work board layout", () => {
     expect(styles).toContain(".mobile-aftersales-charge-summary");
     expect(styles).toContain(".mobile-aftersales-charge-employees");
     expect(styles).toContain(".mobile-aftersales-charge-detail-list");
+    expect(styles).toContain(".mobile-aftersales-detail-toggle");
     expect(styles).toContain(".mobile-aftersales-load-more");
   });
 });

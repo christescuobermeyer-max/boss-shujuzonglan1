@@ -205,7 +205,12 @@ describe("mobile dashboard data", () => {
       "2026-04-04",
       "2026-04-02"
     ]);
-    expect(getVisibleDailyRepaymentRows(data.dailyRepaymentRows, false)).toHaveLength(7);
+    expect(getVisibleDailyRepaymentRows(data.dailyRepaymentRows, false)).toHaveLength(3);
+    expect(getVisibleDailyRepaymentRows(data.dailyRepaymentRows, false).map((row) => row.date)).toEqual([
+      "2026-04-10",
+      "2026-04-09",
+      "2026-04-08"
+    ]);
     expect(getVisibleDailyRepaymentRows(data.dailyRepaymentRows, true)).toHaveLength(8);
   });
 

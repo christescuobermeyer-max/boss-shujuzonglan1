@@ -1294,6 +1294,12 @@ button {
   margin-bottom: 12px;
 }
 
+.mobile-aftersales-detail-toggle {
+  width: 100%;
+  min-height: 38px;
+  margin-bottom: 12px;
+}
+
 .mobile-aftersales-charge-employee {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto auto;

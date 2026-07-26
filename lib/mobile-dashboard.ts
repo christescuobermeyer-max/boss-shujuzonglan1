@@ -197,7 +197,7 @@ export function getVisibleDailyRepaymentRows(
   rows: MobileDailyRepaymentRow[],
   expanded: boolean
 ) {
-  return expanded ? rows : rows.slice(0, 7);
+  return expanded ? rows : rows.slice(0, 3);
 }
 
 export function buildEmptyMobileMonthlyStats(month: string): MobileMonthlyStatsPayload {

@@ -605,8 +605,15 @@ function MobileAftersalesChargeStatsSection({
   loadingMore: boolean;
   onLoadMore: () => void;
 }) {
+  const [detailsExpanded, setDetailsExpanded] = useState(false);
   const items = data.details?.items ?? [];
-  const hasMore = items.length < Number(data.details?.total ?? 0);
+  const detailTotal = Number(data.details?.total ?? items.length);
+  const hasDetails = detailTotal > 0 || items.length > 0;
+  const hasMore = items.length < detailTotal;
+
+  useEffect(() => {
+    setDetailsExpanded(false);
+  }, [config.type, data.dateKey, data.period]);
 
   return (
     <section className="mobile-section mobile-aftersales-charge-section">
@@ -655,7 +662,19 @@ function MobileAftersalesChargeStatsSection({
             </div>
           ) : null}
 
-          {items.length > 0 ? (
+          {hasDetails ? (
+            <button
+              type="button"
+              className="mobile-link-button mobile-aftersales-detail-toggle"
+              onClick={() => setDetailsExpanded((value) => !value)}
+            >
+              {detailsExpanded
+                ? "收起明细"
+                : `查看明细（${formatMobileCount(detailTotal)}条）`}
+            </button>
+          ) : null}
+
+          {detailsExpanded && items.length > 0 ? (
             <div className="mobile-aftersales-charge-detail-list">
               {items.map((item, index) => (
                 <AftersalesChargeDetailCard
@@ -665,11 +684,13 @@ function MobileAftersalesChargeStatsSection({
                 />
               ))}
             </div>
-          ) : (
-            <div className="mobile-empty">{config.emptyText}</div>
-          )}
+          ) : null}
 
-          {hasMore ? (
+          {detailsExpanded && hasDetails && items.length === 0 ? (
+            <div className="mobile-empty">{config.emptyText}</div>
+          ) : null}
+
+          {detailsExpanded && hasMore ? (
             <button
               type="button"
               className="mobile-link-button mobile-aftersales-load-more"
@@ -1352,7 +1373,7 @@ export function MobileBossDashboard() {
                   <h2>每日回款列表</h2>
                   <span>最新日期优先，展示平台与武汉拆分</span>
                 </div>
-                {dashboardData.dailyRepaymentRows.length > 7 ? (
+                {dashboardData.dailyRepaymentRows.length > 3 ? (
                   <button
                     type="button"
                     className="mobile-link-button"
