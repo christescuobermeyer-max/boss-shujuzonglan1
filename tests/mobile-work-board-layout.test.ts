@@ -11,11 +11,15 @@ describe("mobile work board layout", () => {
 
     expect(source).toContain("MobileWorkflowProgressSection");
     expect(source).toContain("MobileAftersalesDailySection");
+    expect(source).toContain("MobileFinanceExpenseSection");
     expect(source).toContain('buildBossApiUrl("/api/mobile/workflow/daily-monitor")');
     expect(source).toContain("/api/mobile/aftersales/daily-records?date=");
     expect(source).toContain('credentials: "include"');
-    expect(source.indexOf("MobileWorkflowProgressSection")).toBeLessThan(
-      source.indexOf("MobileAftersalesDailySection")
+    expect(source.indexOf("<MobileWorkflowProgressSection")).toBeLessThan(
+      source.indexOf("<MobileFinanceExpenseSection")
+    );
+    expect(source.indexOf("<MobileFinanceExpenseSection")).toBeLessThan(
+      source.indexOf("<MobileAftersalesDailySection")
     );
   });
 

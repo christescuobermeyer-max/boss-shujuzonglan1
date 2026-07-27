@@ -31,6 +31,7 @@ describe("mobile boss quick view layout source", () => {
   it("renders the agreed mobile dashboard sections", () => {
     const source = [
       readProjectFile("components", "mobile", "mobile-boss-dashboard.tsx"),
+      readProjectFile("components", "mobile", "mobile-finance-expense-section.tsx"),
       readProjectFile("components", "mobile", "mobile-all-online-shop-trend.tsx"),
       readProjectFile("lib", "mobile-dashboard.ts")
     ].join("\n");
@@ -69,6 +70,9 @@ describe("mobile boss quick view layout source", () => {
     expect(source).toContain("销售开单");
     expect(source).toContain("运营回款");
     expect(source).toContain("账号生图");
+    expect(source).toContain("财务三人支出");
+    expect(source).toContain("/api/mobile/finance/monthly-summary");
+    expect(source).toContain("/api/mobile/finance/transactions");
     expect(source).toContain("解约");
     expect(source).not.toContain("每日简报");
     expect(source).not.toContain("销售开单 Top");

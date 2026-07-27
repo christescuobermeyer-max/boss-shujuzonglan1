@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { RefreshCw } from "lucide-react";
 import { MobileAllOnlineShopTrend } from "@/components/mobile/mobile-all-online-shop-trend";
 import { MobileAllRepaymentTrend } from "@/components/mobile/mobile-all-repayment-trend";
+import { MobileFinanceExpenseSection } from "@/components/mobile/mobile-finance-expense-section";
 import {
   MobileAmountTrendChart,
   MobileOrderTrendChart,
@@ -1406,6 +1407,7 @@ export function MobileBossDashboard() {
             loading={workflowLoading}
             error={workflowError}
           />
+          <MobileFinanceExpenseSection />
           <MobileAftersalesDailySection
             daily={aftersalesDaily}
             loading={aftersalesLoading}
