@@ -59,6 +59,10 @@ export type RecentSignedTerminationRange = {
     startDate: string;
     endDate: string;
   };
+  previousMonthDateRange: {
+    startDate: string;
+    endDate: string;
+  };
   terminationDateRange: {
     startDate: string;
     endDate: string;
@@ -126,6 +130,18 @@ function isInClosedDateKeyRange(date: string, start: string, end: string) {
   return Boolean(date) && date >= start && date <= end;
 }
 
+function isSignedAndTerminatedInSameMonth(
+  signedDateKey: string,
+  terminationDateKey: string,
+  startDate: string,
+  endDate: string
+) {
+  return (
+    isInClosedDateKeyRange(signedDateKey, startDate, endDate) &&
+    isInClosedDateKeyRange(terminationDateKey, startDate, endDate)
+  );
+}
+
 export function resolveRecentSignedTerminationMonth(
   monthParam: string | null
 ): RecentSignedTerminationRange {
@@ -142,6 +158,7 @@ export function resolveRecentSignedTerminationMonth(
   const startMonth = monthValue(year, monthIndex - 1);
   const endMonth = monthValue(year, monthIndex);
   const signedStartDate = dateKey(year, monthIndex - 1, 1);
+  const previousMonthEndDate = dateKey(year, monthIndex, 0);
   const terminationStartDate = dateKey(year, monthIndex, 1);
   const signedEndDate = dateKey(year, monthIndex + 1, 0);
 
@@ -158,6 +175,10 @@ export function resolveRecentSignedTerminationMonth(
       endMonth,
       startDate: signedStartDate,
       endDate: signedEndDate
+    },
+    previousMonthDateRange: {
+      startDate: signedStartDate,
+      endDate: previousMonthEndDate
     },
     terminationDateRange: {
       startDate: terminationStartDate,
@@ -190,12 +211,14 @@ export function buildRecentSignedTerminationStats(
     const terminationDateKey = formatShanghaiDateKey(shop.terminationDate);
 
     return (
-      isInClosedDateKeyRange(
+      isSignedAndTerminatedInSameMonth(
         signedDateKey,
-        range.signedMonthRange.startDate,
-        range.signedMonthRange.endDate
-      ) &&
-      isInClosedDateKeyRange(
+        terminationDateKey,
+        range.previousMonthDateRange.startDate,
+        range.previousMonthDateRange.endDate
+      ) ||
+      isSignedAndTerminatedInSameMonth(
+        signedDateKey,
         terminationDateKey,
         range.terminationDateRange.startDate,
         range.terminationDateRange.endDate
