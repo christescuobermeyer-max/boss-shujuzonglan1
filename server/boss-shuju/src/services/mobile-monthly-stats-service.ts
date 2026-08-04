@@ -13,6 +13,7 @@ import { resolveMonthRange } from "../lib/stats/month.js";
 import { shiftMonthValue } from "../lib/stats/month-rotation.js";
 import { buildMonthlyPointSummary } from "../lib/stats/monthly-point-summary.js";
 import { buildMonthlyShopCohorts } from "../lib/stats/monthly-shop-cohorts.js";
+import { isExcludedMobileOperatorName } from "../lib/stats/mobile-operator-exclusions.js";
 import {
   buildMonthlySignedShopTrend,
   buildMonthlySignedShopTrendByPlatform,
@@ -112,7 +113,7 @@ function buildSalesRanking(items: TrendItem[]): MobileRankItem[] {
     .sort((left, right) => right.value - left.value || left.name.localeCompare(right.name, "zh-CN"));
 }
 
-function buildOperatorAmountRanking(params: {
+export function buildOperatorAmountRanking(params: {
   meituanDailyPointAmountTrend: DailyTrendSeries[];
   elemeDailyPointAmountTrend: DailyTrendSeries[];
 }): MobileRankItem[] {
@@ -122,6 +123,7 @@ function buildOperatorAmountRanking(params: {
     (series) => {
       const name = String(series.name ?? "").trim() || "未分配";
       if (name === "未分配") return;
+      if (isExcludedMobileOperatorName(name)) return;
 
       const total = series.values.reduce(
         (sum, item) => sum + Number(item.value ?? 0),
@@ -139,13 +141,13 @@ function buildOperatorAmountRanking(params: {
     .sort((left, right) => right.value - left.value || left.name.localeCompare(right.name, "zh-CN"));
 }
 
-function buildOperatorTerminationRanking(items: TrendItem[]): MobileRankItem[] {
+export function buildOperatorTerminationRanking(items: TrendItem[]): MobileRankItem[] {
   return items
     .map((item) => ({
       name: String(item.name ?? "").trim() || "未分配",
       value: Number(item.count ?? 0)
     }))
-    .filter((item) => item.name !== "未分配")
+    .filter((item) => item.name !== "未分配" && !isExcludedMobileOperatorName(item.name))
     .sort((left, right) => right.value - left.value || left.name.localeCompare(right.name, "zh-CN"));
 }
 

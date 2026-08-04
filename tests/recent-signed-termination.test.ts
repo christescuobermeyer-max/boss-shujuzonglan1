@@ -30,6 +30,17 @@ describe("recent signed termination stats", () => {
         terminationCooperationDays: 17
       },
       {
+        _id: "excluded-operator",
+        shopName: "王涛本月签本月解",
+        merchantId: "1008",
+        deliveryPlatform: "美团",
+        operatorName: "王涛",
+        contractSignedDate: new Date("2026-06-04T00:00:00+08:00"),
+        shopStatus: "已解约",
+        terminationDate: new Date("2026-06-18T00:00:00+08:00"),
+        terminationCooperationDays: 14
+      },
+      {
         _id: "previous-signed-current-terminated",
         shopName: "上月签本月解-C",
         merchantId: "1003",
@@ -100,6 +111,8 @@ describe("recent signed termination stats", () => {
       "上月签上月解-F",
       "上月签上月解-A"
     ]);
+    expect(result.operatorStats.map((item) => item.operatorName)).not.toContain("王涛");
+    expect(result.shops.map((shop) => shop.operatorName)).not.toContain("王涛");
   });
 
   it("拒绝无效 month 参数", () => {

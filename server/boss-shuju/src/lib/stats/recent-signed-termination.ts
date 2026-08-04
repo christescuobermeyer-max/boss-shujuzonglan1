@@ -1,3 +1,5 @@
+import { isExcludedMobileOperatorName } from "./mobile-operator-exclusions.js";
+
 export type RecentSignedTerminationShopRow = {
   _id?: unknown;
   shopName?: string;
@@ -77,6 +79,10 @@ function normalizeText(value: unknown) {
 
 function operatorOf(shop: RecentSignedTerminationShopRow) {
   return normalizeText(shop.operatorName) || "未分配";
+}
+
+function isExcludedOperatorShop(shop: RecentSignedTerminationShopRow) {
+  return isExcludedMobileOperatorName(operatorOf(shop));
 }
 
 function pad2(value: number) {
@@ -196,6 +202,8 @@ export function buildRecentSignedTerminationStats(
   const range = resolveRecentSignedTerminationMonth(monthParam);
 
   const twoMonthSignedShops = shops.filter((shop) => {
+    if (isExcludedOperatorShop(shop)) return false;
+
     const signedDateKey = formatShanghaiDateKey(shop.contractSignedDate);
     return isInClosedDateKeyRange(
       signedDateKey,
