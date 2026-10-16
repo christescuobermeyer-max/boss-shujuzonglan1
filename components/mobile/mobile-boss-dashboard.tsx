@@ -393,8 +393,7 @@ function MobileAccountGenerationSection({
       const monthDiff = Number(right.month_count ?? 0) - Number(left.month_count ?? 0);
       if (monthDiff !== 0) return monthDiff;
       return Number(right.total_count ?? 0) - Number(left.total_count ?? 0);
-    })
-    .slice(0, 8);
+    });
   const monthTotal = accounts.reduce((sum, item) => sum + Number(item.month_count ?? 0), 0);
   const periodLabel = data?.month_start ? `${formatGenerationPeriod(data.month_start)}生图统计` : "本月生图统计";
 
